@@ -29,10 +29,8 @@ public class BufferManager {
     public BufferManager() {
     }
     
-    /**
-     *Flushes All non-pinned blocks to disk to clear the buffer.
-     *
-     *@return whether ot not the fluxh succeeded.
+    /**Writes all non-pinned blocks to disk to clear the buffer.
+     *@return Whether ot not the fluxh succeeded.
      */
     public boolean flush() {
         return true;
