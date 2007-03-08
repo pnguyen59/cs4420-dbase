@@ -69,58 +69,61 @@ public class StorageManager {
      * @param fileName The name of the file to open.
      * @return The FileChannel mapped to the newly opened file, or null if it
      * could not be opened.
-     * @throws FileNotFoundException Throws if the file specified cannot be
-     * found.
      */
-    private FileChannel openFile(final String fileName) 
-    	throws FileNotFoundException {
-    	
+    private FileChannel openFile(final String fileName) { 	
     	RandomAccessFile file;
-    	FileChannel channel = null;
-    	
-		//Try to open the RandomAccessFile pointing to fileName and 
-		//get the channel from it.
-		file = new RandomAccessFile("/Documents/test.txt",
-				"r");
-		channel = file.getChannel();
-		
+		FileChannel channel = null;
+    	try {
+    		//Try to open the RandomAccessFile pointing to fileName and 
+    		//get the channel from it.
+    		file = new RandomAccessFile(fileName, "rw");
+    		channel = file.getChannel();
+    	} catch (FileNotFoundException exception) {
+    		//If the file can't be found then print that, the error and exit.
+    		System.out.println("Couldn't open file " + fileName 
+    				+ " in StorageManager.openFile");
+    		System.out.println("Exception" + exception.toString());
+    		System.exit(1);
+    	}
         return channel;
     }
     
     
     /**This reads the requested block from the requested relation's file
      * and returns it.
-     * @param relation the relation to read.
-     * @param block the block needed from that relation.
+     * @param relation The relation to read the block from.
+     * @param block The block needed from that relation.
      * @return The MappedByteBuffer of the block specified or null if read 
      * fails.
      */
     public MappedByteBuffer read(final int relation, final long block) {   	
-    	//TODO Get the filename for the relation passed to this method
     	
-		MappedByteBuffer buffer = null;
+    	MappedByteBuffer buffer = null;
 		FileChannel channel = null;
-		try {
-			//TODO Replace this dummy file.
-			channel = this.openFile("/Documents/test.txt");
-		} catch (FileNotFoundException e) {
-			System.out.println("Couldn't open file test.txt");
-			System.out.println(e);
-		}
 		
-		//TODO have it see if the requested segment is beyond the end of the
-		//file, or just greater than the file size
+    	//TODO Get the filename for the relation passed to this method from the
+		//catalog
+		String file = "/Documents/test.txt";
+    	
+		//Get the FileChannel for the specified relation
+		channel = this.openFile(file);
+		
+		//TODO have it see if the requested block is beyond the end of the
+		//file, or just greater than the file size.  Just some way it can't
+		//be read
+		int size = isBlockInRange(channel, block);
+		
 		//In this try/catch block, we try to read in the specified block from
 		//the file
 		try {
-			//Grab the block with the specified size and offset
+			//TODO When ready for the real shit, take this off of
+			//READ_ONLY
 			buffer = channel.map(
 					FileChannel.MapMode.READ_ONLY, 
-					block * BLOCK_SIZE, BLOCK_SIZE);
+					block * BLOCK_SIZE, size);
 		} catch (IOException e) {
-			//TODO Replace dummy file test.txt
-			System.out.println("Couldn't map bytes from file test.txt");
-			System.out.println(e);
+			System.out.println("Couldn't map bytes from file " + file);
+			System.exit(1);
 		}
 		
         return buffer;
@@ -132,6 +135,44 @@ public class StorageManager {
      */
     public MappedByteBuffer tableScan(final int relation) {
         return null;
+    }
+    
+    /**This method is meant to detect reads or writes which are out of the range
+     * of the specified file.
+     * @param file The file for which the range will be checked.
+     * @param block The block we want to write.
+     * @return The size of the block that can be grabbed
+     */
+    private int isBlockInRange(final FileChannel file, final long block) {
+    	
+    	int returnSize = BLOCK_SIZE;
+    	
+    	//Get the size of the file in bytes
+    	long fileSize = 0;
+    	try {
+    		fileSize = file.size();
+    	} catch (IOException exception) {
+    		System.out.println("The size of the file couldn't be determined"
+    				+ "in StorageManager.isBlockInRange");
+    		System.out.println(exception);
+    		System.exit(1);
+    	}
+    	
+    	//Now see if the block requested is longer than the range of the file
+    	long blockByte = (block + 1) * BLOCK_SIZE;
+    	//If the fileSize is smaller than the requested block then we have a
+    	//problem
+    	if (fileSize < blockByte) {
+        	//First see if the last block in the file isn't full.  If it is then
+        	//return however many bytes the last block has in it.
+    		if ((fileSize % BLOCK_SIZE) != 0) {
+    			returnSize = (int) (fileSize % BLOCK_SIZE);
+    		} else {
+    			//If that isn't it then return -1
+    			returnSize = -1;
+    		}
+    	}	
+    	return returnSize;
     }
     
     /**This writes the given block to the block in the relation specified.
