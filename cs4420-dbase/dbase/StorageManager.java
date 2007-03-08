@@ -10,7 +10,11 @@
 
 package dbase;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  *
@@ -23,10 +27,25 @@ public class StorageManager {
      * used to allow it to get relation files and others.*/
     private SystemCatalog catalog;
     
+    /**This is the size of the block in bytes which will be taken into 
+     * and returned from this class.
+     */
+    public static final int BLOCK_SIZE = 4096;
     
-    /** Creates a new instance of StorageManager. */
+    /** Creates a new instance of StorageManager with nothing inside
+     * of it.
+     */
     public StorageManager() {
         
+    }
+    
+    /**Creates a new instance of StorageManager with the specified 
+     * SystemCatalog.
+     * @param newCatalog The SystemCatalog which this StorageManager will refer
+     * to for information regarding file names and relation names.
+     */
+    public StorageManager(final SystemCatalog newCatalog) {
+    	this.catalog = newCatalog;
     }
     
     /**This scans an index and returns the first block from the index.
@@ -50,9 +69,22 @@ public class StorageManager {
      * @param fileName The name of the file to open.
      * @return The FileChannel mapped to the newly opened file, or null if it
      * could not be opened.
+     * @throws FileNotFoundException Throws if the file specified cannot be
+     * found.
      */
-    public boolean openFile(final String fileName) {
-        return true;
+    private FileChannel openFile(final String fileName) 
+    	throws FileNotFoundException {
+    	
+    	RandomAccessFile file;
+    	FileChannel channel = null;
+    	
+		//Try to open the RandomAccessFile pointing to fileName and 
+		//get the channel from it.
+		file = new RandomAccessFile("/Documents/test.txt",
+				"r");
+		channel = file.getChannel();
+		
+        return channel;
     }
     
     
@@ -63,8 +95,35 @@ public class StorageManager {
      * @return The MappedByteBuffer of the block specified or null if read 
      * fails.
      */
-    public MappedByteBuffer read(final int relation, final long block) {
-        return null;
+    public MappedByteBuffer read(final int relation, final long block) {   	
+    	//TODO Get the filename for the relation passed to this method
+    	
+		MappedByteBuffer buffer = null;
+		FileChannel channel = null;
+		try {
+			//TODO Replace this dummy file.
+			channel = this.openFile("/Documents/test.txt");
+		} catch (FileNotFoundException e) {
+			System.out.println("Couldn't open file test.txt");
+			System.out.println(e);
+		}
+		
+		//TODO have it see if the requested segment is beyond the end of the
+		//file, or just greater than the file size
+		//In this try/catch block, we try to read in the specified block from
+		//the file
+		try {
+			//Grab the block with the specified size and offset
+			buffer = channel.map(
+					FileChannel.MapMode.READ_ONLY, 
+					block * BLOCK_SIZE, BLOCK_SIZE);
+		} catch (IOException e) {
+			//TODO Replace dummy file test.txt
+			System.out.println("Couldn't map bytes from file test.txt");
+			System.out.println(e);
+		}
+		
+        return buffer;
     }
     
     /**Reads in the first block of the specified relation.
