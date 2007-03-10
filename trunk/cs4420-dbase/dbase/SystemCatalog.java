@@ -53,9 +53,10 @@ public class SystemCatalog {
      *
      *@return The Iterator
      */
-    public Iterator getIterator(String relation) {
-        return null;
-    }
+//    public Iterator getIterator(String relation) {
+//    	//TODO Implement and uncomment out
+//        return null;
+//    }
     
     /**
      *Inserts a record into a relation and possibl an index.

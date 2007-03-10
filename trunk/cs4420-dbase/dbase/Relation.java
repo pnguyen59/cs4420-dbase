@@ -36,6 +36,14 @@ public class Relation {
 		return channel;
 	}
 	
+//	public Iterator Open() {
+//	TODO implement once Iterator is uploaded.	
+//	}
+	
+	public void Close() {
+		//TODO Closes the iterator thingy.
+	}
+	
 	//TODO Finish implementing all other functionality of the class including an attribute map or list, etc.
 
 }

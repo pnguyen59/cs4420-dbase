@@ -10,6 +10,7 @@
 package dbase;
 
 import java.nio.MappedByteBuffer;
+import java.nio.*;
 
 /**
  * @author andrewco
@@ -42,7 +43,18 @@ public class BufferManager {
      *@return The logical address of the freed block.
      */
     private long freeSpace() {
-        return time; 
+	    	while (true) {
+			if (lookUpTable[(int) time][1] == 0) {
+				return time;
+			} else {
+				if (lookUpTable[(int) time][1] == -1) {
+					time++;
+				} else {
+					lookUpTable[(int) time][1]--;
+					time++;
+				}
+			}
+		}
     }
     
     
@@ -62,6 +74,7 @@ public class BufferManager {
      *@return The block requested in a MappedByteBuffer.
      */
     public MappedByteBuffer read(final int relation, final long address) {
+    	freeSpace();
         return null;
     }
     
@@ -75,13 +88,34 @@ public class BufferManager {
         return true;
     }
     
-    /***Writes the specified block to disk.
+    /***Writes the specified block to disk. given the physical address
      *@param address The <b>logical</b> address to be written to disk.
+     *@param data the ByteBuffer of data to be written to the MappedByteBuffer in buffer.
      *@return whether the block was successfully written.
      */
-    public boolean write(final long address) {
-        return true;
+    public boolean writePhysical(final long address, ByteBuffer data) {
+    	int logical;
+    	for (int i = 0; i < buffer.length; i++) {
+    		if (lookUpTable[i][0] == address) {
+    			logical = i;
+    			buffer[logical].put(data);
+    	    	return true;
+    		}
+    	}
+    	return false;
     }
+    
+    /***Writes the specified block to disk. given the logical address
+     *@param address The <b>logical</b> address to be written to disk.
+     *@param data the ByteBuffer of data to be written to the MappedByteBuffer in buffer.
+     *@return whether the block was successfully written.
+     */
+    
+    public boolean writeLogical(final long address, ByteBuffer data) {
+    	buffer[(int)address].put(data);
+    	return true;
+    }
+    
     
     /**This method will return whether or not the specified block is pinned in
      * memory.
