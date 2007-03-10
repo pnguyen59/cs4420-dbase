@@ -27,9 +27,22 @@ public class Database {
     
     /**This will look at a command to see if it is valid.  This will be moved
      * to QueryParser in phase 2 of the project.
+     * @param command The command to parse and possible sent off somewhere.
      * @return Whether or not the query could be parsed correctly.
      */
-    public boolean parseCommand() {
+    public boolean parseCommand(final String command) {
+    	//Split the command into an array of strings
+    	String [] splitCommand = command.split("/\\s+/");
+    	
+    	//TODO send the result to SystemCatalog
+    	if (splitCommand[0].compareToIgnoreCase("SELECT") == 1) {
+    		
+    	} else if (splitCommand[0].compareToIgnoreCase("SELECT") == 1) {
+    		
+    	} else if (splitCommand[0].compareToIgnoreCase("INSERT") == 1) {
+    		
+    	}
+    	
         return true;
     }
     
