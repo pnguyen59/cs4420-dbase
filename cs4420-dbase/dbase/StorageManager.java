@@ -216,9 +216,13 @@ public class StorageManager {
      */  
     public boolean write(final int relation, final long address, 
     		final MappedByteBuffer block) {
-    	//TODO figure out how to write
+    	//TODO figure out how to write. 
+    	//Easier than expected, just need to make some Basic changes to be explained later.
     	
-    	//TODO have it go from the relation ID to the file name.
+    	Relation currentrelation = relationholder.getRelation(relation);
+		
+    	String file = currentrelation.getFilename();
+    	System.out.println(file);
         return true;
     }
 }
