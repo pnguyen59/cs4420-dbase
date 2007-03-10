@@ -43,13 +43,17 @@ public class BufferManager {
      *@return The logical address of the freed block.
      */
     private long freeSpace() {
-	    	while (true) {
+    	//go till we find one
+	    while (true) {
+	    	//if it is 0 return it
 			if (lookUpTable[(int) time][1] == 0) {
 				return time;
 			} else {
+				//if it's pinned just move on
 				if (lookUpTable[(int) time][1] == -1) {
 					time++;
 				} else {
+					//if it's not pinned decrement and move on
 					lookUpTable[(int) time][1]--;
 					time++;
 				}
@@ -64,7 +68,23 @@ public class BufferManager {
      *@return Whether or not the block was successfully pinned.
      */    
     public boolean pin(final int relation, final long block) {
-        return true;
+//    	make physical address
+    	long address = block * 100 + relation;
+    	//look for that address
+    	for (int i = 0; i < lookUpTable.length; i++) {
+    		if (address == lookUpTable[i][0]) {
+    			//see if it is pinned
+    			if (lookUpTable[i][1] != (long)-1) {
+    				//found and unpinned
+    				lookUpTable[i][1] = -1;
+    				return true;
+    			}
+    			//found but not pinned
+    			return false;
+    		}
+    	}
+    	//not found
+    	return false;
     }
     
     /**Reads a block from memory, will load block into memory if not already in
@@ -74,6 +94,7 @@ public class BufferManager {
      *@return The block requested in a MappedByteBuffer.
      */
     public MappedByteBuffer read(final int relation, final long address) {
+    	//TODO fix this obviously.
     	freeSpace();
         return null;
     }
@@ -85,7 +106,23 @@ public class BufferManager {
      *@return Whether or not the block was successfully unpinned.
      */
     public boolean unpin(final int relation, final long block) {
-        return true;
+    	//make physical address
+    	long address = block * 100 + relation;
+    	//look for that address
+    	for (int i = 0; i < lookUpTable.length; i++) {
+    		if (address == lookUpTable[i][0]) {
+    			//see if it is pinned
+    			if (lookUpTable[i][1] == (long)-1) {
+    				//found and pinned
+    				lookUpTable[i][1] = 1;
+    				return true;
+    			}
+    			//found but not pinned
+    			return false;
+    		}
+    	}
+    	//not found
+    	return false;
     }
     
     /***Writes the specified block to disk. given the physical address
@@ -118,12 +155,28 @@ public class BufferManager {
     
     
     /**This method will return whether or not the specified block is pinned in
-     * memory.
+     * memory. Please note all Physical Addresses are in the format: &&####%%
+     * where #### is the block number, %% is the relation ID, and && is the record number on the block
      * @param relation The relation containing the block.
      * @param block The block inside of that relation.
      * @return Whether or not the block is pinned.
      */
     public boolean isPinned(final int relation, final long block) {
+    	//make physical address
+    	long address = block * 100 + relation;
+    	//look for that address
+    	for (int i = 0; i < lookUpTable.length; i++) {
+    		if (address == lookUpTable[i][0]) {
+    			//see if it is pinned
+    			if (lookUpTable[i][1] == (long)-1) {
+    				//found and pinned
+    				return true;
+    			}
+    			//found but not pinned
+    			return false;
+    		}
+    	}
+    	//not found
     	return false;
     }
 }
