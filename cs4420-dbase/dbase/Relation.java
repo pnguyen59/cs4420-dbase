@@ -11,6 +11,7 @@ package dbase;
  */
 
 import java.nio.channels.FileChannel;
+import java.util.*;
 
 public class Relation {
 	
@@ -22,6 +23,17 @@ public class Relation {
 	
 	/**The FileChannel which maps to this relation and reads from it.*/
 	private FileChannel channel;
+	
+	/** The Basic information for the Relation */
+	private String relationname;
+	private int creationdate;
+	private int modifydate;
+	private int tuples;
+	private ArrayList<Attribute> indexed;
+	private ArrayList<String> indexfiles;
+	private int blocktotal;
+	
+	
 	
 	/**This creates a new instance of relation.
 	 * @param newfilename The file that holds the records of this relation.
