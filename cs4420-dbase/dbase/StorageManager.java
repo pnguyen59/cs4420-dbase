@@ -62,6 +62,10 @@ public class StorageManager {
      * @return Whether or not the file was sucessfully created.
      */
     public boolean makeFile(final String fileName) {
+    	//TODO make the file for this relation.
+    	
+    	
+    	
         return true;
     }
     
@@ -134,6 +138,7 @@ public class StorageManager {
      * @return The first block of the relation as a MappedByteBuffer.
      */
     public MappedByteBuffer tableScan(final int relation) {
+    	//TODO have it get the first block of the table
         return null;
     }
     
@@ -145,6 +150,7 @@ public class StorageManager {
      */
     private int isBlockInRange(final FileChannel file, final long block) {
     	
+    	//Default to the standard block size
     	int returnSize = BLOCK_SIZE;
     	
     	//Get the size of the file in bytes
@@ -168,7 +174,8 @@ public class StorageManager {
     		if ((fileSize % BLOCK_SIZE) != 0) {
     			returnSize = (int) (fileSize % BLOCK_SIZE);
     		} else {
-    			//If that isn't it then return -1
+    			//If that isn't it then return -1 cause the requested block 
+    			//is definately not in the file.
     			returnSize = -1;
     		}
     	}	
@@ -176,13 +183,16 @@ public class StorageManager {
     }
     
     /**This writes the given block to the block in the relation specified.
-     *@param relation The relation to write the block to.
-     *@param address The block to write to.
-     *@param block The information to be written to disk.
-     *@return Whether or not the write succeeded.
+     * @param relation The relation to write the block to.
+     * @param address The block to write to.
+     * @param block The information to be written to disk.
+     * @return Whether or not the write succeeded.
      */  
     public boolean write(final int relation, final long address, 
     		final MappedByteBuffer block) {
+    	//TODO figure out how to write
+    	
+    	//TODO have it go from the relation ID to the file name.
         return true;
     }
 }
