@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.io.*;
 
 /**
  *
@@ -24,8 +25,16 @@ public class StorageManager {
     
     
     /**The System Catalog that owns the buffermanager this belongs to, 
-     * used to allow it to get relation files and others.*/
-    private SystemCatalog catalog;
+     * used to allow it to get relation files and others. 
+     * Replaced with static methods in Storage Manager*/
+    //private SystemCatalog catalog;
+	
+	/**
+	 * The RelationHolder Class to hold relation lists for filename access etc.
+	 * Grabs the Relation list from RelationHolder.
+	 */
+	
+	private RelationHolder relationholder = RelationHolder.getRelationHolder();
     
     /**This is the size of the block in bytes which will be taken into 
      * and returned from this class.
@@ -44,9 +53,9 @@ public class StorageManager {
      * @param newCatalog The SystemCatalog which this StorageManager will refer
      * to for information regarding file names and relation names.
      */
-    public StorageManager(final SystemCatalog newCatalog) {
-    	this.catalog = newCatalog;
-    }
+//    public StorageManager(final SystemCatalog newCatalog) {
+//    	this.catalog = newCatalog;
+//    }
     
     /**This scans an index and returns the first block from the index.
      * @param relation The relation for which the index is being found.
@@ -58,16 +67,17 @@ public class StorageManager {
     }
     
     /**This creates a new file wiht the given name.
+     * --Moved into code in openFile--
      * @param fileName The name of the new file to be created.
      * @return Whether or not the file was sucessfully created.
      */
-    public boolean makeFile(final String fileName) {
-    	//TODO make the file for this relation.
-    	
-    	
-    	
-        return true;
-    }
+//    public boolean makeFile(final String fileName) {
+//    	//TODO make the file for this relation.
+//    	
+//    	
+//    	
+//        return true;
+//    }
     
     /**This opens a file for the storage manager to read into or write out of.
      * @param fileName The name of the file to open.
@@ -83,6 +93,22 @@ public class StorageManager {
     		file = new RandomAccessFile(fileName, "rw");
     		channel = file.getChannel();
     	} catch (FileNotFoundException exception) {
+    		//If open failed because file doesn't exist, create file and open it.
+    		try {
+    			File newfile = new File(fileName);
+    			boolean worked = newfile.createNewFile();
+    			if (worked) {
+    				System.out.println("File Successfully Created.");
+    				return openFile(fileName);
+    			} else {
+    				System.out.println("File Creation Unsuccesful.");
+    			}
+    		
+    		} catch(IOException e) {
+    			System.out.println("Couldn't create file " + fileName);
+    			System.out.println("Exception " + e.toString());
+    			System.exit(1);
+    		}
     		//If the file can't be found then print that, the error and exit.
     		System.out.println("Couldn't open file " + fileName 
     				+ " in StorageManager.openFile");
