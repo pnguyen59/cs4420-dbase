@@ -9,8 +9,20 @@ import java.nio.MappedByteBuffer;
  */
 public class Iterator {
 
+	/**The Relation that the Iterator will operate on.*/
+	private Relation relation;
+	
 	public Iterator() {
 		
+	}
+	
+	/**Creates a new instance of Iterator that will work on the specified
+	 * relation.
+	 * @param newRelation The relation who's records the new Iterator will 
+	 * fetch.
+	 */
+	public Iterator(final Relation newRelation) {
+		this.relation = newRelation;
 	}
 	
 	/**Thie method will close the iterator.
