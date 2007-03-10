@@ -14,10 +14,16 @@ package dbase;
  *
  * @author andrewco
  */
+
+import java.util.*;
 public class SystemCatalog {
     
     /**The Database's buffer */
     public BufferManager buffer;
+    
+    /**A list of Relations and Attributes */
+    private ArrayList<Relation> relations;
+    private ArrayList<Attribute> attributes;
     
     /** Creates a new instance of SystemCatalog */
     public SystemCatalog() {
@@ -38,11 +44,33 @@ public class SystemCatalog {
     /**
      *Creates an index on an existing relation.
      *
-     *@param the relation to be indexed
+     *@param relation the relation to be indexed.
+     *@param attribute the attribute to be indexed on.
      *
      *@return whether the index was created successfully
      */
-    public boolean createIndex(String relation) {
+    public boolean createIndex(String relation, String attribute) {
+        long rID = -1, aID = -1;
+    	int i, j;
+        
+        //Find the rID and aID for use with the indexing.
+    	for (i = 0; i < relations.size(); i++) {
+        	if (relations.get(i).getFilename().equalsIgnoreCase(relation)) {
+        		rID = relations.get(i).getID();
+        		break;
+        	}
+        }
+        
+        for (j = 0; j < attributes.size(); j++) {
+        	if (attributes.get(j).getName().equalsIgnoreCase(attribute) && attributes.get(j).getParent() == rID) {
+        		aID = attributes.get(j).getID();
+        	}
+        }
+        
+        aID++; //delete this later, just here to remove warning.
+        
+        //TODO put in the iteration/insert algorythm here.
+        
         return true;
     }
     
