@@ -33,14 +33,19 @@ public class RelationHolder {
 	}
 	
 	/**
-	 * gets a relation based on the Internal relation ID as defined in RELATION_CATALOG
+	 * Gets a relation based on the Internal relation ID as defined in RELATION_CATALOG
 	 * @param ID The Internal ID
 	 * @return The denoted Relation
 	 */
 	
 	public Relation getRelation(int ID) {
-		//TODO Add search function to search list for internal ID number
-		return new Relation();
+		for (int i = 0; i < relations.size(); i++) {
+			if (relations.get(i).getID() == ID) {
+				return relations.get(i);
+			}
+		}
+		//TODO Possibly add code to load this Relation if not already done, we'll see.
+		return null;
 	}
 	
 	/**
