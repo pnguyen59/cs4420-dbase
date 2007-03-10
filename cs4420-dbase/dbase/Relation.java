@@ -61,7 +61,7 @@ public class Relation {
 		return new Iterator(this);	
 	}
 	
-	public void Close() {
+	public void close() {
 		//TODO Closes the iterator thingy.
 	}
 	
