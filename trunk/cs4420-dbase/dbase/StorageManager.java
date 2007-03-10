@@ -79,12 +79,13 @@ public class StorageManager {
 //        return true;
 //    }
     
-    /**This opens a file for the storage manager to read into or write out of.
+    /**This opens a file for the storage manager to read into or write out of. 
+     * Changed to be used when creating new Relation, indexes etc.
      * @param fileName The name of the file to open.
      * @return The FileChannel mapped to the newly opened file, or null if it
      * could not be opened.
      */
-    private FileChannel openFile(final String fileName) { 	
+    public static FileChannel openFile(final String fileName) { 	
     	RandomAccessFile file;
 		FileChannel channel = null;
     	try {
@@ -130,13 +131,12 @@ public class StorageManager {
     	
     	MappedByteBuffer buffer = null;
 		FileChannel channel = null;
+		Relation currentrelation = relationholder.getRelation(relation);
 		
-    	//TODO Get the filename for the relation passed to this method from the
-		//catalog
-		String file = "/Documents/test.txt";
+    	String file = currentrelation.getFilename();
     	
 		//Get the FileChannel for the specified relation
-		channel = this.openFile(file);
+		channel = currentrelation.getChannel();
 		
 		//TODO have it see if the requested block is beyond the end of the
 		//file, or just greater than the file size.  Just some way it can't
