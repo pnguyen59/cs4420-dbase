@@ -35,6 +35,62 @@ public class Relation {
 	
 	
 	
+	public int getBlocktotal() {
+		return blocktotal;
+	}
+
+	public void setBlocktotal(int blocktotal) {
+		this.blocktotal = blocktotal;
+	}
+
+	public int getCreationdate() {
+		return creationdate;
+	}
+
+	public void setCreationdate(int creationdate) {
+		this.creationdate = creationdate;
+	}
+
+	public ArrayList<Attribute> getIndexed() {
+		return indexed;
+	}
+
+	public void setIndexed(ArrayList<Attribute> indexed) {
+		this.indexed = indexed;
+	}
+
+	public ArrayList<String> getIndexfiles() {
+		return indexfiles;
+	}
+
+	public void setIndexfiles(ArrayList<String> indexfiles) {
+		this.indexfiles = indexfiles;
+	}
+
+	public int getModifydate() {
+		return modifydate;
+	}
+
+	public void setModifydate(int modifydate) {
+		this.modifydate = modifydate;
+	}
+
+	public String getRelationname() {
+		return relationname;
+	}
+
+	public void setRelationname(String relationname) {
+		this.relationname = relationname;
+	}
+
+	public int getTuples() {
+		return tuples;
+	}
+
+	public void setTuples(int tuples) {
+		this.tuples = tuples;
+	}
+
 	/**This creates a new instance of relation.
 	 * @param newfilename The file that holds the records of this relation.
 	 * @param newID The unique internal ID of this relation.

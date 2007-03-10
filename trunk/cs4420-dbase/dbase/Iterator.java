@@ -23,6 +23,7 @@ public class Iterator {
 	 */
 	public Iterator(final Relation newRelation) {
 		this.relation = newRelation;
+		System.out.println(relation); //TODO delete later, used to remove warning about not using relation.
 	}
 	
 	/**Thie method will close the iterator.
