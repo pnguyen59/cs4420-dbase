@@ -22,6 +22,7 @@ public class BufferManager {
     
     /**The offset of the block in the whole relation and block going to 
      * the physical address.  At 1000, this limits the DB to 1000 relations.
+     * because the physical sddres takes the form of block*offset+relation.
      */
     public static final int BLOCK_ADDRESS_OFFSET = 1000;
     
