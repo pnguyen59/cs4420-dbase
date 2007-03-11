@@ -3,38 +3,66 @@
  */
 package dbase;
 
+import java.util.ArrayList;
+
 /**
  * @author gtg471h
  *
  */
-import java.util.*;
-
 public class Attribute {
 	
+	/**This represents the type of the attribute, e.g. INT, CHAR, LONG, etc.
+	 * @author gtg471h
+	 */
 	public enum Type {
-		Int, Long, String, Boolean, Character, Float, Double
+		Int, Long, Boolean, Char, Float, Double
 	}
 	
+	/**The Type of this attribute, e.g. INT, LONG, CHAR, etc.*/
 	private Type type;
+	
 	private ArrayList values;
+	
+	/**The number of distinct values that this attribute contains.*/
 	private int distinct;
+	
+	/**Whether or not the value of this relation can be set to "NULL".*/
 	private boolean nullable;
+	
+	/**The ID of the parent relation.*/
 	private long parent;
+	
+	/**The ID of this attribute in the parent relation.*/
 	private long ID;
+	
+	/**The name of this attribute.*/
 	private String name;
 	
+	/**The size of this attribute in bytes.*/
+	private int size;
+	
+	/**Returns the name of this attribute.
+	 * @return The name of this attribute.
+	 */
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	/**Sets the name of this attribute.
+	 * @param newName The new name for this attribute.
+	 */
+	public void setName(final String newName) {
+		this.name = newName;
 	}
 
 	public Attribute() {
 		
 	}
 
+	/**Tells whether or not this attribute can be set to the value of "NULL" in
+	 * a record.
+	 * @return Whether or not this attribute is nullable.
+	 */
 	public boolean isNullable() {
 		return nullable;
 	}
