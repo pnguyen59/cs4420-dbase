@@ -110,11 +110,6 @@ public class StorageManager {
     			System.out.println("Exception " + e.toString());
     			System.exit(1);
     		}
-    		//If the file can't be found then print that, the error and exit.
-    		System.out.println("Couldn't open file " + fileName 
-    				+ " in StorageManager.openFile");
-    		System.out.println("Exception" + exception.toString());
-    		System.exit(1);
     	}
         return channel;
     }
