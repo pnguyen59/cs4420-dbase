@@ -11,7 +11,7 @@ package dbase;
  */
 
 import java.nio.channels.FileChannel;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Relation {
 	
@@ -26,21 +26,38 @@ public class Relation {
 	
 	/** The Basic information for the Relation */
 	private String relationname;
-	private int creationdate;
-	private int modifydate;
-	private int tuples;
-	private ArrayList<Attribute> indexed;
-	private ArrayList<String> indexfiles;
-	private int blocktotal;
 	
+	/**The date that this relation was created.*/
+	private int creationdate;
+	
+	/**The date that this relation was last modified.*/
+	private int modifydate;
+	
+	/**The number of records in this relation.*/
+	private int records;
+	
+	/**The indexed attributes of this relation.*/
+	private ArrayList<Attribute> indexed;
+	
+	/**The Attributes of this relation.*/
+	private ArrayList<Attribute> attributes;
+	
+	/**The names of the index files of this relation.*/
+	private ArrayList<String> indexFiles;
+	
+	/**The total number of blocks that this relation spans.*/
+	private int blockTotal;
+	
+	/**The size of one record in this relation in bytes.*/
+	private int size;
 	
 	
 	public int getBlocktotal() {
-		return blocktotal;
+		return blockTotal;
 	}
 
 	public void setBlocktotal(int blocktotal) {
-		this.blocktotal = blocktotal;
+		this.blockTotal = blocktotal;
 	}
 
 	public int getCreationdate() {
@@ -60,11 +77,11 @@ public class Relation {
 	}
 
 	public ArrayList<String> getIndexfiles() {
-		return indexfiles;
+		return indexFiles;
 	}
 
 	public void setIndexfiles(ArrayList<String> indexfiles) {
-		this.indexfiles = indexfiles;
+		this.indexFiles = indexfiles;
 	}
 
 	public int getModifydate() {
@@ -83,12 +100,12 @@ public class Relation {
 		this.relationname = relationname;
 	}
 
-	public int getTuples() {
-		return tuples;
+	public int getRecords() {
+		return records;
 	}
 
-	public void setTuples(int tuples) {
-		this.tuples = tuples;
+	public void setRecords(int tuples) {
+		this.records = tuples;
 	}
 
 	/**This creates a new instance of relation.
@@ -127,6 +144,21 @@ public class Relation {
 	 */
 	public Iterator open() {
 		return new Iterator(this);	
+	}
+	
+	/**This method will return the size of one record in this relation in 
+	 * bytes.  This is dynamically caclulated using the size of the attributes
+	 * in the relation.
+	 * @return The size of one record in this Relation in bytes.
+	 */
+	public int getSize() {
+		//Loop through all of the attributes and get their sizes
+		int totalSize = 0;
+		for (int attribute = 0; attribute < attributes.size(); attribute++) {
+			//Add the size of each attribute to the total size
+			totalSize += ((Attribute) attributes.get(attribute)).getSize();
+		}
+		return totalSize;
 	}
 	
 	public void close() {
