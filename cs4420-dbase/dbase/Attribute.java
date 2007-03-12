@@ -102,5 +102,9 @@ public class Attribute {
 	public long getID() {
 		return ID;
 	}
+	
+	public int getSize() {
+		return size;
+	}
 
 }
