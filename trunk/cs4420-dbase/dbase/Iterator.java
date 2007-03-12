@@ -12,6 +12,13 @@ public class Iterator {
 	/**The Relation that the Iterator will operate on.*/
 	private Relation relation;
 	
+	/**The block that this iterator is currently working on.*/
+	private long block;
+	
+	/**The next record that this iterator will return from its current block.*/
+	private int nextRecord;
+	
+	
 	public Iterator() {
 		
 	}
