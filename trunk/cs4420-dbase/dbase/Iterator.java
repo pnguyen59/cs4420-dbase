@@ -13,11 +13,10 @@ public class Iterator {
 	private Relation relation;
 	
 	/**The block that this iterator is currently working on.*/
-	private long block;
+	private long currentBlock;
 	
 	/**The next record that this iterator will return from its current block.*/
 	private int nextRecord;
-	
 	
 	public Iterator() {
 		
@@ -45,6 +44,30 @@ public class Iterator {
 	 * @return The next record in the relation as a string.
 	 */
 	public String getNext() {
+		
+		//Get the block that were using from the buffer manager.
+		MappedByteBuffer block = null;
+		//See if the next record that were are supposed to get is outside of
+		//this block
+		//The relations per block is block size / relation size
+		int recordsPerBlock = StorageManager.BLOCK_SIZE / relation.getSize();
+		if (nextRecord > recordsPerBlock * currentBlock) {
+			//TODO do whatever is to be done when the next record is not in the
+			//current block.
+		}
+		
+		//If it isn't then find the record's bytes within this block
+		byte [] bytes = block.array();
+		//Find out how many records there are in this block
+		long blockRecords = relation.getRecords() 
+			- ((long) (currentBlock) * (long) recordsPerBlock);
+		long previousRecords = relation.getRecords() - blockRecords;
+		
+		//Have the relation parse out the record into whatever it's supposed to
+		//be
+		
+		//Return the record as a string
+		
 		return null;
 	}
 	
@@ -56,8 +79,8 @@ public class Iterator {
 	 * @param record Which record in the block to fetch.
 	 * @return The requested record as a String;
 	 */
-	public static String parseRecord(final MappedByteBuffer block
-			, final int relation,
+	public static String parseRecord(final MappedByteBuffer block, 
+			final int relation,
 			final int record) {
 		return null;
 	}
