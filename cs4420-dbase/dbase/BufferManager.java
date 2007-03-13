@@ -10,7 +10,6 @@
 package dbase;
 
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 
 /**
  * @author andrewco
@@ -18,7 +17,7 @@ import java.nio.MappedByteBuffer;
 public class BufferManager {
     
     /**The Buffer Implenetation.*/
-    private MappedByteBuffer [] buffer;
+    private ByteBuffer [] buffer;
     
     /**The offset of the block in the whole relation and block going to 
      * the physical address.  At 1000, this limits the DB to 1000 relations.
@@ -87,7 +86,7 @@ public class BufferManager {
      * @param physical The physical address of the block.
      * @return Whether or not the block was successfully added to the buffer.
      */
-    private boolean addToBuffer(final MappedByteBuffer block,
+    private boolean addToBuffer(final ByteBuffer block,
     		final long physical) {
     	//First get a space in the buffer to add the new block to.
     	long logicalAddress = freeSpace();
@@ -132,7 +131,7 @@ public class BufferManager {
      *@param block The block from the specified relation.
      *@return The block requested in a MappedByteBuffer.
      */
-    public MappedByteBuffer read(final int relation, final long block) {
+    public ByteBuffer read(final int relation, final long block) {
     	
     	//First generate the physical address of the block
     	long physicalAddress = makePhysicalAddress(relation, block);
@@ -145,7 +144,7 @@ public class BufferManager {
     	
     	//If it isn't already in the buffer, then we need to ask storage manager
     	//to get it for us.
-    	MappedByteBuffer result = storage.read(relation, block);
+    	ByteBuffer result = storage.read(relation, block);
     	//Then we need to put it in the buffer because it was just read.
     	addToBuffer(result, physicalAddress);
     	
@@ -287,7 +286,7 @@ public class BufferManager {
      * @param physical  The physical address of the block we want.
      * @return The MappedByteBuffer of that block.
      */
-    private MappedByteBuffer getFromBuffer(final long physical) {
+    private ByteBuffer getFromBuffer(final long physical) {
     	//Loop through the lookupTable to see if the physical address is in
     	//Here and return the MappedByteBuffer containing it if so.
     	for (int logical = 0; logical < lookUpTable.length; logical++) {
