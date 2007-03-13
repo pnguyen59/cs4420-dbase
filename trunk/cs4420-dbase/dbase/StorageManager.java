@@ -10,12 +10,12 @@
 
 package dbase;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.io.*;
 
 /**
  *
@@ -62,7 +62,7 @@ public class StorageManager {
      * @param index The Index ID to load.
      * @return The first block of the index as a MappedByteBuffer.
      */
-    public MappedByteBuffer indexScan(final int relation, final int index) {
+    public ByteBuffer indexScan(final int relation, final int index) {
         return null;
     }
     
@@ -94,7 +94,8 @@ public class StorageManager {
     		file = new RandomAccessFile(fileName, "rw");
     		channel = file.getChannel();
     	} catch (FileNotFoundException exception) {
-    		//If open failed because file doesn't exist, create file and open it.
+    		//If open failed because file doesn't exist, create 
+    		//file and open it.
     		try {
     			File newfile = new File(fileName);
     			boolean worked = newfile.createNewFile();
@@ -105,7 +106,7 @@ public class StorageManager {
     				System.out.println("File Creation Unsuccesful.");
     			}
     		
-    		} catch(IOException e) {
+    		} catch (IOException e) {
     			System.out.println("Couldn't create file " + fileName);
     			System.out.println("Exception " + e.toString());
     			System.exit(1);
@@ -122,32 +123,29 @@ public class StorageManager {
      * @return The MappedByteBuffer of the block specified or null if read 
      * fails.
      */
-    public MappedByteBuffer read(final int relation, final long block) {   	
+    public ByteBuffer read(final int relation, final long block) {   	
     	
-    	MappedByteBuffer buffer = null;
+    	ByteBuffer buffer = null;
 		FileChannel channel = null;
-		Relation currentrelation = relationholder.getRelation(relation);
 		
+		//Get the file of the specified relation from relationholder
+		Relation currentrelation = relationholder.getRelation(relation);
     	String file = currentrelation.getFilename();
     	
 		//Get the FileChannel for the specified relation
 		channel = currentrelation.getChannel();
 		
-		//THave it see if the requested block is beyond the end of the
-		//file, or just greater than the file size.  Just some way it can't
-		//read the block.
+		//If the block is outside of the file then exit.
 		isBlockInRange(channel, block);
 		
 		//In this try/catch block, we try to read in the specified block from
 		//the file
 		try {
-			//TODO When ready for the real shit, take this off of
-			//READ_ONLY
 			buffer = channel.map(
 					FileChannel.MapMode.READ_ONLY, 
 					block * BLOCK_SIZE, BLOCK_SIZE);
 		} catch (IOException e) {
-			System.out.println("Couldn't map bytes from file " + file);
+			System.out.println("Couldn't get bytes from file " + file);
 			System.exit(1);
 		}
 		
@@ -158,7 +156,7 @@ public class StorageManager {
      * @param relation The ID of the relation to scan.
      * @return The first block of the relation as a MappedByteBuffer.
      */
-    public MappedByteBuffer tableScan(final int relation) {
+    public ByteBuffer tableScan(final int relation) {
     	//TODO have it get the first block of the table
         return null;
     }
@@ -210,14 +208,22 @@ public class StorageManager {
      * @return Whether or not the write succeeded.
      */  
     public boolean write(final int relation, final long address, 
-    		final MappedByteBuffer block) {
-    	//TODO figure out how to write. 
-    	//Easier than expected, just need to make some Basic changes to be explained later.
-    	
+    		final ByteBuffer block) {
+
+    	//Get the file for the relation and open the channel to it.
     	Relation currentrelation = relationholder.getRelation(relation);
-		
     	String file = currentrelation.getFilename();
-    	System.out.println(file);
+    	FileChannel channel = openFile(file);
+    	
+    	//Now try to write the block to the file with the specified address
+    	try {
+    		//Write the given block to the specified address in the file
+    		channel.write(block, address * BLOCK_SIZE);
+    	} catch (IOException exception) {
+    		System.out.println("Couldn't write to file " + file + ".");
+    		System.out.println(exception);
+    	}
+
         return true;
     }
 }
