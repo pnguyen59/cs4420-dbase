@@ -133,10 +133,10 @@ public class StorageManager {
 		//Get the FileChannel for the specified relation
 		channel = currentrelation.getChannel();
 		
-		//TODO have it see if the requested block is beyond the end of the
+		//THave it see if the requested block is beyond the end of the
 		//file, or just greater than the file size.  Just some way it can't
-		//be read
-		int size = isBlockInRange(channel, block);
+		//read the block.
+		isBlockInRange(channel, block);
 		
 		//In this try/catch block, we try to read in the specified block from
 		//the file
@@ -145,7 +145,7 @@ public class StorageManager {
 			//READ_ONLY
 			buffer = channel.map(
 					FileChannel.MapMode.READ_ONLY, 
-					block * BLOCK_SIZE, size);
+					block * BLOCK_SIZE, BLOCK_SIZE);
 		} catch (IOException e) {
 			System.out.println("Couldn't map bytes from file " + file);
 			System.exit(1);
