@@ -302,4 +302,21 @@ public class BufferManager {
     	System.exit(1);
     	return null;
     }
+    
+    /**This method will create a ByteBuffer of BLOCK_SIZE with '\0' for its
+     * entire contents.
+     * @return  An empty block.
+     */
+    public static ByteBuffer getEmptyBlock() {
+    	//Generate and return a block with all null characters
+    	byte [] block = new byte [StorageManager.BLOCK_SIZE];
+    	//Fill it with null characters as bytes
+    	for (int currentByte = 0; currentByte < StorageManager.BLOCK_SIZE; 
+    		currentByte++) {
+    		block[currentByte] = (byte) '\0';	      
+    	}
+    	
+    	//Return the block in a ByteBuffer
+    	return ByteBuffer.wrap(block);
+    }
 }
