@@ -26,6 +26,14 @@ public class BufferManager {
      */
     public static final int BLOCK_ADDRESS_OFFSET = 1000;
     
+    /**The index indicating the time of a block for the clock algorithm in 
+     * the lookUp table.
+     */ 
+    public static final int TIME_INDEX = 1;
+    
+    /**The index of the physical address in the lookup table.*/
+    public static final int PHYSICAL_INDEX = 0;
+    
     /**A lookup table for the buffer.*/
     private long [][] lookUpTable;
     
@@ -57,15 +65,15 @@ public class BufferManager {
     	//go till we find one
 	    while (true) {
 	    	//if it is 0 return it
-			if (lookUpTable[(int) time][1] == 0) {
+			if (lookUpTable[(int) time][TIME_INDEX] == 0) {
 				return time;
 			} else {
 				//if it's pinned just move on
-				if (lookUpTable[(int) time][1] == -1) {
+				if (lookUpTable[(int) time][TIME_INDEX] == -1) {
 					time++;
 				} else {
 					//if it's not pinned decrement and move on
-					lookUpTable[(int) time][1]--;
+					lookUpTable[(int) time][TIME_INDEX]--;
 					time++;
 				}
 			}
@@ -86,9 +94,9 @@ public class BufferManager {
     	
     	//Now add it to the buffer and the lookuptable
     	buffer[(int) logicalAddress] = block;
-    	lookUpTable[(int) logicalAddress][0] = physical;
+    	lookUpTable[(int) logicalAddress][PHYSICAL_INDEX] = physical;
     	//Then set its clock value to 1
-    	lookUpTable[(int) logicalAddress][1] = 1;
+    	lookUpTable[(int) logicalAddress][TIME_INDEX] = 1;
     	
     	return true;
     }
@@ -102,12 +110,12 @@ public class BufferManager {
     	//make physical address
     	long address = makePhysicalAddress(relation, block);
     	//look for that address
-    	for (int i = 0; i < lookUpTable.length; i++) {
-    		if (address == lookUpTable[i][0]) {
+    	for (int logical = 0; logical < lookUpTable.length; logical++) {
+    		if (address == lookUpTable[logical][PHYSICAL_INDEX]) {
     			//see if it is pinned
-    			if (lookUpTable[i][1] != (long) -1) {
+    			if (lookUpTable[logical][TIME_INDEX] != (long) -1) {
     				//found and unpinned
-    				lookUpTable[i][1] = -1;
+    				lookUpTable[logical][TIME_INDEX] = -1;
     				return true;
     			}
     			//found but not pinned
@@ -154,12 +162,12 @@ public class BufferManager {
     	//make physical address
     	long address = makePhysicalAddress(relation, block);
     	//look for that address
-    	for (int i = 0; i < lookUpTable.length; i++) {
-    		if (address == lookUpTable[i][0]) {
+    	for (int logical = 0; logical < lookUpTable.length; logical++) {
+    		if (address == lookUpTable[logical][0]) {
     			//see if it is pinned
-    			if (lookUpTable[i][1] == (long) -1) {
+    			if (lookUpTable[logical][TIME_INDEX] == (long) -1) {
     				//found and pinned
-    				lookUpTable[i][1] = 1;
+    				lookUpTable[logical][TIME_INDEX] = 1;
     				return true;
     			}
     			//found but not pinned
@@ -212,10 +220,10 @@ public class BufferManager {
     	//make physical address
     	long address = makePhysicalAddress(relation, block);
     	//look for that address
-    	for (int i = 0; i < lookUpTable.length; i++) {
-    		if (address == lookUpTable[i][0]) {
+    	for (int logical = 0; logical < lookUpTable.length; logical++) {
+    		if (address == lookUpTable[logical][PHYSICAL_INDEX]) {
     			//see if it is pinned
-    			if (lookUpTable[i][1] == (long) -1) {
+    			if (lookUpTable[logical][TIME_INDEX] == (long) -1) {
     				//found and pinned
     				return true;
     			}
@@ -251,7 +259,7 @@ public class BufferManager {
     	//them map to the specified physical address
     	for (int logical = 0; logical < lookUpTable.length; logical++) {
     		//If one of the logical addresses maps to the physical, return true
-    		if (physical == lookUpTable[logical][0]) {
+    		if (physical == lookUpTable[logical][PHYSICAL_INDEX]) {
     			return true;
     		}
     	}
@@ -284,7 +292,7 @@ public class BufferManager {
     	//Here and return the MappedByteBuffer containing it if so.
     	for (int logical = 0; logical < lookUpTable.length; logical++) {
     		//If one of the logical addresses maps to the physical, return true
-    		if (physical == lookUpTable[logical][0]) {
+    		if (physical == lookUpTable[logical][PHYSICAL_INDEX]) {
     			return buffer[logical];
     		}
     	}
