@@ -177,32 +177,30 @@ public class BufferManager {
     	return false;
     }
     
-    /**Writes the specified block to disk. given the physical address
-     * @param address The <b>logical</b> address to be written to disk.
-     * @param data the ByteBuffer of data to be written to the MappedByteBuffer
-     * in buffer.
+    /**Writes the specified block to disk, given the physical address.
+     * @param address The <b>physical</b> address to be written to disk.
+     * @param data the ByteBuffer of data to be written to the disk.
      * @return whether the block was successfully written.
      */
     public boolean writePhysical(final long address, final ByteBuffer data) {
-    	int logical;
-    	for (int i = 0; i < buffer.length; i++) {
-    		if (lookUpTable[i][0] == address) {
-    			logical = i;
-    			buffer[logical].put(data);
-    	    	return true;
-    		}
-    	}
-    	return false;
+    	//Just write the specified data to the address specified.
+    	storage.write((int) address % BLOCK_ADDRESS_OFFSET,
+    		address / BLOCK_ADDRESS_OFFSET, data);
+    	return true;
     }
     
     /**Writes the specified block to disk. given the logical address.
-     * @param address The <b>logical</b> address to be written to disk.
-     * @param data the ByteBuffer of data to be written to the MappedByteBuffer
-     * in buffer.
+     * @param logical The <b>logical</b> address to be written to disk.
      * @return whether the block was successfully written.
      */
-    public boolean writeLogical(final long address, final ByteBuffer data) {
-    	buffer[(int) address].put(data);
+    public boolean writeLogical(final long logical) {
+     	//Find the block to be written given the logical address
+    	ByteBuffer block = buffer[(int) logical];
+    	//Find the physical address of the block
+    	long physical = lookUpTable[(int) logical][PHYSICAL_INDEX];
+    	//Write the block to disk
+    	storage.write((int) physical % BLOCK_ADDRESS_OFFSET,
+    		physical / BLOCK_ADDRESS_OFFSET, block);	   
     	return true;
     }
     
