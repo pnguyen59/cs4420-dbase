@@ -131,4 +131,26 @@ public class SystemCatalog {
     }
     
     
+    public boolean insert(final int relation, final String record) {
+    	
+    	//TODO parse this bitch out
+    	
+    	//TODO First see if a record exists with this key.  If so then return
+    	//false or print an error or some shit.
+    	
+    	//TODO Find out whitch block this record should go in in its relation.
+    	
+    	//TODO Then see if the block is full or has space.
+    	
+    	//TODO If the block is full, then make an empty block and write it to
+    	//the file
+    	
+    	//TODO Then turn the record into an array of bytes.
+    	
+    	//TODO Then insert the array of bytes into the byte buffer of the block.
+    	
+    	return true;
+    }
+    
+    
 }
