@@ -161,8 +161,25 @@ public class Relation {
 		return totalSize;
 	}
 	
+	/**This method returns the number of records of this relation which can
+	 * be placed in one block
+	 * @ return The records of this relation which will fit in one block.
+	 */
+	public int getRecordsPerBlock() {
+		return (StorageManager.BLOCK_SIZE / this.getSize());
+	}
+	
 	public void close() {
 		//TODO Closes the iterator thingy.
+	}
+	
+	/**This method calculates whether or not the last block of the relation is
+	 * full and returns the result.  It looks to see if the total number of
+	 * blocks * the records per block is equal to the total number of records.
+	 * @return Whether or not the last block is full.
+	 */
+	public boolean isLastBlockFull() {
+		return ((blockTotal * this.getRecordsPerBlock()) == records);
 	}
 	
 	//TODO Finish implementing all other functionality of the class including an attribute map or list, etc.
