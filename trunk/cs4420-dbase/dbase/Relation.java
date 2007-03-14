@@ -10,6 +10,7 @@ package dbase;
  * information held in the database.  1 instance per Relation.
  */
 
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
@@ -188,6 +189,16 @@ public class Relation {
 	 */
 	public int getLastRecordStart() {
 		return (records % this.getRecordsPerBlock()) * this.getSize();
+	}
+	
+	public boolean addRecord (ByteBuffer block, String record) {
+    	//Parse the record to be inserted into its single attributes
+    	String [] attributeValues = record.split("/\\s/");
+    	
+    	//GEt the start of the record
+    	
+    	
+		return true;
 	}
 	
 }
