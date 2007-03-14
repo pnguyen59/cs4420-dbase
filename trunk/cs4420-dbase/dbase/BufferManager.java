@@ -302,7 +302,7 @@ public class BufferManager {
     	System.exit(1);
     	return null;
     }
-    
+
     /**This method will create a ByteBuffer of BLOCK_SIZE with '\0' for its
      * entire contents.
      * @return  An empty block.
