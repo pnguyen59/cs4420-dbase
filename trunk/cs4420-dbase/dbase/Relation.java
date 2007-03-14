@@ -162,8 +162,8 @@ public class Relation {
 	}
 	
 	/**This method returns the number of records of this relation which can
-	 * be placed in one block
-	 * @ return The records of this relation which will fit in one block.
+	 * be placed in one block.
+	 * @return The records of this relation which will fit in one block.
 	 */
 	public int getRecordsPerBlock() {
 		return (StorageManager.BLOCK_SIZE / this.getSize());
@@ -182,6 +182,4 @@ public class Relation {
 		return ((blockTotal * this.getRecordsPerBlock()) == records);
 	}
 	
-	//TODO Finish implementing all other functionality of the class including an attribute map or list, etc.
-
 }
