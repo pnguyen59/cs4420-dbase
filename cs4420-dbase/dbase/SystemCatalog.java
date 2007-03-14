@@ -141,10 +141,7 @@ public class SystemCatalog {
      * @return Whether or not the insertion succeeded.
      */
     public boolean insert(final int relationID, final String record) {
-    	
-    	//Parse the record to be inserted into its single attributes
-    	String [] attributeValues = record.split("/\\s/");
-    	
+
     	//TODO First see if a record exists with this key.  If so then return
     	//false or print an error or some shit.  Either way don't inser it.
     	
@@ -172,7 +169,7 @@ public class SystemCatalog {
     			relation.getBlocktotal() - 1);
     	
     	//Then ask relation to insert the record in this block for us
-    	relation.addRecord(record, block);
+    	relation.addRecord(block, record);
 
     	return true;
     }
