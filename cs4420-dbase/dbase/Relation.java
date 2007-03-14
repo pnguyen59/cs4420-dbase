@@ -182,4 +182,12 @@ public class Relation {
 		return ((blockTotal * this.getRecordsPerBlock()) == records);
 	}
 	
+	/**This method will return where in the last block a new record should
+	 * start.
+	 * @return Where a new record should go in the last block.
+	 */
+	public int getLastRecordStart() {
+		return (records % this.getRecordsPerBlock()) * this.getSize();
+	}
+	
 }
