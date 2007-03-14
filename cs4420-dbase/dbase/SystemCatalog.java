@@ -140,7 +140,7 @@ public class SystemCatalog {
      * @param record The record to be inserted.
      * @return Whether or not the insertion succeeded.
      */
-    public boolean insert(final int relation, final String record) {
+    public boolean insert(final int relationID, final String record) {
     	
     	//Parse the record to be inserted into its single attributes
     	String [] attributeValues = record.split("/\\s/");
@@ -150,26 +150,32 @@ public class SystemCatalog {
     	
     	//Ask relation which block this record should be written to, i.e. it's
     	//last block
-    	long blockTotal = relationHolder.getRelation(relation).getBlocktotal();
+    	Relation relation = relationHolder.getRelation(relationID);
+    	long blockTotal = relation.getBlocktotal();
     	//The last block is blockTotal - 1 cause the first block is 0 
     	long lastBlock = blockTotal - 1;
     	
-    	//TODO Then see if the block is full or has space.
-    	//See if there is enough space in the block for another record.
-    	//First ask the buffer for the block
-    	ByteBuffer block = buffer.read(relation, lastBlock);
-    	//Then determine how many records there are in this block and how many
-    	//can be in a block.
-    	
-    	//TODO If the block is full, then make an empty block and write it to
-    	//the file
+    	//See if there is enough space in the last block for another record.
+    	if (relation.isLastBlockFull()) {
+    		//If there isn't, generate a new block and write it to the file
+    		//of the relation.
+    		long blockAddress = BufferManager.makePhysicalAddress(relationID
+    				, lastBlock + 1);
+    		buffer.writePhysical(blockAddress, buffer.getEmptyBlock());
+    		//Then increment the block count of the relation
+    		relation.setBlocktotal(relation.getBlocktotal() + 1);
+    	}
+
+    	//Then regardless, the last block of the relation has enough space in
+    	//it, so have the last block loaded into the buffer.
+    	buffer.read(relationID, relation.getBlocktotal() - 1);
     	
     	//TODO Then turn the record into an array of bytes.
     	//Perhaps have Relation use what it knows about itself
-    	//to turn the record into bytes
-    	
+    	//to turn the record into bytes	
     	
     	//TODO Then insert the array of bytes into the ByteBuffer of the block.
+    	//Have the relation insert the record.  It knows best doesn't it?
     	
     	return true;
     }
