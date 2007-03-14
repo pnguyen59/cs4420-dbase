@@ -15,15 +15,18 @@ package dbase;
  * @author andrewco
  */
 
-import java.util.*;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 public class SystemCatalog {
     
     /**The Database's buffer */
     public BufferManager buffer;
     
     /**A list of Relations and Attributes */
-    private ArrayList<Relation> relations;
-    private ArrayList<Attribute> attributes;
+    private ArrayList <Relation> relations;
+    private ArrayList <Attribute> attributes;
+    
+    private RelationHolder relationHolder = RelationHolder.getRelationHolder();
     
     /** Creates a new instance of SystemCatalog */
     public SystemCatalog() {
@@ -131,23 +134,42 @@ public class SystemCatalog {
     }
     
     
+    /**This method will insert the specified record into the specified
+     * relation.
+     * @param relation The relation in which to insert the record.
+     * @param record The record to be inserted.
+     * @return Whether or not the insertion succeeded.
+     */
     public boolean insert(final int relation, final String record) {
     	
-    	//TODO parse this bitch out
+    	//Parse the record to be inserted into its single attributes
+    	String [] attributeValues = record.split("/\\s/");
     	
     	//TODO First see if a record exists with this key.  If so then return
-    	//false or print an error or some shit.
+    	//false or print an error or some shit.  Either way don't inser it.
     	
-    	//TODO Find out whitch block this record should go in in its relation.
+    	//Ask relation which block this record should be written to, i.e. it's
+    	//last block
+    	long blockTotal = relationHolder.getRelation(relation).getBlocktotal();
+    	//The last block is blockTotal - 1 cause the first block is 0 
+    	long lastBlock = blockTotal - 1;
     	
     	//TODO Then see if the block is full or has space.
+    	//See if there is enough space in the block for another record.
+    	//First ask the buffer for the block
+    	ByteBuffer block = buffer.read(relation, lastBlock);
+    	//Then determine how many records there are in this block and how many
+    	//can be in a block.
     	
     	//TODO If the block is full, then make an empty block and write it to
     	//the file
     	
     	//TODO Then turn the record into an array of bytes.
+    	//Perhaps have Relation use what it knows about itself
+    	//to turn the record into bytes
     	
-    	//TODO Then insert the array of bytes into the byte buffer of the block.
+    	
+    	//TODO Then insert the array of bytes into the ByteBuffer of the block.
     	
     	return true;
     }
