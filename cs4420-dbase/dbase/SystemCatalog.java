@@ -168,15 +168,12 @@ public class SystemCatalog {
 
     	//Then regardless, the last block of the relation has enough space in
     	//it, so have the last block loaded into the buffer.
-    	buffer.read(relationID, relation.getBlocktotal() - 1);
+    	ByteBuffer block = buffer.read(relationID, 
+    			relation.getBlocktotal() - 1);
     	
-    	//TODO Then turn the record into an array of bytes.
-    	//Perhaps have Relation use what it knows about itself
-    	//to turn the record into bytes	
-    	
-    	//TODO Then insert the array of bytes into the ByteBuffer of the block.
-    	//Have the relation insert the record.  It knows best doesn't it?
-    	
+    	//Then ask relation to insert the record in this block for us
+    	relation.addRecord(record, block);
+
     	return true;
     }
     
