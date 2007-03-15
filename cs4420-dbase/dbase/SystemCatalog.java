@@ -41,7 +41,7 @@ public class SystemCatalog {
      *@return whether the table was created correctly.
      */
     public boolean createTable(String relation, String key) {
-    	//TODO
+    	//TODO Implement this.
         return true;
     }
     

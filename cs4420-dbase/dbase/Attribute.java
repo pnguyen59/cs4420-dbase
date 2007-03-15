@@ -58,6 +58,19 @@ public class Attribute {
 	public Attribute() {
 		
 	}
+	
+	/**
+	 * Constructor, fool!
+	 * @param name what it's called
+	 * @param type the data it has
+	 * @param ID it's internal ID
+	 */
+	
+	public Attribute(String name, Type type, int ID){
+		this.name = name;
+		this.type = type;
+		this.ID = ID;
+	}
 
 	/**Tells whether or not this attribute can be set to the value of "NULL" in
 	 * a record.
