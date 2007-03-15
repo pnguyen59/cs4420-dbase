@@ -63,10 +63,10 @@ public class Iterator {
 			- ((long) (currentBlock) * (long) recordsPerBlock);
 		long previousRecords = relation.getRecords() - blockRecords;
 		
-		//Have the relation parse out the record into whatever it's supposed to
+		//TODO Have the relation parse out the record into whatever it's supposed to
 		//be
 		
-		//Return the record as a string
+		//TODO Return the record as a string
 		
 		return null;
 	}
@@ -82,6 +82,7 @@ public class Iterator {
 	public static String parseRecord(final MappedByteBuffer block, 
 			final int relation,
 			final int record) {
+		//TODO Is this still needed?
 		return null;
 	}
 	
