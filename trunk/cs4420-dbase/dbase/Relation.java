@@ -117,6 +117,7 @@ public class Relation {
 		this.filename = newfilename;
 		this.ID = newID;
 		channel = StorageManager.openFile(filename);
+		attributes = new ArrayList<Attribute>();
 	}
 
 	/**Returns the name of the file that holds the records of this relation.
@@ -212,6 +213,11 @@ public class Relation {
 		Attribute att = new Attribute(name, type, ID);
 		attributes.add(att);
 		return true;
+	}
+	
+	public String toString(){
+		return "Relation "+ID+" named: "+this.filename+" with "+attributes.size()
+			+" attributes: "+attributes.toString()+"\n";
 	}
 	
 	
