@@ -201,4 +201,20 @@ public class Relation {
 		return true;
 	}
 	
+	/**
+	 * This method is responsible for adding an attribute to the method
+	 * @param name what we're calling the attribute
+	 * @param type the type of the attribute
+	 * @param ID the internal ID
+	 * @return true if successful
+	 */
+	public boolean addAttribute(String name, Attribute.Type type, int ID){
+		Attribute att = new Attribute(name, type, ID);
+		attributes.add(att);
+		return true;
+	}
+	
+	
+	
+	
 }
