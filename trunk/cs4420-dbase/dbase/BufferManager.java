@@ -15,6 +15,9 @@ import java.nio.ByteBuffer;
  * @author andrewco
  */
 public class BufferManager {
+	
+	/**For singleton use*/
+	private static BufferManager thisbuffer;
     
     /**The Buffer Implenetation.*/
     private ByteBuffer [] buffer;
@@ -45,7 +48,21 @@ public class BufferManager {
     private StorageManager storage;
     
     /**Creates a new instance of BufferManager.*/
-    public BufferManager() {
+    private BufferManager() {
+    }
+    
+    
+    /**
+     * The Singleton accessor for BufferManagers.  This is the only way to get a BufferManager.
+     * @return The copy of BufferManager for the system.
+     */
+    public static BufferManager getBufferManager() {
+    	if (thisbuffer != null) {
+    		return thisbuffer;
+    	} else {
+    		thisbuffer = new BufferManager();
+    		return thisbuffer;
+    	}
     }
     
     /**Writes all non-pinned blocks to disk to clear the buffer.
