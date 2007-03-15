@@ -38,7 +38,7 @@ public class RelationHolder {
 	 * @return The denoted Relation
 	 */
 	
-	public Relation getRelation(int ID) {
+	public Relation getRelation(long ID) {
 		for (int i = 0; i < relations.size(); i++) {
 			if (relations.get(i).getID() == ID) {
 				return relations.get(i);
