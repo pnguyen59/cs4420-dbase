@@ -57,6 +57,22 @@ public class RelationHolder {
 		return relations.add(newrelation);
 	}
 	
+	/**
+	 * This method is used by SystemCatalog to assign IDs
+	 * @return the smallest unused relation ID
+	 */
+	public int getSmallestUnusedID(){
+		int j=0;
+		while (getRelation(j)!=null){
+			j++;
+		}
+		return j;
+	}
+	
+	public String toString(){
+		return relations.toString();
+	}
+	
 	
 
 }

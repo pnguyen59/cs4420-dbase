@@ -17,6 +17,7 @@ package dbase;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 public class SystemCatalog {
     
     /**The Database's buffer */
@@ -30,6 +31,8 @@ public class SystemCatalog {
     
     /** Creates a new instance of SystemCatalog */
     public SystemCatalog() {
+    	attributes = new ArrayList<Attribute>();
+    	//TODO read in files
     }
     
     /**
@@ -41,7 +44,38 @@ public class SystemCatalog {
      *@return whether the table was created correctly.
      */
     public boolean createTable(String relation, String key) {
-    	//TODO Implement this.
+    	String relationname;
+    	relationname = relation.substring(relation.indexOf(" ", relation.toLowerCase().indexOf("table"))+1, relation.indexOf("("));
+    	Relation rel = new Relation(relationname, relationHolder.getSmallestUnusedID());
+    	relationHolder.addRelation(rel);
+    	StringTokenizer st = new StringTokenizer(relation.substring(relation.indexOf("(")+1,relation.indexOf(")")),",");
+    	while (st.hasMoreTokens()){
+    		String currentattribute = st.nextToken();
+    		String attributename = currentattribute.split(" ")[0];
+    		String attributetype = currentattribute.split(" ")[1];
+    		Attribute.Type type;
+    		if (attributetype.toLowerCase().equals("int")){
+    			type = Attribute.Type.Int;
+    		} else if (attributetype.toLowerCase().equals("long")){
+    			type = Attribute.Type.Long;
+    		} else if (attributetype.toLowerCase().equals("boolean") || attributetype.toLowerCase().equals("bool")){
+    			type = Attribute.Type.Boolean;
+    		} else if (attributetype.toLowerCase().equals("char") || attributetype.toLowerCase().equals("character")){
+    			type = Attribute.Type.Char;
+    		} else if (attributetype.toLowerCase().equals("float")){
+    			type = Attribute.Type.Float;
+    		} else if (attributetype.toLowerCase().equals("double")){
+    			type = Attribute.Type.Double;
+    		} else {
+    			type = Attribute.Type.Undeclared;
+    		}
+    		
+    		rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    	}
+    	
+    	System.out.println(relationHolder);
+    	
+    	
         return true;
     }
     
@@ -179,5 +213,37 @@ public class SystemCatalog {
     	return true;
     }
     
+	/**
+	 * This method is used by SystemCatalog to assign IDs
+	 * @return the smallest unused attribute ID
+	 */
+	public int getSmallestUnusedAttributeID(){
+		int j=0;
+		while (getAttribute(j)!=null){
+			j++;
+		}
+		return j;
+	}
+	
+	/**
+	 * Gets a relation based on the Internal attribute ID as defined in RELATION_CATALOG
+	 * @param ID The Internal ID
+	 * @return The denoted Attribute
+	 */
+	public Attribute getAttribute(int ID) {
+		for (int i = 0; i < attributes.size(); i++) {
+			if (attributes.get(i).getID() == ID) {
+				return attributes.get(i);
+			}
+		}
+		//TODO Possibly add code to load this Relation if not already done, we'll see.
+		return null;
+	}
+	
     
+    public static void main(String[] args){
+    	SystemCatalog sc = new SystemCatalog();
+    	sc.createTable("CREATE TABLE table_name(attr1 int)", "key");
+    	sc.createTable("CREATE TABLE t(attr1 int)", "key");
+    }
 }

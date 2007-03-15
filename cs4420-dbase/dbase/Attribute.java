@@ -15,7 +15,7 @@ public class Attribute {
 	 * @author gtg471h
 	 */
 	public enum Type {
-		Int, Long, Boolean, Char, Float, Double
+		Int, Long, Boolean, Char, Float, Double, Undeclared
 	}
 	
 	/**The Type of this attribute, e.g. INT, LONG, CHAR, etc.*/
@@ -118,6 +118,10 @@ public class Attribute {
 	
 	public int getSize() {
 		return size;
+	}
+	
+	public String toString(){
+		return "Attribute with name "+name+" and type "+type;
 	}
 
 }
