@@ -197,7 +197,34 @@ public class Relation {
     	String [] attributeValues = record.split("/\\s/");
     	
     	//GEt the start of the record
+    	int start = this.getLastRecordStart();
     	
+    	//Go through the attributes add add the things.
+    	for (int attribute = 0; attribute < attributes.size(); attribute++) {
+    		
+    		//Get the current attribute from the list of attributes.
+    		Attribute currentAttribute = (Attribute) attributes.get(attribute);
+    		
+    		//Find out what kind it is, write it to the block.
+    		if (currentAttribute.getType() == Attribute.Type.Int) {
+    			block.putInt(start, Integer.parseInt(
+    					attributeValues[attribute]));
+    		} else if (currentAttribute.getType() == Attribute.Type.Char) {
+    			//TODO Add strings to the block
+    		} else if (currentAttribute.getType() == Attribute.Type.Long) {
+    			block.putLong(start, Long.parseLong(
+    				attributeValues[attribute]));
+    		} else if (currentAttribute.getType() == Attribute.Type.Float) {
+    			block.putFloat(start, Float.parseFloat(
+    				attributeValues[attribute]));
+    		} else if (currentAttribute.getType() == Attribute.Type.Double) {
+    			block.putDouble(start, Double.parseDouble(
+        			attributeValues[attribute]));
+        	}
+    		
+    		//Then for the next attribute, move past this one's size.
+    		start += currentAttribute.getSize();
+    	}
     	
 		return true;
 	}
