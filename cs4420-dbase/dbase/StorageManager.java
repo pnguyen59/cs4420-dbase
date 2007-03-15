@@ -72,7 +72,7 @@ public class StorageManager {
      * @return Whether or not the file was sucessfully created.
      */
 //    public boolean makeFile(final String fileName) {
-//    	//TODO make the file for this relation.
+//    	//tODO make the file for this relation.
 //    	
 //    	
 //    	
@@ -157,7 +157,7 @@ public class StorageManager {
      * @return The first block of the relation as a MappedByteBuffer.
      */
     public ByteBuffer tableScan(final int relation) {
-    	//TODO have it get the first block of the table
+    	//TODO have it get the first block of the table, Does this still need to be made?
         return null;
     }
     
