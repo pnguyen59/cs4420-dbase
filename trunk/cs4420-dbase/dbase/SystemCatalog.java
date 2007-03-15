@@ -41,6 +41,7 @@ public class SystemCatalog {
      *@return whether the table was created correctly.
      */
     public boolean createTable(String relation, String key) {
+    	//TODO
         return true;
     }
     
@@ -97,6 +98,7 @@ public class SystemCatalog {
      *@return whether it was successfully added.
      */
     public boolean insert(String insertion) {
+    	//TODO Implement Insert
         return true;
     }
     
@@ -108,6 +110,7 @@ public class SystemCatalog {
      *@return The Table in String format.
      */
     public String [] selectFromTable(String selection) {
+    	//TODO Implement printout.
         return null;
     }
     
@@ -119,6 +122,7 @@ public class SystemCatalog {
      *@return The Index in String format.
      */
     public String [] selectFromIndex(String selection) {
+    	//TODO Implement Printout.
         return null;
     }
     
@@ -130,6 +134,7 @@ public class SystemCatalog {
      *@return The Relation in String format.
      */
     public String [] selectFromCatalog(String selection) {
+    	//TODO Implement Printout.
         return null;
     }
     
@@ -158,7 +163,7 @@ public class SystemCatalog {
     		//of the relation.
     		long blockAddress = BufferManager.makePhysicalAddress(relationID
     				, lastBlock + 1);
-    		buffer.writePhysical(blockAddress, buffer.getEmptyBlock());
+    		buffer.writePhysical(blockAddress, BufferManager.getEmptyBlock());
     		//Then increment the block count of the relation
     		relation.setBlocktotal(relation.getBlocktotal() + 1);
     	}
