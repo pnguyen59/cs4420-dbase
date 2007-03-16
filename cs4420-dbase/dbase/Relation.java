@@ -266,6 +266,10 @@ public class Relation {
 	public String getFilename() {
 		return filename;
 	}
+	
+	public String getName(){
+		return relationname;
+	}
 
 	/**Returns the internal ID of this relation.
 	 * @return The ID of this relation.
