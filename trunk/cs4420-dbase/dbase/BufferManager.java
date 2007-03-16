@@ -240,7 +240,7 @@ public class BufferManager {
     	
     	//If it isn't already in the buffer, then we need to ask storage manager
     	//to get it for us.
-    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.ATT_OFFSET)/(StorageManager.BLOCK_SIZE));
+    	ByteBuffer result = storage.read(catalog, block);
     	//Then we need to put it in the buffer because it was just read.
     	pin(addToBuffer(result, block));
     	    	
