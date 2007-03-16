@@ -17,10 +17,14 @@ public class Iterator {
 	BufferManager buffer = BufferManager.getBufferManager(); 
 	
 	/**The block that this iterator is currently working on.*/
-	private long currentBlock = -1;
+	private long currentBlock = 0;
 	
 	/**The next record that this iterator will return from its current block.*/
 	private int nextRecord = 0;
+	
+	byte[] bytes = new byte [4096];
+	
+	boolean load = true;
 	
 	public Iterator() {
 		
@@ -51,19 +55,25 @@ public class Iterator {
 	public String[] getNext() {
 		
 		//Get the block that were using from the buffer manager.
-		ByteBuffer block = null;
+		ByteBuffer block = buffer.read(relation.getID(), currentBlock);
+		//System.out.println("Block capcity: " + block.capacity());
 		//See if the next record that were are supposed to get is outside of
 		//this block
 		//The relations per block is block size / relation size
 		int recordsPerBlock = relation.getRecordsPerBlock();
-		if (nextRecord >= recordsPerBlock * (currentBlock + 1)) {
-			block = buffer.read(relation.getID(), ++currentBlock);
-			System.out.println("BLEAH");
+		if (nextRecord > recordsPerBlock * (currentBlock + 1)) {
+			block = buffer.read(relation.getID(), ++currentBlock).duplicate();
+			load = true;
+			//System.out.println("Next Record:" + nextRecord);
+			//System.out.println("On block: " + currentBlock);
 		}
 		
-		//If it isn't then find the record's bytes within this block
-		byte [] bytes = new byte[block.capacity()];
-		block.get(bytes);
+		if (load) {
+			block.get(bytes);
+			load = false;
+		}
+		//System.out.println("Block capcity: " + block.capacity());
+		//System.out.println("Bytes Size: " + bytes.length);
 		//Find out how many records there are in this block
 		long blockRecords = Math.min(relation.getRecords() 
 			- ((long) (currentBlock - 1) * (long) recordsPerBlock),
@@ -71,7 +81,8 @@ public class Iterator {
 		long previousRecords = relation.getRecords() - blockRecords;
 		byte[] subbuffer = new byte[relation.getSize()];
 		for (int i = 0; i < relation.getSize(); i++) {
-			subbuffer[i] = bytes[(nextRecord % relation.getRecordsPerBlock()) + i];
+			subbuffer[i] = bytes[(nextRecord % relation.getRecordsPerBlock()) *
+			                     relation.getSize() + i];
 		}
 		
 		nextRecord++;
