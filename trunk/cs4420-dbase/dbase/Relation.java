@@ -125,7 +125,7 @@ public class Relation {
     	
     	//GEt the start of the record
     	int start = this.getLastRecordStart();
-    	
+  
     	//Go through the attributes add add the things.
     	for (int attribute = 0; attribute < attributes.size(); attribute++) {
     		
@@ -168,7 +168,7 @@ public class Relation {
     	String [] attributeValues = record.substring(record.indexOf("(")+1,record.indexOf(")")).split(",");
     	String [] attributeNames = attribute.substring(attribute.indexOf("(")+1,attribute.indexOf(")")).split(",");
     	//GEt the start of the record
-    	int start = this.getLastRecordStart();
+    	int offset = this.getLastRecordStart();
     	
     	//Go through the attributes add add the things.
     	for (int j = 0; j < attributeNames.length; j++) {
@@ -178,7 +178,7 @@ public class Relation {
     		//Get the current attribute from the list of attributes.
     		Attribute currentAttribute = getAttributeByName(attributeNames[j].trim());
     		
-    		start = getAttributeBlockPosition(currentAttribute);
+    		int start = offset + getAttributeBlockPosition(currentAttribute);
     		
     		//Find out what kind it is, write it to the block.
     		if (currentAttribute.getType() == Attribute.Type.Int) {
@@ -491,6 +491,7 @@ public class Relation {
 	public boolean writeString(final ByteBuffer block, 
 		final String chars, final int start, final int newSize) {
 		int offset = start;
+		System.out.println("Offset: " + offset); 
 		//Loop through the String, writing the characters as ints.
 		for (int index = 0; index < chars.length();  index++) {
 			//Get the char at the index
