@@ -431,7 +431,7 @@ public class Relation {
 		this.blockTotal = blocktotal;
 	}
 	
-	public void setCreationdate(int creationdate) {
+	public void setCreationdate(long creationdate) {
 		modifydate = (new Date()).getTime();
 		this.creationdate = creationdate;
 	}
@@ -446,7 +446,7 @@ public class Relation {
 		this.indexFiles = indexfiles;
 	}
 	
-	public void setModifydate(int modifydate) {
+	public void setModifydate(long modifydate) {
 		
 		this.modifydate = modifydate;
 	}
@@ -590,5 +590,9 @@ public class Relation {
 		
 		//Return the parsed records
 		return recordList;
+	}
+
+	public int getBlockTotal() {
+		return blockTotal;
 	}
 }

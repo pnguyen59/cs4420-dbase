@@ -183,7 +183,7 @@ public class BufferManager {
      * @param block the block number.
      * @return The ByteBuffer denoted.
      */
-    public ByteBuffer read(FileChannel catalog, final long block) {
+    public ByteBuffer readRel(FileChannel catalog, final long block) {
     	
     	//First generate the physical address of the block
     	
@@ -195,7 +195,32 @@ public class BufferManager {
     	
     	//If it isn't already in the buffer, then we need to ask storage manager
     	//to get it for us.
-    	ByteBuffer result = storage.read(catalog, block);
+    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.REL_OFFSET));
+    	//Then we need to put it in the buffer because it was just read.
+    	addToBuffer(result, block);
+    	    	
+        return result;
+    }
+    
+    /**
+     * Used to read in only for catalog use.
+     * @param catalog The FileChannel of the Catalog File.
+     * @param block the block number.
+     * @return The ByteBuffer denoted.
+     */
+    public ByteBuffer readAtt(FileChannel catalog, final long block) {
+    	
+    	//First generate the physical address of the block
+    	
+    	//Then see if it is already in memory.  If it is then get it from
+    	//the buffer and return it.  This is the point of a buffer.
+    	if (isInBuffer(block)) {
+    		return this.getFromBuffer(block);
+    	}
+    	
+    	//If it isn't already in the buffer, then we need to ask storage manager
+    	//to get it for us.
+    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.ATT_OFFSET));
     	//Then we need to put it in the buffer because it was just read.
     	addToBuffer(result, block);
     	    	
@@ -255,8 +280,27 @@ public class BufferManager {
     	return true;
     }
     
-    public boolean writeCatalog(FileChannel catalog, long address) {
-    	
+    /**
+     * Used to write to relation Catalog.
+     * @param catalog The Catalog FileChannel.
+     * @param address The Address to write to.
+     * @param block The Block to Write.
+     * @return whether it wrote.
+     */
+    public boolean writeRelCatalog(FileChannel catalog, long address, ByteBuffer block) {
+    	storage.write(catalog, (int)(address - Math.pow(2, 30)), block);
+    	return true;
+    }
+    
+    /**
+     * Used to write to Attribute Catalog.
+     * @param catalog The Catalog FileChannel.
+     * @param address The Address to write to.
+     * @param block The Block to Write.
+     * @return whether it wrote.
+     */
+    public boolean writeAttCatalog(FileChannel catalog, long address, ByteBuffer block) {
+    	storage.write(catalog, (int)(address - Math.pow(2, 31)), block);
     	return true;
     }
     

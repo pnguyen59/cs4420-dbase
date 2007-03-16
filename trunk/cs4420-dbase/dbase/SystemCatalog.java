@@ -36,8 +36,10 @@ public class SystemCatalog {
     private FileChannel relationcatalog = StorageManager.openFile("RELATION_CATALOG.rc");
     private FileChannel attributecatalog = StorageManager.openFile("ATTRIBUTE_CATALOG.ac");
     long relationmarker = 0, attributemarker = 0;
-    private final int attrecsize = 73;
-    private final int relrecsize = 398;
+    public static final int ATT_REC_SIZE = 73;
+    public static final int REL_REC_SIZE = 398;
+    public final static long ATT_OFFSET = (long)Math.pow(2, 31);
+    public final static long REL_OFFSET = (long)Math.pow(2, 30);
     
     /** Singleton relationholder */
     private RelationHolder relationHolder = RelationHolder.getRelationHolder();
@@ -46,11 +48,46 @@ public class SystemCatalog {
     public SystemCatalog() {
     	attributes = new ArrayList<Attribute>();
     	buffer = BufferManager.getBufferManager();
+    	int relsize = 0, attsize = 0;
+    	
     	try {
-    		int relsize = (int) (relationcatalog.size() / (int) StorageManager.BLOCK_SIZE);
-    		int accsize = (int) (attributecatalog.size() / (int) StorageManager.BLOCK_SIZE);
+    		relsize = (int) (relationcatalog.size() / (int) StorageManager.BLOCK_SIZE);
+    		attsize = (int) (attributecatalog.size() / (int) StorageManager.BLOCK_SIZE);
     	} catch(IOException e) {
     		System.exit(1);
+    	}
+    	ByteBuffer relbuffer;
+    	int relationpos = 0;
+    	String relname = "";
+    	int ID;
+    	Relation rel;
+    	for(int i = 0; i < relsize; i++) {
+    		relbuffer = buffer.readRel(relationcatalog, relationmarker + REL_OFFSET);
+    		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; j++) {
+    			for (int k = 0; k < 15; k++) {
+    				if (relbuffer.getChar(relationpos) != BufferManager.NULL_CHARACTER) {
+    					relname += relbuffer.getChar(relationpos);
+    				}
+    				relationpos += Attribute.CHAR_SIZE;
+    			}
+    			ID = relbuffer.getInt(relationpos);
+    			rel = new Relation(relname, ID);
+    			relations.add(rel);
+    			relationpos += Attribute.INT_SIZE;
+    			rel.setCreationdate(relbuffer.getLong(relationpos));
+    			relationpos += Attribute.LONG_SIZE;
+    			rel.setModifydate(relbuffer.getLong(relationpos));
+    			relationpos += Attribute.LONG_SIZE;
+    			rel.setRecords(relbuffer.getInt(relationpos));
+    			relationpos += Attribute.INT_SIZE;
+    			rel.setBlocktotal(relbuffer.getInt(relationpos));
+    			relationpos += Attribute.INT_SIZE;
+    			for(int l = 0; l < 10; l++) {
+    				
+    			}
+    			
+    		}
+    		
     	}
     }
     
