@@ -199,7 +199,7 @@ public class Attribute {
 	
 	public String toString(){
 		String ret = "Attribute with name "+name+" and type "+type;
-		if (this.type == Type.Char) ret+=" of length "+size;
+		if (this.type == Type.Char) ret+=" of length "+length;
 		return ret;
 	}
 
