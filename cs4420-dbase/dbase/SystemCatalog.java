@@ -32,6 +32,7 @@ public class SystemCatalog {
     /** Creates a new instance of SystemCatalog */
     public SystemCatalog() {
     	attributes = new ArrayList<Attribute>();
+    	buffer = BufferManager.getBufferManager();
     	//TODO read in files
     }
     
@@ -50,7 +51,7 @@ public class SystemCatalog {
     	relationHolder.addRelation(rel);
     	StringTokenizer st = new StringTokenizer(relation.substring(relation.indexOf("(")+1,relation.indexOf(")")),",");
     	while (st.hasMoreTokens()){
-    		String currentattribute = st.nextToken();
+    		String currentattribute = st.nextToken().trim();
     		String attributename = currentattribute.split(" ")[0];
     		String attributetype = currentattribute.split(" ")[1];
     		Attribute.Type type;
@@ -70,7 +71,8 @@ public class SystemCatalog {
     			type = Attribute.Type.Undeclared;
     		}
     		
-    		rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    		Attribute att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    		attributes.add(att);
     	}
     	
     	System.out.println(relationHolder);
@@ -90,11 +92,14 @@ public class SystemCatalog {
     public boolean createIndex(String relation, String attribute) {
         long rID = -1, aID = -1;
     	int i, j;
+    	Attribute.Type aType = Attribute.Type.Undeclared;
+    	Relation rel =  null;
         
         //Find the rID and aID for use with the indexing.
     	for (i = 0; i < relations.size(); i++) {
         	if (relations.get(i).getFilename().equalsIgnoreCase(relation)) {
         		rID = relations.get(i).getID();
+        		rel = relations.get(i);
         		break;
         	}
         }
@@ -102,7 +107,19 @@ public class SystemCatalog {
         for (j = 0; j < attributes.size(); j++) {
         	if (attributes.get(j).getName().equalsIgnoreCase(attribute) && attributes.get(j).getParent() == rID) {
         		aID = attributes.get(j).getID();
+        		aType = attributes.get(j).getType();
         	}
+        }
+        
+        if (rel == null || rel.containsIndex("./"+rID+aID+".if")){
+        	return false;
+        } else if (aType!=Attribute.Type.Int && aType!=Attribute.Type.Long){
+        	return false;
+        } else{
+        	BTree b = new BTree();
+        	int idx = b.OpenIndex("./"+rID+aID+".if", true);
+        	Iterator it = relationHolder.getRelation(rID).open(); 
+        	
         }
         
         aID++; //delete this later, just here to remove warning.
@@ -243,7 +260,7 @@ public class SystemCatalog {
     
     public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
-    	sc.createTable("CREATE TABLE table_name(attr1 int)", "key");
-    	sc.createTable("CREATE TABLE t(attr1 int)", "key");
+    	sc.createTable("CREATE TABLE table_name(anint int)", "key");
+    	sc.createTable("CREATE TABLE t(abool boolean, anint int)", "key");
     }
 }
