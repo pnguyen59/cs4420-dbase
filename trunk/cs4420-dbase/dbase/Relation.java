@@ -236,10 +236,10 @@ public class Relation {
 	 * @param ID the internal ID
 	 * @return true if successful
 	 */
-	public boolean addAttribute(String name, Attribute.Type type, int ID){
+	public Attribute addAttribute(String name, Attribute.Type type, int ID){
 		Attribute att = new Attribute(name, type, ID);
 		attributes.add(att);
-		return true;
+		return att;
 	}
 	
 	public String toString(){
@@ -247,7 +247,76 @@ public class Relation {
 			+" attributes: "+attributes.toString()+"\n";
 	}
 	
+	 /**This method will insert the specified record into the specified
+     * relation.
+     * @param relation The relation in which to insert the record.
+     * @param record The record to be inserted.
+     * @return Whether or not the insertion succeeded.
+     */
+    public boolean insert(final int relationID, final String record) {
+
+    	//TODO First see if a record exists with this key.  If so then return
+    	//false or print an error or some shit.  Either way don't inser it.
+    	
+    	//The last block is blockTotal - 1 cause the first block is 0.  This
+    	//is where we are going to write to.
+    	long lastBlock = blockTotal - 1;
+    	
+    	//Get the BufferManager
+    	BufferManager buffer = BufferManager.getBufferManager();
+    	
+    	//See if there is enough space in the last block for another record.
+    	if (isLastBlockFull()) {
+    		//If there isn't, generate a new block and write it to the file
+    		//of this relation.
+    		long blockAddress = BufferManager.makePhysicalAddress(relationID
+    				, lastBlock + 1);
+    		buffer.writePhysical(blockAddress, 
+    				BufferManager.getEmptyBlock());
+    		//Then increment the block count of the relation
+    		setBlocktotal(getBlocktotal() + 1);
+    	}
+
+    	//Then regardless, the last block of the relation has enough space in
+    	//it, so have the last block loaded into the buffer.
+    	ByteBuffer block = buffer.read(
+    			relationID, getBlocktotal() - 1);
+    	
+    	//Then, when we know that we have a block that has space in it, write
+    	//this new record to the block
+    	addRecord(block, record);
+
+    	return true;
+    }
 	
+    /**This method will add an index file to the list of files maintained by
+     * the Relation.
+     * @param fileName The name of the index file to add.
+     * @return Whether or not the index file was successfully added.
+     */
+	public boolean addIndex(final String fileName) {
+		//If the index doesn't already exist then add it.
+		if (!containsIndex(fileName)) {
+			indexFiles.add(fileName);
+			return true;
+		}
+		//If it already exists, then don't add it and return false.
+		return false;
+	}
 	
+	/**Checks whether or not this relation contains the specified index file.
+	 * @param fileName The index we are checking.
+	 * @return Whether or not this relation contains the specified index.
+	 */
+	public boolean containsIndex(final String fileName) {
+		//Looop through the list of indexes and see if it contains the file
+		for (int index = 0; index < indexFiles.size(); index++) {
+			if (((String) indexFiles.get(index)).equalsIgnoreCase(fileName)) {
+				return true;
+			}
+		}
+		//If it doesn't then return false.
+		return false;
+	}
 	
 }
