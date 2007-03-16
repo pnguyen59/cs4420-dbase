@@ -155,7 +155,7 @@ public class Relation {
     	}
     	
     	System.out.println(block.asCharBuffer());
-    	
+    	this.records++;
     	//Return that the record was added to the relation.
 		return true;
 	}
@@ -201,7 +201,7 @@ public class Relation {
     	}
     	
     	System.out.println(block.asCharBuffer());
-    	
+    	this.records++;
     	//Return that the record was added to the relation.
 		return true;
 	}
@@ -325,50 +325,7 @@ public class Relation {
 		return totalSize;
 	}
 	
-	/**This method will insert the specified record into the specified
-     * relation.
-     * @param relation The relation in which to insert the record.
-     * @param record The record to be inserted.
-     * @return Whether or not the insertion succeeded.
-     */
-    public boolean insert(final int relationID, final String record) {
-    	modifydate = (new Date()).getTime();
-    	//TODO First see if a record exists with this key.  If so then return
-    	//false or print an error or some shit.  Either way don't inser it.
-    	
-    	//The last block is blockTotal - 1 cause the first block is 0.  This
-    	//is where we are going to write to.
-    	long lastBlock = blockTotal - 1;
-    	
-    	//Get the BufferManager
-    	BufferManager buffer = BufferManager.getBufferManager();
-    	
-    	//See if there is enough space in the last block for another record.
-    	if (isLastBlockFull()) {
-    		//If there isn't, generate a new block and write it to the file
-    		//of this relation.
-    		long blockAddress = BufferManager.makePhysicalAddress(relationID
-    				, lastBlock + 1);
-    		buffer.writePhysical(blockAddress, 
-    				BufferManager.getEmptyBlock());
-    		//Then increment the block count of the relation
-    		setBlocktotal(getBlocktotal() + 1);
-    	}
-
-    	//Then regardless, the last block of the relation has enough space in
-    	//it, so have the last block loaded into the buffer.
-    	ByteBuffer block = buffer.read(
-    			relationID, getBlocktotal() - 1);
-    	
-    	//Then, when we know that we have a block that has space in it, write
-    	//this new record to the block
-    	addRecord(block, record);
-    	
-    	//Finally, increment the number of records in this relation
-    	this.records++;
-
-    	return true;
-    }
+	
 	
 	/**This method calculates whether or not the last block of the relation is
 	 * full and returns the result.  It looks to see if the total number of
