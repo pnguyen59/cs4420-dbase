@@ -55,7 +55,8 @@ public class Iterator {
 	public String[] getNext() {
 		
 		//Get the block that were using from the buffer manager.
-		ByteBuffer block = buffer.read(relation.getID(), currentBlock);
+		ByteBuffer block = buffer.
+			read(relation.getID(), currentBlock).duplicate();
 		//System.out.println("Block capcity: " + block.capacity());
 		//See if the next record that were are supposed to get is outside of
 		//this block
