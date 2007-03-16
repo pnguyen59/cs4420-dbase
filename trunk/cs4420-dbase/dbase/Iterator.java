@@ -71,7 +71,7 @@ public class Iterator {
 		return null;
 	}
 	
-	/**ParseRecord is a utility method for all classes to use.  It is meant
+	/** DEPRECATED - ParseRecord is a utility method for all classes to use.  It is meant
 	 * to be able to parse a record from a given block if you tell it which 
 	 * relation the block is from.
 	 * @param block The block that the record is in.
@@ -79,11 +79,11 @@ public class Iterator {
 	 * @param record Which record in the block to fetch.
 	 * @return The requested record as a String;
 	 */
-	public static String parseRecord(final MappedByteBuffer block, 
-			final int relation,
-			final int record) {
-		//TODO Is this still needed?
-		return null;
-	}
+//	public static String parseRecord(final MappedByteBuffer block, 
+//			final int relation,
+//			final int record) {
+//		//TODO Is this still needed?
+//		return null;
+//	}
 	
 }
