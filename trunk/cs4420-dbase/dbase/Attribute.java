@@ -94,6 +94,7 @@ public class Attribute {
 		this.name = name;
 		this.type = type;
 		this.ID = ID;
+		this.length = length;
 	}
 
 	public int getCharLength() {
