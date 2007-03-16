@@ -35,7 +35,7 @@ public class SystemCatalog {
     private FileChannel relationcatalog = StorageManager.openFile("RELATION_CATALOG.rc");
     private FileChannel attributecatalog = StorageManager.openFile("ATTRIBUTE_CATALOG.ac");
     long relationmarker = 0, attributemarker = 0;
-    public static final int ATT_REC_SIZE = 73;
+    public static final int ATT_REC_SIZE = 58;
     public static final int REL_REC_SIZE = 398;
     public final static long ATT_OFFSET = (long)Math.pow(2, 31);
     public final static long REL_OFFSET = (long)Math.pow(2, 30);
@@ -118,9 +118,25 @@ public class SystemCatalog {
     			 for (int k = 0; k < 15; k++) {
     				 if (attbuffer.getChar( attposition) != BufferManager.NULL_CHARACTER) {
     					 name += attbuffer.getChar(attposition);
-    					 attposition += Attribute.CHAR_SIZE;
     				 }
+    				 attposition += Attribute.CHAR_SIZE;
     			 }
+    			 long aID = attbuffer.getLong(attposition);
+    			 attposition += Attribute.LONG_SIZE;
+    			 char nullable = attbuffer.getChar(attposition);
+    			 attposition += Attribute.CHAR_SIZE;
+    			 char type = attbuffer.getChar(attposition);
+    			 attposition += Attribute.CHAR_SIZE;
+    			 long rID = attbuffer.getLong(attposition);
+    			 attposition += Attribute.LONG_SIZE;
+    			 int distinct = attbuffer.getInt(attposition);
+    			 attposition += Attribute.INT_SIZE;
+    			 int length = attbuffer.getInt(attposition);
+    			 attposition += Attribute.INT_SIZE;
+    			 
+    			 Attribute used = new Attribute(name, aID, rID, type, nullable, distinct, length);
+    			 attributes.add(used);
+    			 relationHolder.getRelation(rID).addAttribute(used);
     			 
     		 }
     	 }
