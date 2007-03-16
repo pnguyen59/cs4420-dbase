@@ -57,6 +57,9 @@ public class BufferManager {
     	for (long zero: lookUpTable[TIME_INDEX]){
     		zero = 0;
     	}
+    	for (long physical: lookUpTable[PHYSICAL_INDEX]) {
+    		physical = -1;
+    	}
     }
     
     
