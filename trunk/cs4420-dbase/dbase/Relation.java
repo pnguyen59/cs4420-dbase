@@ -226,6 +226,16 @@ public class Relation {
 		return null;
 	}
 	
+	public int getIndexByName(final String name) {
+		for (int index = 0; index < attributes.size(); index++) {
+			Attribute current = (Attribute) attributes.get(index);
+			if (name.equalsIgnoreCase(current.getName())) {
+				return index;
+			}
+		}
+		return -1;
+	}
+	
 	public void close() {
 		//TODO Closes the iterator thingy.
 	}
