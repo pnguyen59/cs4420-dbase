@@ -15,7 +15,9 @@ package dbase;
  * @author andrewco
  */
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 public class SystemCatalog {
@@ -30,13 +32,26 @@ public class SystemCatalog {
     private ArrayList <Relation> relations;
     private ArrayList <Attribute> attributes;
     
+    /** FileChannels for the attribute and relation catalogs*/
+    private FileChannel relationcatalog = StorageManager.openFile("RELATION_CATALOG.rc");
+    private FileChannel attributecatalog = StorageManager.openFile("ATTRIBUTE_CATALOG.ac");
+    long relationmarker = 0, attributemarker = 0;
+    private final int attrecsize = 73;
+    private final int relrecsize = 398;
+    
+    /** Singleton relationholder */
     private RelationHolder relationHolder = RelationHolder.getRelationHolder();
     
     /** Creates a new instance of SystemCatalog */
     public SystemCatalog() {
     	attributes = new ArrayList<Attribute>();
     	buffer = BufferManager.getBufferManager();
-    	//TODO read in files
+    	try {
+    		int relsize = (int) (relationcatalog.size() / (int) StorageManager.BLOCK_SIZE);
+    		int accsize = (int) (attributecatalog.size() / (int) StorageManager.BLOCK_SIZE);
+    	} catch(IOException e) {
+    		System.exit(1);
+    	}
     }
     
     /**
