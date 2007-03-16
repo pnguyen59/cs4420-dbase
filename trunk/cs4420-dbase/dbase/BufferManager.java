@@ -36,6 +36,9 @@ public class BufferManager {
     /**The index of the physical address in the lookup table.*/
     public static final int PHYSICAL_INDEX = 0;
     
+    /**This is a null character for creating empty spaces in blocks.*/
+    public static final char NULL_CHARACTER = '\0';
+    
     /**A lookup table for the buffer.*/
     private long [][] lookUpTable;
     
