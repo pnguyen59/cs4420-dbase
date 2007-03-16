@@ -332,8 +332,8 @@ public class Relation {
 			
 			//Then get the bytes for the attribute
 			if (currentAttribute.getType() == Attribute.Type.Int) {
-				System.out.println("Parsing int starting at " + start
-						+ " and of size " + Attribute.INT_SIZE);
+				//System.out.println("Parsing int starting at " + start
+				//		+ " and of size " + Attribute.INT_SIZE);
 				parsedAttribute = Integer.toString(record.getInt(start));
 				//System.out.println("Found int " + parsedAttribute);
 			} else if (currentAttribute.getType() == Attribute.Type.Char) {
@@ -368,8 +368,8 @@ public class Relation {
 	 */
 	public static String parseString(final ByteBuffer record, final int start, 
 			final int size) {
-		System.out.println("Parsing string starting at: " + start 
-				+ " and of size " + size);
+		//System.out.println("Parsing string starting at: " + start 
+		//		+ " and of size " + size);
 		
 		//Loop through the record, getting thigs out as integers and casting
 		//them as characters.
@@ -449,8 +449,8 @@ public class Relation {
 		for (int index = 0; index < chars.length();  index++) {
 			//Get the char at the index
 			block.putChar(offset, chars.charAt(index));
-			System.out.println("Putting character " + chars.charAt(index)
-				+ " at " + offset);
+			//System.out.println("Putting character " + chars.charAt(index)
+			//	+ " at " + offset);
 			//Then add the size of an int to start
 			offset += Attribute.CHAR_SIZE;
 		}
@@ -460,7 +460,7 @@ public class Relation {
 		int nullsToWrite = (newSize - stringSize) / 2;
 		for (int nulls = 0; nulls < nullsToWrite; nulls++) {
 			block.putChar(offset, BufferManager.NULL_CHARACTER);
-			System.out.println("Putting  null character at " + offset);
+			//System.out.println("Putting  null character at " + offset);
 			offset += Attribute.CHAR_SIZE;
 		}
 		
@@ -486,5 +486,76 @@ public class Relation {
 		System.out.println("Relation doesn't have the attribute with the"
 				+ " specified ID.");
 		return -1;		
+	}
+	
+	/**This method takes in a block from this relation, parses out, an returns
+	 * all records in the block.
+	 * @param block The block to parse for records.
+	 * @return The list of records and their attributes as a 2-D array.
+	 */
+	public String [][] parseBlock(ByteBuffer block) {
+		//Loop through the block and determine the number of records
+		//Look at the first byte of each record and stop when we find a 
+		//blank one.
+		int recordsFound = 0;
+		byte [] blockArray = block.array();
+		
+		//Loop, making sure we don't go beyond the block
+		while (recordsFound < getRecordsPerBlock()) {
+			
+			//Calculate the offset for this cycle
+			int offset = recordsFound * getSize();
+		
+			//End the loop unless a new record is found
+			boolean lastRecord = true;
+			
+			//End this if the next record is out of the block
+			if ((recordsFound * getSize()) + getSize() 
+				> block.capacity()) {
+				break;
+			}
+			
+			//If the next record is still in the block, then read it.
+			//System.out.println("Getting record " + recordsFound 
+			//		+ " at byte " + recordsFound * getSize());
+			byte [] record = new byte [getSize()];
+			//Copy them over from blockArray
+			for (int index = offset;  index < offset + getSize(); index++) {
+				record [index - offset] = blockArray[index];
+			}
+ 		
+			//If this is the last record then stop the loop
+			for (int index = 0; index < record.length; index ++) {
+				if ((char) record[index] != '\0') {
+					lastRecord = false;
+					recordsFound++;
+					break;
+				}
+			}
+			
+			if (lastRecord) {
+				break;
+			}		
+		} //End looking for records
+		
+		System.out.println("Found " + recordsFound + " records");
+		
+		//Now parse the records and add them to the list to return
+		String [][] recordList = new String [recordsFound][attributes.size()];
+		for (int currentRecord = 0; currentRecord < recordsFound;
+			currentRecord++) {
+			//Load records and parse them into their places
+			byte [] record = new byte [getSize()];
+			//Copy them over from blockArray
+			int offset = currentRecord * getSize();
+			for (int index = offset;  index < offset + getSize(); index++) {
+				record [index - offset] = blockArray[index];
+			}
+			//Add the record to the list of records
+			recordList[currentRecord] = parseRecord(ByteBuffer.wrap(record));
+		}
+		
+		//Return the parsed records
+		return recordList;
 	}
 }
