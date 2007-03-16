@@ -49,7 +49,7 @@ public class Database {
     /**The main function for the whole dealie.
      * @param ARGVS  Any parameters passed from the command line.
      */
-    public static void main(final String [] ARGV) {
+    public static void main(final String [] ARGVS) {
     	
     }
     
