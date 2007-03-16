@@ -69,7 +69,7 @@ public class SystemCatalog {
     	int relationpos = 0;
     	String relname = "";
     	int ID;
-    	Relation rel;
+    	//Relation rel;
     	for(int i = 0; i < relsize; i++) {
     		relbuffer = buffer.readRel(relationcatalog, relationmarker * StorageManager.BLOCK_SIZE + REL_OFFSET);
     		System.out.println("Error Isn't Here.");
@@ -86,7 +86,7 @@ public class SystemCatalog {
     			}
     			ID = relbuffer.getInt(relationpos);
     			System.out.println(ID);
-    			rel = new Relation(relname, ID);
+    			Relation rel = new Relation(relname, ID);
     			relationHolder.addRelation(rel);
     			relationpos += Attribute.INT_SIZE;
     			rel.setCreationdate(relbuffer.getLong(relationpos));
@@ -115,9 +115,10 @@ public class SystemCatalog {
     				rel.addIndex(index);
     				index = new String();
     			}
-    			relationpos = 0;
-    			relationmarker++;
+    			
     		}
+    		relationpos = 0;
+			relationmarker++;
     		
     	}
     	ByteBuffer attbuffer;
