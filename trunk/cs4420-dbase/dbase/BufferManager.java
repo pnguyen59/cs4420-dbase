@@ -10,6 +10,7 @@
 package dbase;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * @author andrewco
@@ -40,7 +41,7 @@ public class BufferManager {
     public static final char NULL_CHARACTER = '\0';
     
     /**A lookup table for the buffer.*/
-    private long [][] lookUpTable;
+    private long [][] lookUpTable = new long [2][4000];
     
     /**The current position of the clock.*/
     private long time = 0;
@@ -53,6 +54,9 @@ public class BufferManager {
     /**Creates a new instance of BufferManager.*/
     private BufferManager() {
     	storage = new StorageManager();
+    	for (long zero: lookUpTable[TIME_INDEX]){
+    		zero = 0;
+    	}
     }
     
     
@@ -73,6 +77,7 @@ public class BufferManager {
      *@return Whether ot not the fluxh succeeded.
      */
     public boolean flush() {
+    	//TODO write flush.
         return true;
     }
     
@@ -172,6 +177,31 @@ public class BufferManager {
         return result;
     }
     
+    /**
+     * Used to read in only for catalog use.
+     * @param catalog The FileChannel of the Catalog File.
+     * @param block the block number.
+     * @return The ByteBuffer denoted.
+     */
+    public ByteBuffer read(FileChannel catalog, final long block) {
+    	
+    	//First generate the physical address of the block
+    	
+    	//Then see if it is already in memory.  If it is then get it from
+    	//the buffer and return it.  This is the point of a buffer.
+    	if (isInBuffer(block)) {
+    		return this.getFromBuffer(block);
+    	}
+    	
+    	//If it isn't already in the buffer, then we need to ask storage manager
+    	//to get it for us.
+    	ByteBuffer result = storage.read(catalog, block);
+    	//Then we need to put it in the buffer because it was just read.
+    	addToBuffer(result, block);
+    	    	
+        return result;
+    }
+    
     /**Removes the pin from a block in memory.
      *@param relation The ID of the relation containing the block to be 
      *unpinned.
@@ -222,6 +252,11 @@ public class BufferManager {
     	//Write the block to disk
     	storage.write((int) physical % BLOCK_ADDRESS_OFFSET,
     		physical / BLOCK_ADDRESS_OFFSET, block);	   
+    	return true;
+    }
+    
+    public boolean writeCatalog(FileChannel catalog, long address) {
+    	
     	return true;
     }
     
