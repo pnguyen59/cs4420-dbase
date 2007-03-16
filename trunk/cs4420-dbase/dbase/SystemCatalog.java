@@ -29,7 +29,6 @@ public class SystemCatalog {
     public final static int stringlength = 15;
     
     /**A list of Relations and Attributes */
-    private ArrayList <Relation> relations;
     private ArrayList <Attribute> attributes;
     
     /** FileChannels for the attribute and relation catalogs*/
@@ -72,7 +71,7 @@ public class SystemCatalog {
     			}
     			ID = relbuffer.getInt(relationpos);
     			rel = new Relation(relname, ID);
-    			relations.add(rel);
+    			relationHolder.addRelation(rel);
     			relationpos += Attribute.INT_SIZE;
     			rel.setCreationdate(relbuffer.getLong(relationpos));
     			relationpos += Attribute.LONG_SIZE;
@@ -138,10 +137,25 @@ public class SystemCatalog {
     		attributes.add(att);
     	}
     	
+    	
     	System.out.println(relationHolder);
     	
     	
         return true;
+    }
+    
+    /**
+     * 
+     * @param cstmt the statement to parse
+     * @return if successfully creates the index
+     */
+    public boolean createIndex(String cstmt){
+    	String relationname = cstmt.substring(cstmt.toLowerCase().indexOf(" on ")+4,cstmt.indexOf("(")).trim();
+    	String indexname = cstmt.substring(12,cstmt.toLowerCase().indexOf(" on ")).trim();
+    	String attribute = cstmt.substring(cstmt.indexOf("(")+1, cstmt.indexOf(")"));
+    	boolean dups = (cstmt.toLowerCase().indexOf("no duplicates") != -1);
+    	return createIndex(relationname, attribute, indexname, dups);
+    	
     }
     
     /**
@@ -160,11 +174,16 @@ public class SystemCatalog {
     	Attribute att = null;
     	Iterator it = null;
     	BTree b = new BTree();
+    	
+    	System.out.println("This had better get called");
+    	
+    	StorageManager.openFile(""+Indexname+".if");
+    	
     	int idx;
-        
+        ArrayList <Relation> relations = relationHolder.getRelations();
         //Find the rID and aID for use with the indexing.
     	for (i = 0; i < relations.size(); i++) {
-        	if (relations.get(i).getFilename().equalsIgnoreCase(relation)) {
+        	if (relations.get(i).getName().equalsIgnoreCase(relation)) {
         		rID = relations.get(i).getID();
         		rel = relations.get(i);
         		break;
@@ -180,8 +199,10 @@ public class SystemCatalog {
         	}
         }
         
+        System.out.println(relation);
+        
         //if it works open the appropriate type of index, duplicate or not
-        if (rel == null || rel.containsIndex("./"+Indexname+".if")){
+        if (rel == null || rel.containsIndex(""+Indexname)){
         	return false;
         } else if (aType!=Attribute.Type.Int && aType!=Attribute.Type.Long){
         	return false;
@@ -189,16 +210,18 @@ public class SystemCatalog {
 	        if (duplicates) {
 	        	rel.addIndex(Indexname);
 	        	att.setIndex(Indexname.toCharArray());
-	        	idx = b.OpenIndex("./"+Indexname+".if", true);
+	        	idx = b.OpenIndex(""+Indexname+".if", true);
 	        	it = relationHolder.getRelation(rID).open(); 
         	} else {
         		rel.addIndex(Indexname);
             	att.setIndexd(Indexname.toCharArray());
-            	idx = b.OpenIndex("./"+Indexname+".if", false);
+            	idx = b.OpenIndex(""+Indexname+".if", false);
             	it = relationHolder.getRelation(rID).open();
         	}
         	
         }
+        
+        System.out.println("INSERTING AN INDEX VAL");
         
         //Iterate through the Relation and insert the values into the index.
         String[] record;
@@ -206,12 +229,15 @@ public class SystemCatalog {
         long key;
         long address;
         while(it.hasNext()) {
+        	
         	record = it.getNext();
         	keystr = record[rel.indexOfAttribute(aID)];
         	key = Long.parseLong(keystr);
         	address = it.getAddress();
         	b.Insert(idx, key, address);
+        	
         }
+        b.CloseIndex(idx);
         it.close();
         
         return true;
@@ -286,7 +312,7 @@ public class SystemCatalog {
     	    	for (int i = 0; i < values.length; i++) {
     	    		System.out.print(values[i]);
     	    	}
-    	    	System.out.print();
+    	    	System.out.print("");
     		} 		
     	}
     	
@@ -350,6 +376,7 @@ public class SystemCatalog {
     
     private boolean meetsConditon(final String condition, 
     		final String [] relation) {
+    	return true;
     }
     
     /**
@@ -462,13 +489,14 @@ public class SystemCatalog {
     	RelationHolder holder = RelationHolder.getRelationHolder(); 
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
     	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
-    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefg)");
+    	sc.insert("INSERT INTO t (achar2, achar, anint) VALUES(a1, abcdefg, 10)");
+    	sc.createIndex("CREATE INDEX bob ON t (anint)");
     	System.out.println(RelationHolder.getRelationHolder());
     	Relation r = RelationHolder.getRelationHolder().getRelation(1);
-    	Iterator it = r.open();
+    	/*Iterator it = r.open();
     	while (it.hasNext()){
     		String[] r2 = it.getNext();
     		System.out.println(r2[2]);
-    	}
+    	}*/
     }
 }

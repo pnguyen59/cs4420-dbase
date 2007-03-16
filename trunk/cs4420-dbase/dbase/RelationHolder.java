@@ -92,6 +92,10 @@ public class RelationHolder {
 		return -1;
 	}
 	
+	public ArrayList<Relation> getRelations(){
+		return relations;
+	}
+	
 	public String toString(){
 		return relations.toString();
 	}
