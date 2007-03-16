@@ -341,7 +341,7 @@ public class SystemCatalog {
     public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
-    	sc.createTable("CREATE TABLE t(anint int, achar char 50)", "key");
-    	sc.insert("INSERT INTO t (achar) VALUES(abcdefg)");
+    	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefg)");
     }
 }
