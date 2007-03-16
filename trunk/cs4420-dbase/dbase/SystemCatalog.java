@@ -155,6 +155,7 @@ public class SystemCatalog {
     	relationname = relation.substring(relation.indexOf(" ", relation.toLowerCase().indexOf("table"))+1, relation.indexOf("("));
     	Relation rel = new Relation(relationname, relationHolder.getSmallestUnusedID());
     	relationHolder.addRelation(rel);
+    	Attribute att;
     	StringTokenizer st = new StringTokenizer(relation.substring(relation.indexOf("(")+1,relation.indexOf(")")),",");
     	while (st.hasMoreTokens()){
     		String currentattribute = st.nextToken().trim();
@@ -179,14 +180,15 @@ public class SystemCatalog {
     			type = Attribute.Type.DateTime;
     		} else {
     			type = Attribute.Type.Undeclared;
-    		}
-    		Attribute att;
-    		if (type == Attribute.Type.Char){
+    		} if (type == Attribute.Type.Char){
     			 att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID(), size);
     		} else {
     			att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
     		}
     		attributes.add(att);
+    		
+    		//Now get the entry for this biotch in the attribute catalog
+    		
     	}
     	
     	
@@ -294,6 +296,7 @@ public class SystemCatalog {
         
         return true;
     }
+    
     
     /**
      *Returns an Iterator on the given relation.
