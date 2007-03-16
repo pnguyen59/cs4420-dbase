@@ -53,62 +53,6 @@ public class Relation {
 	private int size;
 	
 	
-	public int getBlocktotal() {
-		return blockTotal;
-	}
-
-	public void setBlocktotal(int blocktotal) {
-		this.blockTotal = blocktotal;
-	}
-
-	public int getCreationdate() {
-		return creationdate;
-	}
-
-	public void setCreationdate(int creationdate) {
-		this.creationdate = creationdate;
-	}
-
-	public ArrayList<Attribute> getIndexed() {
-		return indexed;
-	}
-
-	public void setIndexed(ArrayList<Attribute> indexed) {
-		this.indexed = indexed;
-	}
-
-	public ArrayList<String> getIndexfiles() {
-		return indexFiles;
-	}
-
-	public void setIndexfiles(ArrayList<String> indexfiles) {
-		this.indexFiles = indexfiles;
-	}
-
-	public int getModifydate() {
-		return modifydate;
-	}
-
-	public void setModifydate(int modifydate) {
-		this.modifydate = modifydate;
-	}
-
-	public String getRelationname() {
-		return relationname;
-	}
-
-	public void setRelationname(String relationname) {
-		this.relationname = relationname;
-	}
-
-	public int getRecords() {
-		return records;
-	}
-
-	public void setRecords(int tuples) {
-		this.records = tuples;
-	}
-
 	/**This creates a new instance of relation.
 	 * @param newfilename The file that holds the records of this relation.
 	 * @param newID The unique internal ID of this relation.
@@ -120,78 +64,35 @@ public class Relation {
 		attributes = new ArrayList<Attribute>();
 	}
 
-	/**Returns the name of the file that holds the records of this relation.
-	 * @return The name of this relations file.
+	/**This method is responsible for adding an attribute to the method
+	 * @param name what we're calling the attribute
+	 * @param type the type of the attribute
+	 * @param ID the internal ID
+	 * @return true if successful
 	 */
-	public String getFilename() {
-		return filename;
+	public Attribute addAttribute(String name, Attribute.Type type) {
+		//Determine the ID of this attribute
+		int newID = attributes.size();
+		Attribute att = new Attribute(name, type, newID);
+		attributes.add(att);
+		return att;
 	}
 
-	/**Returns the internal ID of this relation.
-	 * @return The ID of this relation.
-	 */
-	public int getID() {
-		return ID;
-	}
-
-	/**Returns the FileChannel mapped to this relations file.
-	 * @return The FileChannel of this relation.
-	 */
-	public FileChannel getChannel() {
-		return channel;
-	}
-	
-	/**This method opens up an Iterator for this relation.
-	 * @return An instance of Iterator for this relation.
-	 */
-	public Iterator open() {
-		return new Iterator(this);	
-	}
-	
-	/**This method will return the size of one record in this relation in 
-	 * bytes.  This is dynamically caclulated using the size of the attributes
-	 * in the relation.
-	 * @return The size of one record in this Relation in bytes.
-	 */
-	public int getSize() {
-		//Loop through all of the attributes and get their sizes
-		int totalSize = 0;
-		for (int attribute = 0; attribute < attributes.size(); attribute++) {
-			//Add the size of each attribute to the total size
-			totalSize += ((Attribute) attributes.get(attribute)).getSize();
+	/**This method will add an index file to the list of files maintained by
+     * the Relation.
+     * @param fileName The name of the index file to add.
+     * @return Whether or not the index file was successfully added.
+     */
+	public boolean addIndex(final String fileName) {
+		//If the index doesn't already exist then add it.
+		if (!containsIndex(fileName)) {
+			indexFiles.add(fileName);
+			return true;
 		}
-		return totalSize;
+		//If it already exists, then don't add it and return false.
+		return false;
 	}
-	
-	/**This method returns the number of records of this relation which can
-	 * be placed in one block.
-	 * @return The records of this relation which will fit in one block.
-	 */
-	public int getRecordsPerBlock() {
-		return (StorageManager.BLOCK_SIZE / this.getSize());
-	}
-	
-	public void close() {
-		//TODO Closes the iterator thingy.
-	}
-	
-	/**This method calculates whether or not the last block of the relation is
-	 * full and returns the result.  It looks to see if the total number of
-	 * blocks * the records per block is equal to the total number of records.
-	 * @return Whether or not the last block is full.
-	 */
-	public boolean isLastBlockFull() {
-		return ((blockTotal * this.getRecordsPerBlock()) == records);
-	}
-	
-	/**This method will return where in the last block a new record should
-	 * start.
-	 * @return Where a new record should go in the last block.
-	 */
-	public int getLastRecordStart() {
-		return (records % this.getRecordsPerBlock()) * this.getSize();
-	}
-	
+
 	public boolean addRecord (ByteBuffer block, String record) {
     	//Parse the record to be inserted into its single attributes
     	String [] attributeValues = record.split("/\\s/");
@@ -230,26 +131,107 @@ public class Relation {
     	//Return that the record was added to the relation.
 		return true;
 	}
-	
-	/**
-	 * This method is responsible for adding an attribute to the method
-	 * @param name what we're calling the attribute
-	 * @param type the type of the attribute
-	 * @param ID the internal ID
-	 * @return true if successful
+
+	public void close() {
+		//TODO Closes the iterator thingy.
+	}
+
+	/**Checks whether or not this relation contains the specified index file.
+	 * @param fileName The index we are checking.
+	 * @return Whether or not this relation contains the specified index.
 	 */
-	public Attribute addAttribute(String name, Attribute.Type type, int ID){
-		Attribute att = new Attribute(name, type, ID);
-		attributes.add(att);
-		return att;
+	public boolean containsIndex(final String fileName) {
+		//Looop through the list of indexes and see if it contains the file
+		for (int index = 0; index < indexFiles.size(); index++) {
+			if (((String) indexFiles.get(index)).equalsIgnoreCase(fileName)) {
+				return true;
+			}
+		}
+		//If it doesn't then return false.
+		return false;
+	}
+
+	public int getBlocktotal() {
+		return blockTotal;
+	}
+
+	/**Returns the FileChannel mapped to this relations file.
+	 * @return The FileChannel of this relation.
+	 */
+	public FileChannel getChannel() {
+		return channel;
+	}
+
+	public int getCreationdate() {
+		return creationdate;
+	}
+
+	/**Returns the name of the file that holds the records of this relation.
+	 * @return The name of this relations file.
+	 */
+	public String getFilename() {
+		return filename;
+	}
+
+	/**Returns the internal ID of this relation.
+	 * @return The ID of this relation.
+	 */
+	public int getID() {
+		return ID;
+	}
+
+	public ArrayList<Attribute> getIndexed() {
+		return indexed;
+	}
+
+	public ArrayList<String> getIndexfiles() {
+		return indexFiles;
+	}
+
+	/**This method will return where in the last block a new record should
+	 * start.
+	 * @return Where a new record should go in the last block.
+	 */
+	public int getLastRecordStart() {
+		return (records % this.getRecordsPerBlock()) * this.getSize();
+	}
+
+	public int getModifydate() {
+		return modifydate;
+	}
+
+	public int getRecords() {
+		return records;
+	}
+
+	/**This method returns the number of records of this relation which can
+	 * be placed in one block.
+	 * @return The records of this relation which will fit in one block.
+	 */
+	public int getRecordsPerBlock() {
+		return (StorageManager.BLOCK_SIZE / this.getSize());
+	}
+
+	public String getRelationname() {
+		return relationname;
 	}
 	
-	public String toString(){
-		return "Relation "+ID+" named: "+this.filename+" with "+attributes.size()
-			+" attributes: "+attributes.toString()+"\n";
+	/**This method will return the size of one record in this relation in 
+	 * bytes.  This is dynamically caclulated using the size of the attributes
+	 * in the relation.
+	 * @return The size of one record in this Relation in bytes.
+	 */
+	public int getSize() {
+		//Loop through all of the attributes and get their sizes
+		int totalSize = 0;
+		for (int attribute = 0; attribute < attributes.size(); attribute++) {
+			//Add the size of each attribute to the total size
+			totalSize += ((Attribute) attributes.get(attribute)).getSize();
+		}
+		return totalSize;
 	}
 	
-	 /**This method will insert the specified record into the specified
+	/**This method will insert the specified record into the specified
      * relation.
      * @param relation The relation in which to insert the record.
      * @param record The record to be inserted.
@@ -287,38 +269,74 @@ public class Relation {
     	//Then, when we know that we have a block that has space in it, write
     	//this new record to the block
     	addRecord(block, record);
+    	
+    	//Finally, increment the number of records in this relation
+    	this.records++;
 
     	return true;
     }
 	
-    /**This method will add an index file to the list of files maintained by
-     * the Relation.
-     * @param fileName The name of the index file to add.
-     * @return Whether or not the index file was successfully added.
-     */
-	public boolean addIndex(final String fileName) {
-		//If the index doesn't already exist then add it.
-		if (!containsIndex(fileName)) {
-			indexFiles.add(fileName);
-			return true;
-		}
-		//If it already exists, then don't add it and return false.
-		return false;
+	/**This method calculates whether or not the last block of the relation is
+	 * full and returns the result.  It looks to see if the total number of
+	 * blocks * the records per block is equal to the total number of records.
+	 * @return Whether or not the last block is full.
+	 */
+	public boolean isLastBlockFull() {
+		return ((blockTotal * this.getRecordsPerBlock()) == records);
 	}
 	
-	/**Checks whether or not this relation contains the specified index file.
-	 * @param fileName The index we are checking.
-	 * @return Whether or not this relation contains the specified index.
+	/**This method opens up an Iterator for this relation.
+	 * @return An instance of Iterator for this relation.
 	 */
-	public boolean containsIndex(final String fileName) {
-		//Looop through the list of indexes and see if it contains the file
-		for (int index = 0; index < indexFiles.size(); index++) {
-			if (((String) indexFiles.get(index)).equalsIgnoreCase(fileName)) {
-				return true;
-			}
+	public Iterator open() {
+		return new Iterator(this);	
+	}
+	
+	public String [] parseRecord(final ByteBuffer record) {
+		
+		//Start at the first byte of this record, cause we should be realtively
+		//sure the record starts there.
+		
+		//For each attribute in this relation, parse it out of this record
+		for (int attributeID = 0; 
+			attributeID < attributes.size(); attributeID++) {
+			//Read the attribute in from the ByteBuffer
 		}
-		//If it doesn't then return false.
-		return false;
+		
+		return null;
+	}
+	
+	public void setBlocktotal(int blocktotal) {
+		this.blockTotal = blocktotal;
+	}
+	
+	public void setCreationdate(int creationdate) {
+		this.creationdate = creationdate;
+	}
+	
+	public void setIndexed(ArrayList<Attribute> indexed) {
+		this.indexed = indexed;
+	}
+	
+	public void setIndexfiles(ArrayList<String> indexfiles) {
+		this.indexFiles = indexfiles;
+	}
+	
+	public void setModifydate(int modifydate) {
+		this.modifydate = modifydate;
+	}
+	
+	 public void setRecords(int tuples) {
+		this.records = tuples;
+	}
+	
+    public void setRelationname(String relationname) {
+		this.relationname = relationname;
+	}
+	
+	public String toString(){
+		return "Relation "+ID+" named: "+this.filename+" with "+attributes.size()
+			+" attributes: "+attributes.toString()+"\n";
 	}
 	
 	/**This method will write the given string to the given block a the given
