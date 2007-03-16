@@ -343,5 +343,12 @@ public class SystemCatalog {
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
     	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
     	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefg)");
+    	System.out.println(RelationHolder.getRelationHolder());
+    	Relation r = RelationHolder.getRelationHolder().getRelation(1);
+    	Iterator it = r.open();
+    	while (it.hasNext()){
+    		String[] r2 = it.getNext();
+    		System.out.println(r2[2]);
+    	}
     }
 }
