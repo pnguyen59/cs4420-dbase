@@ -172,6 +172,7 @@ public class StorageManager {
 		
 		//If the block is outside of the file then exit.
 		isBlockInRange(channel, block);
+//		System.out.println("" + block);
 		
 		//In this try/catch block, we try to read in the specified block from
 		//the file
@@ -179,8 +180,10 @@ public class StorageManager {
 			buffer = channel.map(
 					FileChannel.MapMode.READ_WRITE, 
 					block * BLOCK_SIZE, BLOCK_SIZE);
+			channel.close();
 		} catch (IOException e) {
-			System.out.println("Couldn't get bytes from file.");
+			System.out.println("Couldn't get bytes from file:" + catalog);
+			e.printStackTrace();
 			System.exit(1);
 		}
 		

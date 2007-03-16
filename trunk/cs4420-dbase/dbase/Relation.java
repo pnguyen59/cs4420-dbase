@@ -625,7 +625,7 @@ public class Relation {
 				char ch = relationname.charAt(j);
 				buf.putChar(j*2,ch);
 			} else {
-				buf.putChar(j*2,' ');
+				buf.putChar(j*2,BufferManager.NULL_CHARACTER);
 			}
 		}
 		buf.putInt(30,ID);
@@ -648,7 +648,7 @@ public class Relation {
 					char ch = indexFiles.get(j).charAt(k);
 					buf.putChar(98+k*2+j*30,ch);
 				} else {
-					buf.putChar(98+k*2+j*30,' ');
+					buf.putChar(98+k*2+j*30, BufferManager.NULL_CHARACTER);
 				}
 			}
 		}
