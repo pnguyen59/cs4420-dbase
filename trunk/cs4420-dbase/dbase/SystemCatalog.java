@@ -75,7 +75,7 @@ public class SystemCatalog {
     		System.out.println("Error Isn't Here.");
     		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; j++) {
     			if (relbuffer.getChar(relationpos) == BufferManager.NULL_CHARACTER) {
-    				System.out.println("Didn't Load Shit.");
+    				System.out.println("Null character encountered");
     				break;
     			}
     			for (int k = 0; k < 15; k++) {
@@ -803,7 +803,6 @@ public class SystemCatalog {
 		ByteBuffer temp3 = ByteBuffer.wrap(bytes);
 		buffer.writeRelCatalog(relationcatalog, blocknum, temp3);
 	}
-	
 	
 	
     
