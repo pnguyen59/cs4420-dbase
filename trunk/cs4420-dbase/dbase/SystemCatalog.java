@@ -410,11 +410,6 @@ public class SystemCatalog {
     	return (condition.split("\\s"))[4];
     }
     
-    private boolean meetsConditon(final String condition, 
-    		final String [] relation) {
-    	return true;
-    }
-    
     /**
      *Returns the rows from an Index
      *
@@ -527,12 +522,17 @@ public class SystemCatalog {
     	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
     	sc.insert("INSERT INTO t (achar2, achar, anint) VALUES(a1, abcdefg, 10)");
     	sc.createIndex("CREATE INDEX bob ON t (anint)");
-    	System.out.println(RelationHolder.getRelationHolder());
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefh)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefi)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefj)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefk)");
+    	//System.out.println(RelationHolder.getRelationHolder());
     	Relation r = RelationHolder.getRelationHolder().getRelation(1);
     	/*Iterator it = r.open();
     	while (it.hasNext()){
     		String[] r2 = it.getNext();
-    		System.out.println(r2[2]);
+    		System.out.println(r2[1]);
     	}*/
+    	//sc.selectFromTable("SELECT FROM TABLE t WHERE achar = abcdefg");
     }
 }
