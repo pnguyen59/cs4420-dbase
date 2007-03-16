@@ -37,7 +37,7 @@ public class Iterator {
 	 */
 	public Iterator(final Relation newRelation) {
 		this.relation = newRelation;
-		System.out.println(relation); //TODO delete later, used to remove warning about not using relation.
+		//System.out.println(relation); //TODO delete later, used to remove warning about not using relation.
 	}
 	
 	/**Thie method will close the iterator.
@@ -101,7 +101,7 @@ public class Iterator {
 			return false;
 		}else if (currentBlock == relation.getBlocktotal() - 1){
 			if (nextRecord >= relation.getRecords()) {
-				System.out.println("Case 2");
+				//System.out.println("Case 2");
 				return false;
 			} else {
 				return true;
