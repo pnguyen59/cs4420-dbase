@@ -220,8 +220,10 @@ public class SystemCatalog {
     	//Find the where statement.
     	for (int index = 0; index < commands.length; index++) {
     		String [] splitCommand = commands[index].split("\\s");
-    		for (int word = 0; word < splitCommand.length) {
-    			if (splitCommand[word].equalsIgnoreCase("Where");
+    		for (int word = 0; word < splitCommand.length; word++) {
+    			if (splitCommand[word].equalsIgnoreCase("Where")) {
+    				
+    			}
     		}
     	}
     	
