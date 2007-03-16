@@ -40,7 +40,12 @@ public class Database {
     	String [] splitCommand = command.split(" ");
     	if (splitCommand[0].compareToIgnoreCase("SELECT") == 0) {
     		if (splitCommand[3].toLowerCase().compareToIgnoreCase("TABLE")== 0){
-    			return catalog.selectFromTable(command).toString();
+    			String ret = "";
+    			String[] str = catalog.selectFromTable(command);
+    			for (int j=0; j<str.length; j++){
+    				ret+=str[j]+"\n";
+    			}
+    			return ret;
     		} else if (splitCommand[3].toLowerCase().compareToIgnoreCase("INDEX")== 0){
     			return catalog.selectFromIndex(command).toString();
     		}  else if (splitCommand[3].toLowerCase().compareToIgnoreCase("CATALOG")== 0){
