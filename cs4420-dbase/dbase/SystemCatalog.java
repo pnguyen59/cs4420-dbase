@@ -79,7 +79,7 @@ public class SystemCatalog {
     		}
     		Attribute att;
     		if (type == Attribute.Type.Char){
-    			 att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID()/*, size*/);
+    			 att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID(), size);
     		} else {
     			att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
     		}
@@ -297,6 +297,6 @@ public class SystemCatalog {
     public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
-    	sc.createTable("CREATE TABLE t(abool boolean, anint int)", "key");
+    	sc.createTable("CREATE TABLE t(abool boolean, anint int, achar char 50)", "key");
     }
 }
