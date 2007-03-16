@@ -76,6 +76,22 @@ public class Relation {
 		attributes.add(att);
 		return att;
 	}
+	
+	/**This method is responsible for adding a CHAR attribute to this
+	 * relation.
+	 * @param name What we're calling the attribute
+	 * @param type The Type of this new attribute.
+	 * @param newID The internal ID of the new attribute.
+	 * @param length The length of the new CHAR attribute.
+	 * @return true if successful
+	 */
+	public Attribute addAttribute(final String name, final Attribute.Type type, 
+			final int newID, final int length) {
+		//Determine the ID of this attribute
+		Attribute att = new Attribute(name, type, newID, length);
+		attributes.add(att);
+		return att;
+	}
 
 	/**This method will add an index file to the list of files maintained by
      * the Relation.
@@ -295,7 +311,7 @@ public class Relation {
 		
 		//Create the array of Strings that will hold the attributes from this
 		String [] parsed = new String [attributes.size()];
-		String parsedAttribute;
+		String parsedAttribute = null;
 		
 		//Start at the first byte of this record, cause we should be realtively
 		//sure the record starts there.
@@ -309,7 +325,10 @@ public class Relation {
 			
 			//Then get the bytes for the attribute
 			if (currentAttribute.getType() == Attribute.Type.Int) {
+				System.out.println("Parsing int starting at " + start
+						+ " and of size " + Attribute.INT_SIZE);
 				parsedAttribute = Integer.toString(record.getInt(start));
+				//System.out.println("Found int " + parsedAttribute);
 			} else if (currentAttribute.getType() == Attribute.Type.Char) {
 				parsedAttribute = parseString(record, start, 
 						currentAttribute.getSize());
@@ -324,10 +343,13 @@ public class Relation {
 			//Then increment start by the size of this attribute so we get the
 			//next one
 			start += currentAttribute.getSize();
+			
+			//Add the parsedAttribute to the array to return
+			parsed[attributeID] = parsedAttribute;
 	    	
 		} 
 		
-		return null;
+		return parsed;
 	}
 	
 	/**This method will parse a string out of a record, if you tell it where
@@ -335,10 +357,12 @@ public class Relation {
 	 * @param record The record containing the string.
 	 * @param start Where the string starts in the record, in bytes.
 	 * @param size  The size of the string in bytes.
-	 * @return
+	 * @return The string parsed out of this record.
 	 */
 	public static String parseString(final ByteBuffer record, final int start, 
 			final int size) {
+		System.out.println("Parsing string starting at: " + start 
+				+ " and of size " + size);
 		
 		//Loop through the record, getting thigs out as integers and casting
 		//them as characters.
@@ -348,6 +372,12 @@ public class Relation {
 		for (int current = 0;  current < size; current++) {
 			//Get the next character from the record and add it to the total
 			char next = record.getChar(offset);
+			
+			//If it is a null character, then stop her and return what we have.
+			if (next == '\0') {
+				return total;
+			}
+			
 			total = total + next;
 			
 			//Increment the start so it gets the next character
@@ -395,25 +425,29 @@ public class Relation {
 	 * @param block The block to write these to.
 	 * @param chars The string of characters to write.
 	 * @param start Where this CHAR should be written in the block.
-	 * @param size This size of this CHAR() attribute, in bytes.
-	 * @return
+	 * @param newSize This size of this CHAR() attribute, in bytes.
+	 * @return Whether or not the write was successful.
 	 */
-	private boolean writeString(final ByteBuffer block, 
-		final String chars, int start, final int size) {
-		
+	public boolean writeString(final ByteBuffer block, 
+		final String chars, final int start, final int newSize) {
+		int offset = start;
 		//Loop through the String, writing the characters as ints.
 		for (int index = 0; index < chars.length();  index++) {
-			//Get the char at the index character
-			char character = chars.charAt(index);
-			block.putInt(start, (int) character);
+			//Get the char at the index
+			block.putChar(offset, chars.charAt(index));
+			System.out.println("Putting character " + chars.charAt(index)
+				+ " at " + offset);
 			//Then add the size of an int to start
-			start += 2;
+			offset += Attribute.CHAR_SIZE;
 		}
 		//After all of the members of the string have been written, fill
 		//in the rest of the space with '\O'
-		for (int nulls = 0; nulls < (size - chars.length()); nulls++) {
-			block.putInt(start, (int) BufferManager.NULL_CHARACTER);
-			start += 2;
+		int stringSize = chars.length() * Attribute.CHAR_SIZE;
+		int nullsToWrite = (newSize - stringSize) / 2;
+		for (int nulls = 0; nulls < nullsToWrite; nulls++) {
+			block.putChar(offset, BufferManager.NULL_CHARACTER);
+			System.out.println("Putting  null character at " + offset);
+			offset += Attribute.CHAR_SIZE;
 		}
 		
 		//Then return true;
