@@ -71,6 +71,10 @@ public class Iterator {
 		return null;
 	}
 	
+	/**
+	 * Returns if there is another record in the Relation.
+	 * @return If there is another record.
+	 */
 	public boolean hasNext() {
 		if (currentBlock >= relation.getBlocktotal()) {
 			return false;
@@ -84,6 +88,10 @@ public class Iterator {
 		} else {
 			return true;
 		}
+	}
+	
+	public long getAddress() {
+		return BufferManager.makePhysicalAddress(relation.getID(), currentBlock);
 	}
 	
 	/** DEPRECATED - ParseRecord is a utility method for all classes to use.  It is meant
