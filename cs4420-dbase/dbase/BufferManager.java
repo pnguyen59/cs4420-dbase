@@ -41,7 +41,7 @@ public class BufferManager {
     public static final char NULL_CHARACTER = '\0';
     
     /**A lookup table for the buffer.*/
-    private long [][] lookUpTable = new long [2][4000];
+    private long [][] lookUpTable = new long [4000][2];
     
     /**The current position of the clock.*/
     private long time = 0;
@@ -55,8 +55,8 @@ public class BufferManager {
     private BufferManager() {
     	storage = new StorageManager();
     	for (int i = 0; i < 4000; i++) {
-    		lookUpTable[PHYSICAL_INDEX][i] = -1;
-    		lookUpTable[TIME_INDEX][i] = 0;
+    		lookUpTable[i][PHYSICAL_INDEX] = -1;
+    		lookUpTable[i][TIME_INDEX] = 0;
     	}
     }
     
