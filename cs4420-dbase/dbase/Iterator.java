@@ -1,6 +1,7 @@
 package dbase;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 /**
  * 
@@ -16,10 +17,10 @@ public class Iterator {
 	BufferManager buffer = BufferManager.getBufferManager(); 
 	
 	/**The block that this iterator is currently working on.*/
-	private long currentBlock;
+	private long currentBlock = 0;
 	
 	/**The next record that this iterator will return from its current block.*/
-	private int nextRecord;
+	private int nextRecord = 0;
 	
 	public Iterator() {
 		
@@ -62,16 +63,17 @@ public class Iterator {
 		//If it isn't then find the record's bytes within this block
 		byte [] bytes = block.array();
 		//Find out how many records there are in this block
-		long blockRecords = relation.getRecords() 
-			- ((long) (currentBlock) * (long) recordsPerBlock);
+		long blockRecords = Math.min(relation.getRecords() 
+			- ((long) (currentBlock) * (long) recordsPerBlock),
+			relation.getRecordsPerBlock());
 		long previousRecords = relation.getRecords() - blockRecords;
+		byte[] subbuffer = new byte[relation.getSize()];
+		for (int i = 0; i < relation.getSize(); i++) {
+			subbuffer[i] = bytes[(nextRecord % relation.getRecordsPerBlock()) + i];
+		}
 		
-		//TODO Have the relation parse out the record into whatever it's supposed to
-		//be
-		
-		//TODO Return the record as a string
-		
-		return null;
+		String[] returnable = relation.parseRecord(ByteBuffer.wrap(subbuffer));
+		return returnable;
 	}
 	
 	/**
@@ -82,8 +84,7 @@ public class Iterator {
 		if (currentBlock >= relation.getBlocktotal()) {
 			return false;
 		}else if (currentBlock == relation.getBlocktotal() - 1){
-			long currentrecord = currentBlock * relation.getRecordsPerBlock() + nextRecord;
-			if (currentrecord >= relation.getRecords()) {
+			if (nextRecord >= relation.getRecords()) {
 				return false;
 			} else {
 				return true;
