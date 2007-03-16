@@ -57,7 +57,7 @@ public class Iterator {
 		//The relations per block is block size / relation size
 		int recordsPerBlock = relation.getRecordsPerBlock();
 		if (nextRecord > recordsPerBlock * currentBlock) {
-			block = buffer.read(relation.getID(), currentBlock++);
+			block = buffer.read(relation.getID(), currentBlock);
 		}
 		
 		//If it isn't then find the record's bytes within this block
@@ -71,7 +71,7 @@ public class Iterator {
 		for (int i = 0; i < relation.getSize(); i++) {
 			subbuffer[i] = bytes[(nextRecord % relation.getRecordsPerBlock()) + i];
 		}
-		
+		currentBlock++;
 		String[] returnable = relation.parseRecord(ByteBuffer.wrap(subbuffer));
 		return returnable;
 	}
