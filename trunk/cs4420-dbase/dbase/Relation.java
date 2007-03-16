@@ -58,8 +58,9 @@ public class Relation {
 	 * @param newfilename The file that holds the records of this relation.
 	 * @param newID The unique internal ID of this relation.
 	 */
-	public Relation(final String newfilename, final int newID) {
-		this.filename = newfilename;
+	public Relation(final String relationname, final int newID) {
+		this.filename = relationname + ".dbd";
+		this.relationname = relationname;
 		this.ID = newID;
 		channel = StorageManager.openFile(filename);
 		attributes = new ArrayList<Attribute>();
