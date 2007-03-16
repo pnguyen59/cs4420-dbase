@@ -208,13 +208,23 @@ public class SystemCatalog {
     
     /**
      *Returns the rows from a Table
-     *
      *@param selection the code from the user
-     *
      *@return The Table in String format.
      */
     public String [] selectFromTable(String selection) {
-    	//TODO Implement printout.
+    	
+    	//First thing to do, get the selection condition or whatever out 
+    	//of the selection string, the part surrounded by [ ]
+    	String [] commands = selection.split("\\[");
+    	
+    	//Find the where statement.
+    	for (int index = 0; index < commands.length; index++) {
+    		String [] splitCommand = commands[index].split("\\s");
+    		for (int word = 0; word < splitCommand.length) {
+    			if (splitCommand[word].equalsIgnoreCase("Where");
+    		}
+    	}
+    	
         return null;
     }
     
