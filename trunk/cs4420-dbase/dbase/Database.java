@@ -38,7 +38,6 @@ public class Database {
     public String parseCommand(final String command) {
     	//Split the command into an array of strings
     	String [] splitCommand = command.split(" ");
-    	System.out.println(splitCommand[1]);
     	//TODO send the result to SystemCatalog
     	if (splitCommand[0].compareToIgnoreCase("SELECT") == 0) {
     		if (command.toLowerCase().compareToIgnoreCase("TABLE")== 0){
@@ -85,13 +84,14 @@ public class Database {
     public static void main(final String [] ARGVS) {
     	String input =  "";
     	Database db = new Database();
-    	while (!input.toLowerCase().equals("exit")){
+    	while (!input.toLowerCase().trim().equals("exit")){
     		Scanner sc = new Scanner(System.in).useDelimiter("\n");
     		input = sc.next();
     		System.out.println(input);
-    		System.out.println(db.parseCommand(input));
+    		if (!input.toLowerCase().trim().equals("exit"))System.out.println(db.parseCommand(input));
     		
     	}
+    	System.exit(1);
     }
     
 }
