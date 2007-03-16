@@ -719,6 +719,50 @@ public class BTree {
 		return ptr;
 	}
 	
+	public String recursivePrintString(final int index, final long block){
+		String str = "";
+		MappedByteBuffer mbb;
+		try{
+		mbb = MapBlock(indexTable[index].fileChannel, block, c.BLOCKSIZE);
+	
+		Node node = new Node();
+	
+		node.leafNode = mbb.getShort();
+		node.keyCount = mbb.getShort();
+		
+		for (int j=0; j<node.keys.length; j++){
+			node.keys[j] = mbb.getLong();
+		}
+		for (int i=0; i<node.pointers.length; i++){
+			node.pointers[i] = mbb.getLong();
+		}
+		
+		if (node.leafNode == 1){
+			for (int i=0; i<node.keys.length; i++){
+				str += node.keys[i]+" "+node.pointers[i];
+				if (i<node.keys.length-1){
+					str+=", ";
+				}
+			}
+		} else if (node.leafNode == 0){
+			for (int i=0; i<node.pointers.length; i++){
+				str += recursivePrintString(index,node.pointers[i]);
+				if (i<node.pointers.length-1){
+					str+=", ";
+				}
+			}
+		}
+		
+		return str;
+		} catch (Exception e){
+			return e.toString();
+		}
+	}
+	
+	public String stringRepresentation(final int idx){
+		return recursivePrintString(idx, getRootBlock(idx));
+	}
+	
 //This is sample code for you to explain how to use the public functions 
 //in this class.
 //Please read carefully the comments written in this function
