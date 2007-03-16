@@ -54,11 +54,9 @@ public class BufferManager {
     /**Creates a new instance of BufferManager.*/
     private BufferManager() {
     	storage = new StorageManager();
-    	for (long zero: lookUpTable[TIME_INDEX]){
-    		zero = 0;
-    	}
-    	for (long physical: lookUpTable[PHYSICAL_INDEX]) {
-    		physical = -1;
+    	for (int i = 0; i < 4000; i++) {
+    		lookUpTable[PHYSICAL_INDEX][i] = -1;
+    		lookUpTable[TIME_INDEX][i] = 0;
     	}
     }
     
