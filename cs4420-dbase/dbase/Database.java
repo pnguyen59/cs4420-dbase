@@ -40,11 +40,11 @@ public class Database {
     	String [] splitCommand = command.split(" ");
     	//TODO send the result to SystemCatalog
     	if (splitCommand[0].compareToIgnoreCase("SELECT") == 0) {
-    		if (splitCommand[1].toLowerCase().compareToIgnoreCase("TABLE")== 0){
+    		if (splitCommand[3].toLowerCase().compareToIgnoreCase("TABLE")== 0){
     			return catalog.selectFromTable(command).toString();
-    		} else if (splitCommand[1].toLowerCase().compareToIgnoreCase("INDEX")== 0){
+    		} else if (splitCommand[3].toLowerCase().compareToIgnoreCase("INDEX")== 0){
     			return catalog.selectFromIndex(command).toString();
-    		}  else if (splitCommand[1].toLowerCase().compareToIgnoreCase("CATALOG")== 0){
+    		}  else if (splitCommand[3].toLowerCase().compareToIgnoreCase("CATALOG")== 0){
     			return catalog.selectFromCatalog(command).toString();
     		} else {
     			return "Command not recognized";
