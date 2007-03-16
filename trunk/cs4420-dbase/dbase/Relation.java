@@ -360,12 +360,14 @@ public class Relation {
 		return new Iterator(this);	
 	}
 	
+	
 	public String [] parseRecord(final ByteBuffer record) {
 		
 		//Create the array of Strings that will hold the attributes from this
 		String [] parsed = new String [attributes.size()];
 		String parsedAttribute = null;
 		
+		System.out.println();
 		//Start at the first byte of this record, cause we should be realtively
 		//sure the record starts there.
 		int start = 0;
