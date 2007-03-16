@@ -189,11 +189,12 @@ public class SystemCatalog {
     		attributes.add(att);
     		
     		//Now get the entry for this biotch in the attribute catalog
+    		//ByteBuffer entry = att.writeCrapToBuffer();
     		
     	}
     	
     	
-    	System.out.println(relationHolder);
+    	//System.out.println(relationHolder);
     	
     	
         return true;
@@ -374,7 +375,7 @@ public class SystemCatalog {
     	    	//for (int i = 0; i < values.length; i++) {
     	    		//System.out.println( "Value: " + values[i]);
     	    	for (int i = 0; i < values.length; i++) {
-    	    		total = total + values[i] + "\t";;
+    	    		total = total + values[i] + " ";
     	    	}
     	    	total = total + "\n";
     	    	//System.out.println("They match!");
@@ -399,17 +400,17 @@ public class SystemCatalog {
     
     private String parseWhereClause(final String selection) {
     	//Find the where statement.
-    	String [] commands = selection.split("\\[");
+    	String [] commands = selection.split("\\s");
+    	String whereClause = "";
     	
     	for (int index = 0; index < commands.length; index++) {
-    		String [] splitCommand = commands[index].split("\\s");
-    		for (int word = 0; word < splitCommand.length; word++) {
-    			if (splitCommand[word].equalsIgnoreCase("Where")) {
-    				return commands[index];
+    		if (commands[index].equalsIgnoreCase("WHERE")) {
+    			for (int word = index; word < commands.length; word++) {
+    				whereClause += commands[word] + " ";
     			}
     		}
     	}
-    	return null;
+    	return whereClause;
     }
     
     private String [] parseSelectAttributes(final String selection) {
@@ -432,6 +433,7 @@ public class SystemCatalog {
     private String parseConditionAttribute(final String condition) {
     	//TODO allow it to handle more than the word after the where.
     	//At this point it should be the second word
+    	System.out.println(condition);
     	return condition.split("\\s")[1]; 	
     }
     
@@ -545,7 +547,7 @@ public class SystemCatalog {
 	}
 	
     
-    /*public static void main(String[] args){
+    public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
     	RelationHolder holder = RelationHolder.getRelationHolder(); 
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
@@ -558,7 +560,7 @@ public class SystemCatalog {
     	sc.insert("INSERT INTO t (achar2, achar) VALUES(a3, abcdefk)");
     	//System.out.println(RelationHolder.getRelationHolder());
     	Relation r = RelationHolder.getRelationHolder().getRelation(1);
-    	/*Iterator it = r.open();
+    	Iterator it = r.open();
     	while (it.hasNext()){
     		String[] r2 = it.getNext();
     		System.out.println(r2[1]);
@@ -592,5 +594,5 @@ public class SystemCatalog {
     		System.out.print(results[i] + "\n");
     	}
     	System.out.println();
-    }*/
+    }
 }
