@@ -161,6 +161,7 @@ public class SystemCatalog {
     	Relation rel = new Relation(relationname, relationHolder.getSmallestUnusedID());
     	relationHolder.addRelation(rel);
     	Attribute att;
+    	writeoutRel(rel.writeCrapToBuffer(), rel.getID());
     	StringTokenizer st = new StringTokenizer(relation.substring(relation.indexOf("(")+1,relation.indexOf(")")),",");
     	while (st.hasMoreTokens()){
     		String currentattribute = st.nextToken().trim();
@@ -554,8 +555,8 @@ public class SystemCatalog {
 		long blocknum = rID / (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
 		long recordnum = rID % (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
 		ByteBuffer temp = buffer.readRel(relationcatalog, blocknum * StorageManager.BLOCK_SIZE + REL_OFFSET);
-		
-		ByteBuffer intermediate;
+		temp.put(buffer2.array(), (int)(recordnum * REL_REC_SIZE), REL_REC_SIZE);
+		buffer.writeRelCatalog(relationcatalog, blocknum, temp);
 	}
 	
     
