@@ -152,7 +152,6 @@ public class StorageManager {
 			System.exit(1);
 		}
 		
-		
         return buffer.duplicate();
     }
     

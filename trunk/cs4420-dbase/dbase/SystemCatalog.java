@@ -153,7 +153,7 @@ public class SystemCatalog {
      */
     public boolean createTable(String relation, String key) {
     	String relationname;
-    	relationname = relation.substring(relation.indexOf(" ", relation.toLowerCase().indexOf("table"))+1, relation.indexOf("("));
+    	relationname = relation.substring(relation.indexOf(" ", relation.toLowerCase().indexOf("table"))+1, relation.indexOf("(")).trim();
     	Relation rel = new Relation(relationname, relationHolder.getSmallestUnusedID());
     	relationHolder.addRelation(rel);
     	Attribute att;
