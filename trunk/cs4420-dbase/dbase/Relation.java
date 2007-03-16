@@ -376,7 +376,7 @@ public class Relation {
 	 * @param attributeID The global ID of the attribute specified.
 	 * @return The index of the requested attribute in this relation.
 	 */
-	public int indexOfAttribute(int attributeID) {
+	public int indexOfAttribute(long attributeID) {
 		
 		for (int index = 0; index < attributes.size(); index++) {
 			//If the ID of this attribute and the specified ID are the same
