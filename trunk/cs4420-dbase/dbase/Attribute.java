@@ -15,7 +15,7 @@ public class Attribute {
 	 * @author gtg471h
 	 */
 	public enum Type {
-		Int, Long, Boolean, Char, Float, Double, Undeclared
+		Int, Long, Boolean, Char, Float, Double, TimeDate, Undeclared
 	}
 
 	/**This is the size in bytes of a single character.*/
