@@ -162,13 +162,13 @@ public class StorageManager {
      * @param block The block to load.
      * @return The ByteBuffer needed.
      */
-    public ByteBuffer read(FileChannel catalog, final long block) {   	
+    public ByteBuffer read(String catalog, final long block) {   	
     	
     	MappedByteBuffer buffer = null;
 		FileChannel channel = null;
     	
 		//Get the FileChannel for the specified relation
-		channel = catalog;
+		channel = openFile(catalog);
 		
 		//If the block is outside of the file then exit.
 		isBlockInRange(channel, block);
@@ -272,15 +272,16 @@ public class StorageManager {
      * @param block The byteBuffer to write
      * @return whether the write was successful.
      */
-    public boolean write(FileChannel catalog, final long address, 
+    public boolean write(String catalog, final long blocknum, 
     		final ByteBuffer block) {
     	
-    	FileChannel channel = catalog;
+    	FileChannel channel = openFile(catalog);
     	
     	//Now try to write the block to the file with the specified address
     	try {
     		//Write the given block to the specified address in the file
-    		channel.write(block, address * BLOCK_SIZE);
+    		channel.write(block, blocknum * BLOCK_SIZE);
+    		channel.close();
     	} catch (IOException exception) {
     		System.out.println("Couldn't write to file.");
     		System.out.println(exception);

@@ -32,8 +32,8 @@ public class SystemCatalog {
     private ArrayList <Attribute> attributes;
     
     /** FileChannels for the attribute and relation catalogs*/
-    private FileChannel relationcatalog = StorageManager.openFile("RELATION_CATALOG.rc");
-    private FileChannel attributecatalog = StorageManager.openFile("ATTRIBUTE_CATALOG.ac");
+    private String relationcatalog = "RELATION_CATALOG.rc";
+    private String attributecatalog = "ATTRIBUTE_CATALOG.ac";
     long relationmarker = 0, attributemarker = 0;
     public static final int ATT_REC_SIZE = 58;
     public static final int REL_REC_SIZE = 398;
@@ -50,8 +50,12 @@ public class SystemCatalog {
     	int relsize = 0, attsize = 0;
     	
     	try {
-    		relsize = (int) (relationcatalog.size() / (int) StorageManager.BLOCK_SIZE);
-    		attsize = (int) (attributecatalog.size() / (int) StorageManager.BLOCK_SIZE);
+    		FileChannel relcat = StorageManager.openFile(relationcatalog);
+    		FileChannel attcat = StorageManager.openFile(attributecatalog);
+    		relsize = (int) (relcat.size() / (int) StorageManager.BLOCK_SIZE);
+    		attsize = (int) (attcat.size() / (int) StorageManager.BLOCK_SIZE);
+    		relcat.close();
+    		attcat.close();
     	} catch(IOException e) {
     		System.exit(1);
     	}
@@ -544,6 +548,14 @@ public class SystemCatalog {
 		}
 		//TODO Possibly add code to load this Relation if not already done, we'll see.
 		return null;
+	}
+	
+	private void writeoutRel(ByteBuffer buffer2, int rID) {
+		long blocknum = rID / (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
+		long recordnum = rID % (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
+		ByteBuffer temp = buffer.readRel(relationcatalog, blocknum * StorageManager.BLOCK_SIZE + REL_OFFSET);
+		
+		ByteBuffer intermediate;
 	}
 	
     
