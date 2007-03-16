@@ -43,7 +43,7 @@ public class Iterator {
 	 * operating on.
 	 * @return The next record in the relation as a string.
 	 */
-	public String getNext() {
+	public String[] getNext() {
 		
 		//Get the block that were using from the buffer manager.
 		MappedByteBuffer block = null;
@@ -69,6 +69,21 @@ public class Iterator {
 		//TODO Return the record as a string
 		
 		return null;
+	}
+	
+	public boolean hasNext() {
+		if (currentBlock >= relation.getBlocktotal()) {
+			return false;
+		}else if (currentBlock == relation.getBlocktotal() - 1){
+			long currentrecord = currentBlock * relation.getRecordsPerBlock() + nextRecord;
+			if (currentrecord >= relation.getRecords()) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return true;
+		}
 	}
 	
 	/** DEPRECATED - ParseRecord is a utility method for all classes to use.  It is meant

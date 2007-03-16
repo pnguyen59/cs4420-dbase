@@ -17,7 +17,7 @@ public class Attribute {
 	public enum Type {
 		Int, Long, Boolean, Char, Float, Double, Undeclared
 	}
-//	Variables
+
 	/**The Type of this attribute, e.g. INT, LONG, CHAR, etc.*/
 	private Type type;
 	
@@ -49,7 +49,7 @@ public class Attribute {
 	
 	/**The size of this attribute in bytes.*/
 	private int size;
-	//endregion Variables
+	
 	
 	public Attribute() {
 		

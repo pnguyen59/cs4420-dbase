@@ -23,6 +23,9 @@ public class SystemCatalog {
     /**The Database's buffer */
     public BufferManager buffer;
     
+    /**String Length Maximum*/
+    public final static int stringlength = 15;
+    
     /**A list of Relations and Attributes */
     private ArrayList <Relation> relations;
     private ArrayList <Attribute> attributes;
@@ -89,11 +92,15 @@ public class SystemCatalog {
      *
      *@return whether the index was created successfully
      */
-    public boolean createIndex(String relation, String attribute) {
+    public boolean createIndex(String relation, String attribute, String Indexname, boolean duplicates) {
         long rID = -1, aID = -1;
     	int i, j;
     	Attribute.Type aType = Attribute.Type.Undeclared;
     	Relation rel =  null;
+    	Attribute att = null;
+    	Iterator it = null;
+    	BTree b = new BTree();
+    	int idx;
         
         //Find the rID and aID for use with the indexing.
     	for (i = 0; i < relations.size(); i++) {
@@ -108,21 +115,37 @@ public class SystemCatalog {
         	if (attributes.get(j).getName().equalsIgnoreCase(attribute) && attributes.get(j).getParent() == rID) {
         		aID = attributes.get(j).getID();
         		aType = attributes.get(j).getType();
+        		att = attributes.get(j);
+        		break;
         	}
         }
         
-        if (rel == null || rel.containsIndex("./"+rID+aID+".if")){
+        if (rel == null || rel.containsIndex("./"+Indexname+".if")){
         	return false;
         } else if (aType!=Attribute.Type.Int && aType!=Attribute.Type.Long){
         	return false;
         } else{
-        	BTree b = new BTree();
-        	int idx = b.OpenIndex("./"+rID+aID+".if", true);
-        	Iterator it = relationHolder.getRelation(rID).open(); 
+	        if (duplicates) {
+	        	rel.addIndex(Indexname);
+	        	att.setIndex(Indexname.toCharArray());
+	        	idx = b.OpenIndex("./"+Indexname+".if", true);
+	        	it = relationHolder.getRelation(rID).open(); 
+        	} else {
+        		rel.addIndex(Indexname);
+            	att.setIndexd(Indexname.toCharArray());
+            	idx = b.OpenIndex("./"+Indexname+".if", false);
+            	it = relationHolder.getRelation(rID).open();
+        	}
         	
         }
         
-        aID++; //delete this later, just here to remove warning.
+        String[] record;
+        while(it.hasNext()) {
+        	record = it.getNext();
+        	
+        	long key = 0, ptr = 0;
+        	b.Insert(idx, key, ptr);
+        }
         
         //TODO put in the iteration/insert algorythm here.
         
