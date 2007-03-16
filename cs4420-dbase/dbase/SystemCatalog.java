@@ -140,11 +140,15 @@ public class SystemCatalog {
         }
         
         String[] record;
+        String keystr;
+        long key;
+        long address;
         while(it.hasNext()) {
         	record = it.getNext();
-        	
-        	long key = 0, ptr = 0;
-        	b.Insert(idx, key, ptr);
+        	keystr = record[rel.IndexofAttribute(aID)];
+        	key = Long.parseLong(keystr);
+        	address = it.getAddress();
+        	b.Insert(idx, key, address);
         }
         
         //TODO put in the iteration/insert algorythm here.
