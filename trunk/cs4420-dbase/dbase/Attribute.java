@@ -18,6 +18,21 @@ public class Attribute {
 		Int, Long, Boolean, Char, Float, Double, Undeclared
 	}
 
+	/**This is the size in bytes of a single character.*/
+	public static final int CHAR_SIZE = Character.SIZE / Byte.SIZE;
+	
+	/**This is the size in bytes of a float.*/
+	public static final int FLOAT_SIZE = Float.SIZE / Byte.SIZE;
+	
+	/**This is the size in bytes of a double.*/
+	public static final int DOUBLE_SIZE = Double.SIZE / Byte.SIZE;
+	
+	/**This is the size in bytes of an integer.*/
+	public static final int INT_SIZE = Integer.SIZE / Byte.SIZE;
+	
+	/**This is the size in bytes of a Long.*/
+	public static final int LONG_SIZE = Long.SIZE / Byte.SIZE;
+	
 	/**The Type of this attribute, e.g. INT, LONG, CHAR, etc.*/
 	private Type type;
 	
@@ -50,15 +65,6 @@ public class Attribute {
 	/**The size of this attribute in bytes.*/
 	private int size;
 	
-	/**This is the size in bytes of a single character.*/
-	public static final int CHAR_SIZE = Character.SIZE / Byte.SIZE;
-	
-	/**This is the size in bytes of an integer.*/
-	public static final int INT_SIZE = Integer.SIZE / Byte.SIZE;
-	
-	/**This is the size in bytes of a Long.*/
-	public static final int LONG_SIZE = Long.SIZE / Byte.SIZE;
-	
 	public Attribute() {
 		
 	}
@@ -71,6 +77,20 @@ public class Attribute {
 	 */
 	
 	public Attribute(String name, Type type, int ID){
+		this.name = name;
+		this.type = type;
+		this.ID = ID;
+	}
+	
+	
+	/**This is the constructor for new attributes of the type CHAR, which
+	 * includes the length of the new attribute.
+	 * @param name The name of this new CHAR.
+	 * @param type The type of this new CHAR.
+	 * @param ID The ID of this new CHAR.
+	 * @param length  The length of this new CHAR.
+	 */
+	public Attribute(String name, Type type, int ID, int length){
 		this.name = name;
 		this.type = type;
 		this.ID = ID;
@@ -108,6 +128,20 @@ public class Attribute {
 	}
 
 	public int getSize() {
+		
+		//Calculate the size of this biatch
+		if (type == Attribute.Type.Int) {
+			return INT_SIZE;
+		} else if (type == Attribute.Type.Char) {
+			return CHAR_SIZE * length;
+		} else if (type == Attribute.Type.Long) {
+			return LONG_SIZE;
+		} else if (type == Attribute.Type.Float) {
+			return FLOAT_SIZE;
+		} else if (type == Attribute.Type.Double) {
+			return DOUBLE_SIZE;
+		}
+		
 		return size;
 	}
 
