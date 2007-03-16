@@ -222,6 +222,7 @@ public class StorageManager {
     	} catch (IOException exception) {
     		System.out.println("Couldn't write to file " + file + ".");
     		System.out.println(exception);
+    		System.exit(1);
     	}
 
         return true;
