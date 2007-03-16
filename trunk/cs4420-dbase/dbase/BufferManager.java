@@ -21,7 +21,7 @@ public class BufferManager {
 	private static BufferManager thisbuffer;
     
     /**The Buffer Implenetation.*/
-    private ByteBuffer [] buffer;
+    private ByteBuffer [] buffer = new ByteBuffer[4000];
     
     /**The offset of the block in the whole relation and block going to 
      * the physical address.  At 1000, this limits the DB to 1000 relations.
