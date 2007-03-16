@@ -314,21 +314,23 @@ public class SystemCatalog {
 
     	//Parse out the desired data fields from the select
     	String [] attributes = parseSelectAttributes(selection);
-    	for (int i = 0; i < attributes.length; i++) {
-    		System.out.println(attributes[i]);
-    	}
+    	//for (int i = 0; i < attributes.length; i++) {
+    	//	System.out.println(attributes[i]);
+    	//}
+    	
+    	String total = "";
     	
     	//Parse out the desired table to work on and various parts of the
     	//Select statement
     	String table = parseSelectTable(selection);
-    	System.out.println(table);
+    	//System.out.println(table);
     	String whereClause = parseWhereClause(selection);
-    	System.out.println(whereClause);
+    	//System.out.println(whereClause);
     	String conditionAttribute = parseConditionAttribute(whereClause);
-    	System.out.println(conditionAttribute);
+    	//System.out.println(conditionAttribute);
     	//Get the variable, what we are comparing the attribute against
     	String variable = parseComparison(whereClause);
-    	System.out.println(variable);
+    	//System.out.println(variable);
     	
     	//Get the relation that this is working on and the index of the
     	//Attribute under scrutiny
@@ -344,19 +346,22 @@ public class SystemCatalog {
     	while(iterator.hasNext()) {
     		String [] values = iterator.getNext();
     		//Now just see if they are the same
-        	for (int i = 0; i < values.length; i++) {
-        		System.out.println(values[i]);
-        	}
+        	//for (int i = 0; i < values.length; i++) {
+        		//System.out.println(values[i]);
+        	//}
     		
     		if (values[attributeIndex].equalsIgnoreCase(variable)) {
+    	    	//for (int i = 0; i < values.length; i++) {
+    	    		//System.out.println( "Value: " + values[i]);
     	    	for (int i = 0; i < values.length; i++) {
-    	    		System.out.print(values[i]);
+    	    		total = total + values[i] + "\t";;
     	    	}
-    	    	System.out.print("They match!");
+    	    	total = total + "\n";
+    	    	//System.out.println("They match!");
     		} 		
     	}
     	
-        return null;
+        return total.split("\\n");
     }
     
     private String parseSelectTable(final String selection) {
@@ -529,8 +534,8 @@ public class SystemCatalog {
     	sc.createIndex("CREATE INDEX bob ON t (anint)");
     	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefh)");
     	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefi)");
-    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefj)");
-    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefk)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a2, abcdefj)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a3, abcdefk)");
     	//System.out.println(RelationHolder.getRelationHolder());
     	Relation r = RelationHolder.getRelationHolder().getRelation(1);
     	/*Iterator it = r.open();
@@ -538,7 +543,34 @@ public class SystemCatalog {
     		String[] r2 = it.getNext();
     		System.out.println(r2[1]);
     	}*/
-    	System.out.println
-    		(sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]"));
+    	String [] results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
+    	//System.out.println();
+    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
+    		for (int i = 0; i < results.length; i++) {
+    			System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
+    	
+    	results = sc.selectFromTable("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
+    	//System.out.println();
+    	System.out.println("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
+    		for (int i = 0; i < results.length; i++) {
+    			System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
+    	
+    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
+    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
+    	for (int i = 0; i < results.length; i++) {
+    		System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
+    	
+    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
+    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
+    	for (int i = 0; i < results.length; i++) {
+    		System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
     }
 }
