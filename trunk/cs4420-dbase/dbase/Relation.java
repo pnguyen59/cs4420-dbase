@@ -39,10 +39,10 @@ public class Relation {
 	private int records;
 	
 	/**The indexed attributes of this relation.*/
-	private ArrayList<Integer> indexed;
+	private ArrayList<Integer> indexed = new ArrayList<Integer>(10);
 	
 	/**The Attributes of this relation.*/
-	private ArrayList<Attribute> attributes;
+	private ArrayList<Attribute> attributes = new ArrayList<Attribute>();;
 	
 	/**The names of the index files of this relation.*/
 	private ArrayList<String> indexFiles;
@@ -634,7 +634,7 @@ public class Relation {
 		buf.putInt(46,records);
 		buf.putInt(50, blockTotal);
 		int j = 0;
-		for (j=0; j<indexed.size()&&j<10; j++){
+		for (j=0; j < indexed.size()&&j<10; j++){
 			buf.putInt(54+j*4, indexed.get(j).intValue());
 		} 
 		while (j<10){

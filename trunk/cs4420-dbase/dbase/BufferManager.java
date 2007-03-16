@@ -308,7 +308,7 @@ public class BufferManager {
      * @return whether it wrote.
      */
     public boolean writeRelCatalog(String catalog, long address, ByteBuffer block) {
-    	storage.write(catalog, (int)(address - Math.pow(2, 30)), block);
+    	storage.write(catalog, (int)(address), block);
     	return true;
     }
     
@@ -320,7 +320,7 @@ public class BufferManager {
      * @return whether it wrote.
      */
     public boolean writeAttCatalog(String catalog, long address, ByteBuffer block) {
-    	storage.write(catalog, (int)(address - Math.pow(2, 31)), block);
+    	storage.write(catalog, (int)(address), block);
     	return true;
     }
     
