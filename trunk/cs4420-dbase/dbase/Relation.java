@@ -606,12 +606,14 @@ public class Relation {
 		indexed.add(new Integer(j));
 	}
 
-	public void writeCrapToBuffer(){
+	public ByteBuffer writeCrapToBuffer(){
 		ByteBuffer buf = ByteBuffer.wrap(new byte[SystemCatalog.REL_REC_SIZE]);
 		for (int j=0; j<15; j++){
 			if (j<relationname.length()){
 				char ch = relationname.charAt(j);
 				buf.putChar(j*2,ch);
+			} else {
+				buf.putChar(j*2,' ');
 			}
 		}
 		
@@ -620,10 +622,25 @@ public class Relation {
 		buf.putInt(46,records);
 		buf.putInt(50, blockTotal);
 		int j = 0;
-		for (j=0; j<indexed.size(); j++){
+		for (j=0; j<indexed.size()&&j<10; j++){
 			buf.putInt(54+j*4, indexed.get(j).intValue());
+		} 
+		while (j<10){
+			buf.putInt(54+j*4, -1);
+			j++;
 		}
 		
+		for (j=0; j<indexFiles.size()&&j<10; j++){
+			for (int k=0; k<15; k++){
+				if (j<indexFiles.get(j).length()){
+					char ch = indexFiles.get(j).charAt(k);
+					buf.putChar(94+k*2+j*30,ch);
+				} else {
+					buf.putChar(94+k*2+j*30,' ');
+				}
+			}
+		}
+		return buf;
 		}
 	
 	
