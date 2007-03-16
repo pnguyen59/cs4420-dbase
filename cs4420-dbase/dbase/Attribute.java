@@ -15,7 +15,7 @@ public class Attribute {
 	 * @author gtg471h
 	 */
 	public enum Type {
-		Int, Long, Boolean, Char, Float, Double, TimeDate, Undeclared
+		Int, Long, Boolean, Char, Float, Double, DateTime, Undeclared
 	}
 
 	/**This is the size in bytes of a single character.*/
@@ -198,7 +198,9 @@ public class Attribute {
 	}
 	
 	public String toString(){
-		return "Attribute with name "+name+" and type "+type;
+		String ret = "Attribute with name "+name+" and type "+type;
+		if (this.type == Type.Char) ret+=" of length "+size;
+		return ret;
 	}
 
 }
