@@ -74,7 +74,7 @@ public class SystemCatalog {
     			type = Attribute.Type.Undeclared;
     		}
     		
-    		Attribute att = rel.addAttribute(attributename, type);
+    		Attribute att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
     		attributes.add(att);
     	}
     	
@@ -145,7 +145,7 @@ public class SystemCatalog {
         long address;
         while(it.hasNext()) {
         	record = it.getNext();
-        	keystr = record[rel.IndexofAttribute(aID)];
+        	keystr = record[rel.indexOfAttribute(aID)];
         	key = Long.parseLong(keystr);
         	address = it.getAddress();
         	b.Insert(idx, key, address);
