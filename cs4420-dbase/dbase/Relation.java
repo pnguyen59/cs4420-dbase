@@ -13,6 +13,7 @@ package dbase;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Relation {
 	
@@ -29,10 +30,10 @@ public class Relation {
 	private String relationname;
 	
 	/**The date that this relation was created.*/
-	private int creationdate;
+	private long creationdate;
 	
 	/**The date that this relation was last modified.*/
-	private int modifydate;
+	private long modifydate;
 	
 	/**The number of records in this relation.*/
 	private int records;
@@ -62,6 +63,8 @@ public class Relation {
 		this.ID = newID;
 		channel = StorageManager.openFile(filename);
 		attributes = new ArrayList<Attribute>();
+		creationdate = (new Date()).getTime();
+		modifydate = (new Date()).getTime();
 	}
 
 	/**This method is responsible for adding an attribute to the method
@@ -74,6 +77,7 @@ public class Relation {
 		//Determine the ID of this attribute
 		Attribute att = new Attribute(name, type, newID);
 		attributes.add(att);
+		modifydate = (new Date()).getTime();
 		return att;
 	}
 	
@@ -90,6 +94,7 @@ public class Relation {
 		//Determine the ID of this attribute
 		Attribute att = new Attribute(name, type, newID, length);
 		attributes.add(att);
+		modifydate = (new Date()).getTime();
 		return att;
 	}
 
@@ -102,6 +107,7 @@ public class Relation {
 		//If the index doesn't already exist then add it.
 		if (!containsIndex(fileName)) {
 			indexFiles.add(fileName);
+			modifydate = (new Date()).getTime();
 			return true;
 		}
 		//If it already exists, then don't add it and return false.
@@ -141,6 +147,7 @@ public class Relation {
     		
     		//Then for the next attribute, move past this one's size.
     		start += currentAttribute.getSize();
+    		modifydate = (new Date()).getTime();
     	}
     	
     	//Return that the record was added to the relation.
@@ -177,7 +184,7 @@ public class Relation {
 		return channel;
 	}
 
-	public int getCreationdate() {
+	public long getCreationdate() {
 		return creationdate;
 	}
 
@@ -211,7 +218,7 @@ public class Relation {
 		return (records % this.getRecordsPerBlock()) * this.getSize();
 	}
 
-	public int getModifydate() {
+	public long getModifydate() {
 		return modifydate;
 	}
 
@@ -253,7 +260,7 @@ public class Relation {
      * @return Whether or not the insertion succeeded.
      */
     public boolean insert(final int relationID, final String record) {
-
+    	modifydate = (new Date()).getTime();
     	//TODO First see if a record exists with this key.  If so then return
     	//false or print an error or some shit.  Either way don't inser it.
     	
@@ -387,30 +394,37 @@ public class Relation {
 	}
 	
 	public void setBlocktotal(int blocktotal) {
+		modifydate = (new Date()).getTime();
 		this.blockTotal = blocktotal;
 	}
 	
 	public void setCreationdate(int creationdate) {
+		modifydate = (new Date()).getTime();
 		this.creationdate = creationdate;
 	}
 	
 	public void setIndexed(ArrayList<Attribute> indexed) {
+		modifydate = (new Date()).getTime();
 		this.indexed = indexed;
 	}
 	
 	public void setIndexfiles(ArrayList<String> indexfiles) {
+		modifydate = (new Date()).getTime();
 		this.indexFiles = indexfiles;
 	}
 	
 	public void setModifydate(int modifydate) {
+		
 		this.modifydate = modifydate;
 	}
 	
 	 public void setRecords(int tuples) {
+		 modifydate = (new Date()).getTime();
 		this.records = tuples;
 	}
 	
     public void setRelationname(String relationname) {
+    	modifydate = (new Date()).getTime();
 		this.relationname = relationname;
 	}
 	
