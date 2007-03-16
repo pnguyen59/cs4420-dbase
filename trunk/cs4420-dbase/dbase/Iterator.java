@@ -66,7 +66,7 @@ public class Iterator {
 		block.get(bytes);
 		//Find out how many records there are in this block
 		long blockRecords = Math.min(relation.getRecords() 
-			- ((long) (currentBlock) * (long) recordsPerBlock),
+			- ((long) (currentBlock - 1) * (long) recordsPerBlock),
 			relation.getRecordsPerBlock());
 		long previousRecords = relation.getRecords() - blockRecords;
 		byte[] subbuffer = new byte[relation.getSize()];
