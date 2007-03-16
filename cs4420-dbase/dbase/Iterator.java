@@ -1,6 +1,6 @@
 package dbase;
 
-import java.nio.MappedByteBuffer;
+import java.nio.ByteBuffer;
 
 /**
  * 
@@ -11,6 +11,9 @@ public class Iterator {
 
 	/**The Relation that the Iterator will operate on.*/
 	private Relation relation;
+	
+	/**Bytebuffer for usage*/
+	BufferManager buffer = BufferManager.getBufferManager(); 
 	
 	/**The block that this iterator is currently working on.*/
 	private long currentBlock;
@@ -36,6 +39,7 @@ public class Iterator {
 	 * @return Whether or not the close was successful.
 	 */
 	public boolean close() {
+		//TODO close the Iterator.
 		return true;
 	}
 	
@@ -46,14 +50,13 @@ public class Iterator {
 	public String[] getNext() {
 		
 		//Get the block that were using from the buffer manager.
-		MappedByteBuffer block = null;
+		ByteBuffer block = null;
 		//See if the next record that were are supposed to get is outside of
 		//this block
 		//The relations per block is block size / relation size
-		int recordsPerBlock = StorageManager.BLOCK_SIZE / relation.getSize();
+		int recordsPerBlock = relation.getRecordsPerBlock();
 		if (nextRecord > recordsPerBlock * currentBlock) {
-			//TODO do whatever is to be done when the next record is not in the
-			//current block.
+			block = buffer.read(relation.getID(), currentBlock++);
 		}
 		
 		//If it isn't then find the record's bytes within this block
