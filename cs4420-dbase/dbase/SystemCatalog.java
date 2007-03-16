@@ -139,6 +139,7 @@ public class SystemCatalog {
     			 relationHolder.getRelation(rID).addAttribute(used);
     			 
     		 }
+    		 attposition = 0;
     	 }
     }
     
