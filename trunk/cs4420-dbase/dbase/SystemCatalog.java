@@ -57,6 +57,7 @@ public class SystemCatalog {
     		String currentattribute = st.nextToken().trim();
     		String attributename = currentattribute.split(" ")[0];
     		String attributetype = currentattribute.split(" ")[1];
+    		int size = 0;
     		Attribute.Type type;
     		if (attributetype.toLowerCase().equals("int")){
     			type = Attribute.Type.Int;
@@ -66,15 +67,22 @@ public class SystemCatalog {
     			type = Attribute.Type.Boolean;
     		} else if (attributetype.toLowerCase().equals("char") || attributetype.toLowerCase().equals("character")){
     			type = Attribute.Type.Char;
+    			size = Integer.parseInt(currentattribute.split(" ")[2]);
     		} else if (attributetype.toLowerCase().equals("float")){
     			type = Attribute.Type.Float;
     		} else if (attributetype.toLowerCase().equals("double")){
     			type = Attribute.Type.Double;
+    		} else if (attributetype.toLowerCase().equals("datetime")){
+    			type = Attribute.Type.DateTime;
     		} else {
     			type = Attribute.Type.Undeclared;
     		}
-    		
-    		Attribute att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    		Attribute att;
+    		if (type == Attribute.Type.Char){
+    			 att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID()/*, size*/);
+    		} else {
+    			att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    		}
     		attributes.add(att);
     	}
     	
