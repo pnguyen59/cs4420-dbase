@@ -202,7 +202,7 @@ public class BufferManager {
      * @param block the block number.
      * @return The ByteBuffer denoted.
      */
-    public ByteBuffer readRel(FileChannel catalog, final long block) {
+    public ByteBuffer readRel(String catalog, final long block) {
     	
     	//First generate the physical address of the block
     	
@@ -228,7 +228,7 @@ public class BufferManager {
      * @param block the block number.
      * @return The ByteBuffer denoted.
      */
-    public ByteBuffer readAtt(FileChannel catalog, final long block) {
+    public ByteBuffer readAtt(String catalog, final long block) {
     	
     	//First generate the physical address of the block
     	
@@ -307,7 +307,7 @@ public class BufferManager {
      * @param block The Block to Write.
      * @return whether it wrote.
      */
-    public boolean writeRelCatalog(FileChannel catalog, long address, ByteBuffer block) {
+    public boolean writeRelCatalog(String catalog, long address, ByteBuffer block) {
     	storage.write(catalog, (int)(address - Math.pow(2, 30)), block);
     	return true;
     }
@@ -319,7 +319,7 @@ public class BufferManager {
      * @param block The Block to Write.
      * @return whether it wrote.
      */
-    public boolean writeAttCatalog(FileChannel catalog, long address, ByteBuffer block) {
+    public boolean writeAttCatalog(String catalog, long address, ByteBuffer block) {
     	storage.write(catalog, (int)(address - Math.pow(2, 31)), block);
     	return true;
     }
