@@ -98,6 +98,30 @@ public class Attribute {
 		this.length = length;
 	}
 
+	public Attribute(String name2, long aid, long rid, char type2, char nullable2, int distinct2, int length2) {
+		this.name = name2;
+		this.ID = aid;
+		this.parent = rid;
+		if (type2 == 'I') {
+			type = Type.Int;
+		} else if (type2 == 'L') {
+			type = Type.Long;
+		} else if (type2 == 'B') {
+			type = Type.Boolean;
+		} else if (type2 == 'C') {
+			type = Type.Char;
+			this.length = length2;
+		} else if (type2 == 'F') {
+			type = Type.Float;
+		} else if (type2 == 'D') {
+			type = Type.DateTime;
+		} else if (type2 == 'U') {
+			type = Type.Undeclared;
+		}
+
+		nullable = (nullable2 == 't');
+	}
+
 	public int getCharLength() {
 		return length;
 	}

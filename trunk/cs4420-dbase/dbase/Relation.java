@@ -658,5 +658,9 @@ public class Relation {
 	public int getBlockTotal() {
 		return blockTotal;
 	}
+
+	public void setChannel(FileChannel channel) {
+		this.channel = channel;
+	}
 	
 }
