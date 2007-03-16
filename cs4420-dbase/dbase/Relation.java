@@ -67,12 +67,11 @@ public class Relation {
 	/**This method is responsible for adding an attribute to the method
 	 * @param name what we're calling the attribute
 	 * @param type the type of the attribute
-	 * @param ID the internal ID
+	 * @param newID the internal ID
 	 * @return true if successful
 	 */
-	public Attribute addAttribute(String name, Attribute.Type type) {
+	public Attribute addAttribute(String name, Attribute.Type type, int newID) {
 		//Determine the ID of this attribute
-		int newID = attributes.size();
 		Attribute att = new Attribute(name, type, newID);
 		attributes.add(att);
 		return att;
@@ -296,12 +295,14 @@ public class Relation {
 		
 		//Start at the first byte of this record, cause we should be realtively
 		//sure the record starts there.
+		int start = 0;
 		
 		//For each attribute in this relation, parse it out of this record
 		for (int attributeID = 0; 
 			attributeID < attributes.size(); attributeID++) {
 			//Read the attribute in from the ByteBuffer
-		}
+			
+		} 
 		
 		return null;
 	}
@@ -370,4 +371,23 @@ public class Relation {
 		return true;
 	}
 	
+	/**This method returns the index of the attribute in this relation with the
+	 * global attribute ID specified.
+	 * @param attributeID The global ID of the attribute specified.
+	 * @return The index of the requested attribute in this relation.
+	 */
+	public int indexOfAttribute(int attributeID) {
+		
+		for (int index = 0; index < attributes.size(); index++) {
+			//If the ID of this attribute and the specified ID are the same
+			//then return index
+			Attribute currentAttribute = attributes.get(index);
+			if (currentAttribute.getID() == attributeID) {
+				return index;
+			}
+		}
+		System.out.println("Relation doesn't have the attribute with the"
+				+ " specified ID.");
+		return -1;		
+	}
 }
