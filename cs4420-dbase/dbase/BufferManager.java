@@ -308,6 +308,7 @@ public class BufferManager {
     	for (int logical = 0; logical < lookUpTable.length; logical++) {
     		//If one of the logical addresses maps to the physical, return true
     		if (physical == lookUpTable[logical][PHYSICAL_INDEX]) {
+    			lookUpTable[logical][TIME_INDEX]++;
     			return buffer[logical];
     		}
     	}
@@ -323,7 +324,7 @@ public class BufferManager {
 
     /**This method will create a ByteBuffer of BLOCK_SIZE with '\0' for its
      * entire contents.
-     * @return  An empty block.
+     * @return  An empty block full of '\0'.
      */
     public static ByteBuffer getEmptyBlock() {
     	//Generate and return a block with all null characters
