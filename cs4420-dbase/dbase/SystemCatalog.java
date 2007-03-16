@@ -344,11 +344,15 @@ public class SystemCatalog {
     	while(iterator.hasNext()) {
     		String [] values = iterator.getNext();
     		//Now just see if they are the same
+        	for (int i = 0; i < values.length; i++) {
+        		System.out.println(values[i]);
+        	}
+    		
     		if (values[attributeIndex].equalsIgnoreCase(variable)) {
     	    	for (int i = 0; i < values.length; i++) {
     	    		System.out.print(values[i]);
     	    	}
-    	    	System.out.print("");
+    	    	System.out.print("They match!");
     		} 		
     	}
     	
@@ -407,7 +411,8 @@ public class SystemCatalog {
     }
     
     private String parseComparison(String condition) {
-    	return (condition.split("\\s"))[4];
+    	String tail = condition.split("\\s")[3];
+    	return (tail.split("\\]"))[0];
     }
     
     /**
@@ -533,6 +538,7 @@ public class SystemCatalog {
     		String[] r2 = it.getNext();
     		System.out.println(r2[1]);
     	}*/
-    	//sc.selectFromTable("SELECT FROM TABLE t WHERE achar = abcdefg");
+    	System.out.println
+    		(sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]"));
     }
 }
