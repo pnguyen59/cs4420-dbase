@@ -377,7 +377,6 @@ public class BufferManager {
     	for (int logical = 0; logical < lookUpTable.length; logical++) {
     		//If one of the logical addresses maps to the physical, return true
     		if (physical == lookUpTable[logical][PHYSICAL_INDEX]) {
-    			System.out.println("It thinks it is in the buffer");
     			return true;
     		}
     	}
