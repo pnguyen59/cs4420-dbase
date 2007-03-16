@@ -367,7 +367,7 @@ public class Relation {
 		String [] parsed = new String [attributes.size()];
 		String parsedAttribute = null;
 		
-		System.out.println();
+		//System.out.println();
 		//Start at the first byte of this record, cause we should be realtively
 		//sure the record starts there.
 		int start = 0;
@@ -493,7 +493,7 @@ public class Relation {
 	public boolean writeString(final ByteBuffer block, 
 		final String chars, final int start, final int newSize) {
 		int offset = start;
-		System.out.println("Offset: " + offset); 
+		//System.out.println("Offset: " + offset); 
 		//Loop through the String, writing the characters as ints.
 		for (int index = 0; index < chars.length();  index++) {
 			//Get the char at the index
@@ -587,7 +587,7 @@ public class Relation {
 			}		
 		} //End looking for records
 		
-		System.out.println("Found " + recordsFound + " records");
+		//System.out.println("Found " + recordsFound + " records");
 		
 		//Now parse the records and add them to the list to return
 		String [][] recordList = new String [recordsFound][attributes.size()];
