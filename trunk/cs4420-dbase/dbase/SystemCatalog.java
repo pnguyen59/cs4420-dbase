@@ -216,16 +216,19 @@ public class SystemCatalog {
     	//First thing to do, get the selection condition or whatever out 
     	//of the selection string, the part surrounded by [ ]
     	String [] commands = selection.split("\\[");
+    	int whereIndex;
     	
     	//Find the where statement.
     	for (int index = 0; index < commands.length; index++) {
     		String [] splitCommand = commands[index].split("\\s");
     		for (int word = 0; word < splitCommand.length; word++) {
     			if (splitCommand[word].equalsIgnoreCase("Where")) {
-    				
+    				whereIndex = index;
     			}
     		}
     	}
+    	
+    	//If we don't have a where, then select all from the spec
     	
         return null;
     }
@@ -338,7 +341,7 @@ public class SystemCatalog {
     public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
-    	sc.createTable("CREATE TABLE t(anint int, achar char 50, anint char 20)", "key");
-    	sc.insert("INSERT INTO t (achar, anint) VALUES(abcdefg, 33)");
+    	sc.createTable("CREATE TABLE t(anint int, achar char 50)", "key");
+    	sc.insert("INSERT INTO t (achar) VALUES(abcdefg)");
     }
 }
