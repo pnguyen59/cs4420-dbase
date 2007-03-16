@@ -22,26 +22,30 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 public class SystemCatalog {
     
-    /**The Database's buffer */
-    public BufferManager buffer;
-    
-    /**String Length Maximum*/
-    public final static int stringlength = 15;
-    
-    /**A list of Relations and Attributes */
-    private ArrayList <Attribute> attributes;
-    
-    /** FileChannels for the attribute and relation catalogs*/
-    private String relationcatalog = "RELATION_CATALOG.rc";
-    private String attributecatalog = "ATTRIBUTE_CATALOG.ac";
-    long relationmarker = 0, attributemarker = 0;
-    public static final int ATT_REC_SIZE = 58;
-    public static final int REL_REC_SIZE = 398;
+	public final static String SELECT_ATTRIBUTE_CATALOG = "ATTRIBUTE_CATALOG";
+	
+	public final static String SELECT_RELATION_CATALOG = "RELATION_CATALOG";
+	
     public final static long ATT_OFFSET = (long)Math.pow(2, 31);
+    
+    public static final int ATT_REC_SIZE = 58;
+    
     public final static long REL_OFFSET = (long)Math.pow(2, 30);
     
+    public static final int REL_REC_SIZE = 398;
+    /**String Length Maximum*/
+    public final static int stringlength = 15;
+    private String attributecatalog = "ATTRIBUTE_CATALOG.ac";
+    /**A list of Relations and Attributes */
+    private ArrayList <Attribute> attributes;
+    /**The Database's buffer */
+    public BufferManager buffer;
+    /** FileChannels for the attribute and relation catalogs*/
+    private String relationcatalog = "RELATION_CATALOG.rc";
     /** Singleton relationholder */
     private RelationHolder relationHolder = RelationHolder.getRelationHolder();
+    
+    long relationmarker = 0, attributemarker = 0;
     
     /** Creates a new instance of SystemCatalog */
     public SystemCatalog() {
@@ -158,82 +162,6 @@ public class SystemCatalog {
     }
     
     /**
-     *Creates a new table in the Catalog as well as a file for it.
-     *
-     *@param relation the name and atributes still in code format
-     *@param the attribute to sort by possibly, probably not (may be removed)
-     *
-     *@return whether the table was created correctly.
-     */
-    public boolean createTable(String relation, String key) {
-    	String relationname;
-    	relationname = relation.substring(relation.indexOf(" ", relation.toLowerCase().indexOf("table"))+1, relation.indexOf("(")).trim();
-    	Relation rel = new Relation(relationname, relationHolder.getSmallestUnusedID());
-    	relationHolder.addRelation(rel);
-    	Attribute att;
-    	writeoutRel(rel.writeCrapToBuffer(), rel.getID());
-    	StringTokenizer st = new StringTokenizer(relation.substring(relation.indexOf("(")+1,relation.indexOf(")")),",");
-    	while (st.hasMoreTokens()){
-    		String currentattribute = st.nextToken().trim();
-    		String attributename = currentattribute.split(" ")[0];
-    		String attributetype = currentattribute.split(" ")[1];
-    		int size = 0;
-    		Attribute.Type type;
-    		if (attributetype.toLowerCase().equals("int")){
-    			type = Attribute.Type.Int;
-    		} else if (attributetype.toLowerCase().equals("long")){
-    			type = Attribute.Type.Long;
-    		} else if (attributetype.toLowerCase().equals("boolean") || attributetype.toLowerCase().equals("bool")){
-    			type = Attribute.Type.Boolean;
-    		} else if (attributetype.toLowerCase().equals("char") || attributetype.toLowerCase().equals("character")){
-    			type = Attribute.Type.Char;
-    			size = Integer.parseInt(currentattribute.split(" ")[2]);
-    		} else if (attributetype.toLowerCase().equals("float")){
-    			type = Attribute.Type.Float;
-    		} else if (attributetype.toLowerCase().equals("double")){
-    			type = Attribute.Type.Double;
-    		} else if (attributetype.toLowerCase().equals("datetime")){
-    			type = Attribute.Type.DateTime;
-    		} else {
-    			type = Attribute.Type.Undeclared;
-    		} if (type == Attribute.Type.Char){
-    			 att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID(), size);
-    		} else {
-    			att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
-    		}
-    		attributes.add(att);
-    		
-    		//Now get the entry for this biotch in the attribute catalog
-    		ByteBuffer entry = att.writeCrapToBuffer();
-    		//Determine which block this thing belongs in.
-    		//How man bytes in is this attribute?
-    		int blockNum = (int)att.getID() / (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
-    		int offset = (int)att.getID() % (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
-    		//System.out.println(blockNum);
-    		//System.out.println(attributecatalog);
-    		
-    		
-    		byte [] byter = new byte [StorageManager.BLOCK_SIZE];
-    		ByteBuffer temp = buffer.readAtt(attributecatalog, blockNum * StorageManager.BLOCK_SIZE + ATT_OFFSET);
-    		temp.put(byter);
-    		byte [] temp2 = entry.array();
-    		int bytenum  = (int)offset * ATT_REC_SIZE;
-    		for (int i = bytenum; i < bytenum + ATT_REC_SIZE; i++) {
-    		byter[i] = temp2[i-bytenum];
-    		}
-    		ByteBuffer block = ByteBuffer.wrap(byter);
-    		buffer.writeAttCatalog(attributecatalog, blockNum, block);
-    		
-    	}
-    	
-    	
-    	//System.out.println(relationHolder);
-    	
-    	
-        return true;
-    }
-    
-    /**
      * 
      * @param cstmt the statement to parse
      * @return if successfully creates the index
@@ -332,6 +260,82 @@ public class SystemCatalog {
         return true;
     }
     
+    /**
+     *Creates a new table in the Catalog as well as a file for it.
+     *
+     *@param relation the name and atributes still in code format
+     *@param the attribute to sort by possibly, probably not (may be removed)
+     *
+     *@return whether the table was created correctly.
+     */
+    public boolean createTable(String relation, String key) {
+    	String relationname;
+    	relationname = relation.substring(relation.indexOf(" ", relation.toLowerCase().indexOf("table"))+1, relation.indexOf("(")).trim();
+    	Relation rel = new Relation(relationname, relationHolder.getSmallestUnusedID());
+    	relationHolder.addRelation(rel);
+    	Attribute att;
+    	writeoutRel(rel.writeCrapToBuffer(), rel.getID());
+    	StringTokenizer st = new StringTokenizer(relation.substring(relation.indexOf("(")+1,relation.indexOf(")")),",");
+    	while (st.hasMoreTokens()){
+    		String currentattribute = st.nextToken().trim();
+    		String attributename = currentattribute.split(" ")[0];
+    		String attributetype = currentattribute.split(" ")[1];
+    		int size = 0;
+    		Attribute.Type type;
+    		if (attributetype.toLowerCase().equals("int")){
+    			type = Attribute.Type.Int;
+    		} else if (attributetype.toLowerCase().equals("long")){
+    			type = Attribute.Type.Long;
+    		} else if (attributetype.toLowerCase().equals("boolean") || attributetype.toLowerCase().equals("bool")){
+    			type = Attribute.Type.Boolean;
+    		} else if (attributetype.toLowerCase().equals("char") || attributetype.toLowerCase().equals("character")){
+    			type = Attribute.Type.Char;
+    			size = Integer.parseInt(currentattribute.split(" ")[2]);
+    		} else if (attributetype.toLowerCase().equals("float")){
+    			type = Attribute.Type.Float;
+    		} else if (attributetype.toLowerCase().equals("double")){
+    			type = Attribute.Type.Double;
+    		} else if (attributetype.toLowerCase().equals("datetime")){
+    			type = Attribute.Type.DateTime;
+    		} else {
+    			type = Attribute.Type.Undeclared;
+    		} if (type == Attribute.Type.Char){
+    			 att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID(), size);
+    		} else {
+    			att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    		}
+    		attributes.add(att);
+    		
+    		//Now get the entry for this biotch in the attribute catalog
+    		ByteBuffer entry = att.writeCrapToBuffer();
+    		//Determine which block this thing belongs in.
+    		//How man bytes in is this attribute?
+    		int blockNum = (int)att.getID() / (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
+    		int offset = (int)att.getID() % (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
+    		//System.out.println(blockNum);
+    		//System.out.println(attributecatalog);
+    		
+    		
+    		byte [] byter = new byte [StorageManager.BLOCK_SIZE];
+    		ByteBuffer temp = buffer.readAtt(attributecatalog, blockNum * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		temp.put(byter);
+    		byte [] temp2 = entry.array();
+    		int bytenum  = (int)offset * ATT_REC_SIZE;
+    		for (int i = bytenum; i < bytenum + ATT_REC_SIZE; i++) {
+    		byter[i] = temp2[i-bytenum];
+    		}
+    		ByteBuffer block = ByteBuffer.wrap(byter);
+    		buffer.writeAttCatalog(attributecatalog, blockNum, block);
+    		
+    	}
+    	
+    	
+    	//System.out.println(relationHolder);
+    	
+    	
+        return true;
+    }
+    
     
     /**
      *Returns an Iterator on the given relation.
@@ -354,159 +358,31 @@ public class SystemCatalog {
     }
     
     /**
-     *Inserts a record into a relation and possibl an index.
-     *
-     *@param insertion the record to be inserted still in string format
-     *
-     *@return whether it was successfully added.
-     */
-    public boolean insert(String insertion) {
-    	String relationname = insertion.split(" ")[2];
-        int ID = relationHolder.getRelationByName(relationname);
-        insert(ID, insertion);
-    	return true;
-    }
+	 * Gets a relation based on the Internal attribute ID as defined in RELATION_CATALOG
+	 * @param ID The Internal ID
+	 * @return The denoted Attribute
+	 */
+	public Attribute getAttribute(int ID) {
+		for (int i = 0; i < attributes.size(); i++) {
+			if (attributes.get(i).getID() == ID) {
+				return attributes.get(i);
+			}
+		}
+		//TODO Possibly add code to load this Relation if not already done, we'll see.
+		return null;
+	}
     
     /**
-     *Returns the rows from a Table
-     *@param selection the code from the user
-     *@return The Table in String format.
-     */
-    public String [] selectFromTable(String selection) {
-
-    	//Parse out the desired data fields from the select
-    	String [] attributes = parseSelectAttributes(selection);
-    	//for (int i = 0; i < attributes.length; i++) {
-    	//	System.out.println(attributes[i]);
-    	//}
-    	
-    	String total = "";
-    	
-    	//Parse out the desired table to work on and various parts of the
-    	//Select statement
-    	String table = parseSelectTable(selection);
-    	//System.out.println(table);
-    	String whereClause = parseWhereClause(selection);
-    	//System.out.println(whereClause);
-    	String conditionAttribute = parseConditionAttribute(whereClause);
-    	//System.out.println(conditionAttribute);
-    	//Get the variable, what we are comparing the attribute against
-    	String variable = parseComparison(whereClause);
-    	//System.out.println(variable);
-    	
-    	//Get the relation that this is working on and the index of the
-    	//Attribute under scrutiny
-    	long relationID = RelationHolder.
-    		getRelationHolder().getRelationByName(table);
-    	Relation relation = RelationHolder.
-    		getRelationHolder().getRelation(relationID);
-    	int attributeIndex = relation.getIndexByName(conditionAttribute);
-    	
-    	//Now see which records of this relation match
-    	Iterator iterator = relation.open();
-    	
-    	while(iterator.hasNext()) {
-    		String [] values = iterator.getNext();
-    		//Now just see if they are the same
-        	//for (int i = 0; i < values.length; i++) {
-        		//System.out.println(values[i]);
-        	//}
-    		
-    		if (values[attributeIndex].equalsIgnoreCase(variable)) {
-    	    	//for (int i = 0; i < values.length; i++) {
-    	    		//System.out.println( "Value: " + values[i]);
-    	    	for (int i = 0; i < values.length; i++) {
-    	    		total = total + values[i] + " ";
-    	    	}
-    	    	total = total + "\n";
-    	    	//System.out.println("They match!");
-    		} 		
-    	}
-    	
-        return total.split("\\n");
-    }
-    
-    private String parseSelectTable(final String selection) {
-    	//Fist thing to do is to find the relation that this thing works on.
-    	String [] commands = selection.split("\\s");
-    	//Find the workd "TABLE" and we know the word after that
-    	//is the relation.
-    	for (int index = 0; index < commands.length; index++) {
-    		if (commands[index].equalsIgnoreCase("TABLE")) {
-    			return commands[index + 1];
-    		}
-    	}
-    	return null;
-    }
-    
-    private String parseWhereClause(final String selection) {
-    	//Find the where statement.
-    	String [] commands = selection.split("\\s");
-    	String whereClause = "";
-    	
-    	for (int index = 0; index < commands.length; index++) {
-    		if (commands[index].equalsIgnoreCase("WHERE")) {
-    			for (int word = index; word < commands.length; word++) {
-    				whereClause += commands[word] + " ";
-    			}
-    		}
-    	}
-    	return whereClause;
-    }
-    
-    private String [] parseSelectAttributes(final String selection) {
-    	//Split up the selection statement
-    	String [] commands = selection.split("\\s");
-    	//And the return array
-    	String attributes = "";
-    	
-    	//Start on index 1 because that's where the attributes start
-    	for (int word = 1; word < commands.length; word++) {
-    		if (commands[word].equalsIgnoreCase("FROM")) {
-    			break;
-    		} else { 
-    			attributes = attributes + " " + commands[word];
-    		}
-    	}
-    	return attributes.split("\\s");
-    }
-    
-    private String parseConditionAttribute(final String condition) {
-    	//TODO allow it to handle more than the word after the where.
-    	//At this point it should be the second word
-//    	System.out.println(condition);
-    	return condition.split("\\s")[1]; 	
-    }
-    
-    private String parseComparison(String condition) {
-    	String tail = condition.split("\\s")[3];
-    	return (tail.split("\\]"))[0];
-    }
-    
-    /**
-     *Returns the rows from an Index
-     *
-     *@param selection the code from the user
-     *
-     *@return The Index in String format.
-     */
-    public String [] selectFromIndex(String selection) {
-    	//TODO Implement Printout.
-        return null;
-    }
-    
-    /**
-     *Returns the relation info
-     *
-     *@param selection the code from the user
-     *
-     *@return The Relation in String format.
-     */
-    public String [] selectFromCatalog(String selection) {
-    	//TODO Implement Printout.
-        return null;
-    }
-    
+	 * This method is used by SystemCatalog to assign IDs
+	 * @return the smallest unused attribute ID
+	 */
+	public int getSmallestUnusedAttributeID(){
+		int j=0;
+		while (getAttribute(j)!=null){
+			j++;
+		}
+		return j;
+	}
     
     /**This method will insert the specified record into the specified
      * relation.
@@ -560,32 +436,358 @@ public class SystemCatalog {
     	return true;
     }
     
-	/**
-	 * This method is used by SystemCatalog to assign IDs
-	 * @return the smallest unused attribute ID
-	 */
-	public int getSmallestUnusedAttributeID(){
-		int j=0;
-		while (getAttribute(j)!=null){
-			j++;
+    /**
+     *Inserts a record into a relation and possibl an index.
+     *
+     *@param insertion the record to be inserted still in string format
+     *
+     *@return whether it was successfully added.
+     */
+    public boolean insert(String insertion) {
+    	String relationname = insertion.split(" ")[2];
+        int ID = relationHolder.getRelationByName(relationname);
+        insert(ID, insertion);
+    	return true;
+    }
+    
+    private String parseComparison(String condition) {
+    	String tail = condition.split("\\s")[3];
+    	return (tail.split("\\]"))[0];
+    }
+    
+    private String parseConditionAttribute(final String condition) {
+    	//TODO allow it to handle more than the word after the where.
+    	//At this point it should be the second word
+//    	System.out.println(condition);
+    	return condition.split("\\s")[1]; 	
+    }
+    
+    private String [] parseSelectAttributes(final String selection) {
+    	//Split up the selection statement
+    	String [] commands = selection.split("\\s");
+    	//And the return array
+    	String attributes = "";
+    	
+    	//Start on index 1 because that's where the attributes start
+    	for (int word = 1; word < commands.length; word++) {
+    		if (commands[word].equalsIgnoreCase("FROM")) {
+    			break;
+    		} else { 
+    			attributes = attributes + " " + commands[word];
+    		}
+    	}
+    	return attributes.split("\\s");
+    }
+    
+    private String parseSelectTable(final String selection) {
+    	//Fist thing to do is to find the relation that this thing works on.
+    	String [] commands = selection.split("\\s");
+    	//Find the workd "TABLE" and we know the word after that
+    	//is the relation.
+    	for (int index = 0; index < commands.length; index++) {
+    		if (commands[index].equalsIgnoreCase("TABLE")) {
+    			return commands[index + 1];
+    		}
+    	}
+    	return null;
+    }
+    
+    private String parseWhereClause(final String selection) {
+    	//Find the where statement.
+    	String [] commands = selection.split("\\s");
+    	String whereClause = "";
+    	
+    	for (int index = 0; index < commands.length; index++) {
+    		if (commands[index].equalsIgnoreCase("WHERE")) {
+    			for (int word = index; word < commands.length; word++) {
+    				whereClause += commands[word] + " ";
+    			}
+    		}
+    	}
+    	return whereClause;
+    }
+    
+    
+    /**Returns metadata of the relations or attributes as specified by
+     * the user.
+     *@param selection The selection statement from the user.
+     *@return The specified metada as an array of strings.
+     */
+    public String [] selectFromCatalog(final String selection) {
+    	
+    	//The return array
+    	String [] catalogSelection = null;
+    	
+    	//First see which catalog they want to select from, attribute or
+    	//relation.
+    	String [] parsedSelection = selection.split("\\s");
+    	if (parsedSelection[4].equalsIgnoreCase(SELECT_ATTRIBUTE_CATALOG)) {
+    		catalogSelection = selectFromAttributeCatalog(selection);
+    	} 
+    	if (parsedSelection[4].equalsIgnoreCase(SELECT_RELATION_CATALOG)) {
+			catalogSelection = selectFromRelationCatalog(selection);
 		}
-		return j;
-	}
+
+		return catalogSelection;
+    }
+    
+    /**This method will return the specified selection from the Attribute
+     * catalog, basically the attribute metadata.
+     * @param selection The selection statement.
+     * @return The metatdata from the attribute catalog.
+     */
+    private String [] selectFromAttributeCatalog(final String selection) {
+    	//Open up a FileChannel to the attribute catalog and prepare to
+    	//read things in.
+    	FileChannel attCat = StorageManager.openFile(attributecatalog);
+    	ByteBuffer block;
+    	int position = 0;
+    	
+    	//The size of the attribute catalog, in blocks
+    	int blocks = 0;
+    	
+    	//The array that will hold the return data
+    	ArrayList <String> metaData = new ArrayList <String> ();
+    	
+    	//Try to find the size of the attribute catalog, so we know how 
+    	//many blocks we have.  Then close the file
+    	try {
+    		blocks = (int) (attCat.size() 
+    				/ (int) StorageManager.BLOCK_SIZE);
+    	 	attCat.close();
+    	} catch (IOException exception) {
+    		System.out.println("Couldn't find the size of the attribute" 
+    			+ " catalog.");
+    		System.out.println("SystemCatalog.selectFromAttributeCatalog.");
+    		System.out.println(exception.getStackTrace());
+    		return null;
+    	}
+    	
+    	//Now loop through the attribute catalog parsing things out.
+    	for (int i = 0; i < blocks; i++) {
+    		
+    		//Get the block for the attribute catalog from the BufferManager
+    		 block = buffer.readAtt(attributecatalog, attributemarker
+    				 * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		 //System.out.println("Error Isn't Here Either.");
+    		 
+    		 //Loop through the entirety of this attribute block parsing things
+    		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
+    			 
+    			 //If we've come to the end of the attributes then break
+    			 if (block.getChar(position) == BufferManager.NULL_CHARACTER) {
+    				 break;
+    			 }
+    			 
+    			 //First get the name of the attribute from the block
+    			 String name = "";
+    			 for (int k = 0; k < SystemCatalog.stringlength; k++) {
+    				 if (block.getChar(position) 
+    					!= BufferManager.NULL_CHARACTER) {
+    					 name += block.getChar(position);
+    				 }
+    				 position += Attribute.CHAR_SIZE;
+    			 }
+    			 
+    			 //Now get the other parts of the attribute out in a less
+    			 //comples manor.
+    			 long aID = block.getLong(position);
+    			 position += Attribute.LONG_SIZE;
+    			 char nullable = block.getChar(position);
+    			 position += Attribute.CHAR_SIZE;
+    			 char type = block.getChar(position);
+    			 position += Attribute.CHAR_SIZE;
+    			 long rID = block.getLong(position);
+    			 position += Attribute.LONG_SIZE;
+    			 int distinct = block.getInt(position);
+    			 position += Attribute.INT_SIZE;
+    			 int length = block.getInt(position);
+    			 position += Attribute.INT_SIZE;
+    			 
+    			 //Now pack all of the attribute metadata into a string
+    			 String data = name + aID + nullable + type + rID + distinct
+    			 	+ length;
+    			 //Add the string to the array
+    			 metaData.add(data);
+    		 }
+    		 position = 0;
+    	 }	
+        //Turn all of the attribute descriptions into a String []
+    	String [] returnArray = new String [metaData.size()];
+    	for (int index = 0; index < metaData.size(); index++) {
+    		returnArray[index] = (String) metaData.get(index);
+    	}
+    	
+    	//Now return the array
+    	return returnArray;	
+    }
+    
+    /**This method will return the specified selection from the Relation
+     * catalog, basically the relation metadata.
+     * @param selection The selection statement.
+     * @return The metatdata from the relation catalog.
+     */
+    private String [] selectFromRelationCatalog(final String selection) {
+    	//Open up a FileChannel to the relation catalog and prepare to
+    	//read things in.
+    	FileChannel relationCat = StorageManager.openFile(relationcatalog);
+    	ByteBuffer block;
+    	int position = 0;
+    	
+    	//The size of the relation catalog, in blocks
+    	int blocks = 0;
+    	
+    	//The array that will hold the return data
+    	ArrayList < String > metaData = new ArrayList < String > ();
+    	
+    	//Try to find the size of the relation catalog, so we know how 
+    	//many blocks we have.  Then close the file
+    	try {
+    		blocks = (int) (relationCat.size() 
+    				/ (int) StorageManager.BLOCK_SIZE);
+    	 	relationCat.close();
+    	} catch (IOException exception) {
+    		System.out.println("Couldn't find the size of the relation" 
+    			+ " catalog.");
+    		System.out.println("SystemCatalog.selectFromRelationCatalog.");
+    		System.out.println(exception.getStackTrace());
+    		return null;
+    	}
+    	
+    	//Now loop through the relation catalog parsing things out.
+    	for (int i = 0; i < blocks; i++) {
+    		
+    		//Get the block for the attribute catalog from the BufferManager
+    		 block = buffer.readRel(relationcatalog, relationmarker
+    				 * StorageManager.BLOCK_SIZE + REL_OFFSET);
+    		 //System.out.println("Error Isn't Here Either.");
+    		 
+    		 //Loop through the entirety of this relation block parsing things
+    		 for (int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE;
+    		 	j++) {
+    			 
+    			 //Start off j records in on this block
+    			 position = j * REL_REC_SIZE;
+    			 
+    			 //If we've come to the end of the relations then break
+    			 if (block.getChar(position) == BufferManager.NULL_CHARACTER) {
+    				 break;
+    			 }
+    			 
+    			 //First get the name of the relation from the block
+    			 String name = "";
+    			 for (int k = 0; k < SystemCatalog.stringlength; k++) {
+    				 if (block.getChar(position) 
+    					!= BufferManager.NULL_CHARACTER) {
+    					 name += block.getChar(position);
+    				 }
+    				 position += Attribute.CHAR_SIZE;
+    			 }
+    			 
+    			 //Now get the other parts of the relation out in a less
+    			 //comples manor.
+    			 int ID = block.getInt(position);
+    			 position += Attribute.INT_SIZE;
+    			 long creationDate = (block.getLong(position));
+    			 position += Attribute.LONG_SIZE;
+    			 long modifyDate = (block.getLong(position));
+    			 position += Attribute.LONG_SIZE;
+    			 int records = (block.getInt(position));
+    			 position += Attribute.INT_SIZE;
+    			 int blocktotal = (block.getInt(position));
+    			 position += Attribute.INT_SIZE;
+    			 
+    			 //Then we need to get the indexed columns
+    			 
+    			 //Now pack all of the attribute metadata into a string
+    			 String data = name + ID + creationDate + modifyDate + records
+    			 	+ blocktotal;
+    			 
+    			 //Add the string to the array
+    			 metaData.add(data);
+    		 }//End j loop
+    		 position = 0;
+    	 }//End i loop	
+        //Turn all of the attribute descriptions into a String []
+    	String [] returnArray = new String [metaData.size()];
+    	for (int index = 0; index < metaData.size(); index++) {
+    		returnArray[index] = (String) metaData.get(index);
+    	}
+    	
+    	//Now return the array
+    	return returnArray;
+    }
+    
+	/**
+     *Returns the rows from an Index
+     *
+     *@param selection the code from the user
+     *
+     *@return The Index in String format.
+     */
+    public String [] selectFromIndex(String selection) {
+    	//TODO Implement Printout.
+        return null;
+    }
 	
 	/**
-	 * Gets a relation based on the Internal attribute ID as defined in RELATION_CATALOG
-	 * @param ID The Internal ID
-	 * @return The denoted Attribute
-	 */
-	public Attribute getAttribute(int ID) {
-		for (int i = 0; i < attributes.size(); i++) {
-			if (attributes.get(i).getID() == ID) {
-				return attributes.get(i);
-			}
-		}
-		//TODO Possibly add code to load this Relation if not already done, we'll see.
-		return null;
-	}
+     *Returns the rows from a Table
+     *@param selection the code from the user
+     *@return The Table in String format.
+     */
+    public String [] selectFromTable(String selection) {
+
+    	//Parse out the desired data fields from the select
+    	//String [] attributes = parseSelectAttributes(selection);
+    	//for (int i = 0; i < attributes.length; i++) {
+    	//	System.out.println(attributes[i]);
+    	//}
+    	
+    	String total = "";
+    	
+    	//Parse out the desired table to work on and various parts of the
+    	//Select statement
+    	String table = parseSelectTable(selection);
+    	//System.out.println(table);
+    	String whereClause = parseWhereClause(selection);
+    	//System.out.println(whereClause);
+    	String conditionAttribute = parseConditionAttribute(whereClause);
+    	//System.out.println(conditionAttribute);
+    	//Get the variable, what we are comparing the attribute against
+    	String variable = parseComparison(whereClause);
+    	//System.out.println(variable);
+    	
+    	//Get the relation that this is working on and the index of the
+    	//Attribute under scrutiny
+    	long relationID = RelationHolder.
+    		getRelationHolder().getRelationByName(table);
+    	Relation relation = RelationHolder.
+    		getRelationHolder().getRelation(relationID);
+    	int attributeIndex = relation.getIndexByName(conditionAttribute);
+    	
+    	//Now see which records of this relation match
+    	Iterator iterator = relation.open();
+    	
+    	while(iterator.hasNext()) {
+    		String [] values = iterator.getNext();
+    		//Now just see if they are the same
+        	//for (int i = 0; i < values.length; i++) {
+        		//System.out.println(values[i]);
+        	//}
+    		
+    		if (values[attributeIndex].equalsIgnoreCase(variable)) {
+    	    	//for (int i = 0; i < values.length; i++) {
+    	    		//System.out.println( "Value: " + values[i]);
+    	    	for (int i = 0; i < values.length; i++) {
+    	    		total = total + values[i] + " ";
+    	    	}
+    	    	total = total + "\n";
+    	    	//System.out.println("They match!");
+    		} 		
+    	}
+    	
+        return total.split("\\n");
+    }
 	
 	private void writeoutRel(ByteBuffer buffer2, int rID) {
 		long blocknum = rID / (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
@@ -601,6 +803,8 @@ public class SystemCatalog {
 		ByteBuffer temp3 = ByteBuffer.wrap(bytes);
 		buffer.writeRelCatalog(relationcatalog, blocknum, temp3);
 	}
+	
+	
 	
     
 //    public static void main(String[] args){
