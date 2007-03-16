@@ -69,6 +69,20 @@ public class RelationHolder {
 		return j;
 	}
 	
+	/**
+	 * 
+	 * @param name The name of the relation to get
+	 * @return the relation ID, or -1 if relation not found
+	 */
+	public int getRelationByName(String name){
+		for (int j=0; j<relations.size(); j++){
+			if (relations.get(j).getFilename().equals(name)){
+				return relations.get(j).getID();
+			}
+		}
+		return -1;
+	}
+	
 	public String toString(){
 		return relations.toString();
 	}
