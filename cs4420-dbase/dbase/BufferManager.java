@@ -49,6 +49,7 @@ public class BufferManager {
     
     /**Creates a new instance of BufferManager.*/
     private BufferManager() {
+    	storage = new StorageManager();
     }
     
     
