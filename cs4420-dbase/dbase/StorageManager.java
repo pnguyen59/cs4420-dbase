@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 /**
@@ -125,7 +126,7 @@ public class StorageManager {
      */
     public ByteBuffer read(final int relation, final long block) {   	
     	
-    	ByteBuffer buffer = null;
+    	MappedByteBuffer buffer = null;
 		FileChannel channel = null;
 		
 		//Get the file of the specified relation from relationholder
@@ -149,7 +150,7 @@ public class StorageManager {
 			System.exit(1);
 		}
 		
-        return buffer;
+        return buffer.duplicate();
     }
     
     /**Reads in the first block of the specified relation.
