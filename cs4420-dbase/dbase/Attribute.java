@@ -50,6 +50,14 @@ public class Attribute {
 	/**The size of this attribute in bytes.*/
 	private int size;
 	
+	/**This is the size in bytes of a single character.*/
+	public static final int CHAR_SIZE = Character.SIZE / Byte.SIZE;
+	
+	/**This is the size in bytes of an integer.*/
+	public static final int INT_SIZE = Integer.SIZE / Byte.SIZE;
+	
+	/**This is the size in bytes of a Long.*/
+	public static final int LONG_SIZE = Long.SIZE / Byte.SIZE;
 	
 	public Attribute() {
 		
