@@ -143,7 +143,7 @@ public class StorageManager {
 		//the file
 		try {
 			buffer = channel.map(
-					FileChannel.MapMode.READ_ONLY, 
+					FileChannel.MapMode.READ_WRITE, 
 					block * BLOCK_SIZE, BLOCK_SIZE);
 		} catch (IOException e) {
 			System.out.println("Couldn't get bytes from file " + file);
@@ -174,7 +174,7 @@ public class StorageManager {
 		//the file
 		try {
 			buffer = channel.map(
-					FileChannel.MapMode.READ_ONLY, 
+					FileChannel.MapMode.READ_WRITE, 
 					block * BLOCK_SIZE, BLOCK_SIZE);
 		} catch (IOException e) {
 			System.out.println("Couldn't get bytes from file.");

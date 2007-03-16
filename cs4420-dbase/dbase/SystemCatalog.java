@@ -200,8 +200,10 @@ public class SystemCatalog {
      *@return whether it was successfully added.
      */
     public boolean insert(String insertion) {
-    	//TODO Implement Insert
-        return true;
+    	String relationname = insertion.substring(insertion.indexOf(" ", insertion.toLowerCase().indexOf("into"))+1, insertion.indexOf("("));
+        int ID = relationHolder.getRelationByName(relationname);
+        insert(ID, insertion);
+    	return true;
     }
     
     /**
@@ -313,5 +315,6 @@ public class SystemCatalog {
     	SystemCatalog sc = new SystemCatalog();
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
     	sc.createTable("CREATE TABLE t(abool boolean, anint int, achar char 50)", "key");
+    	sc.insert("INSERT INTO t(false, 10, abcdefg)");
     }
 }

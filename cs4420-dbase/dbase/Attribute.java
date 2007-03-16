@@ -141,6 +141,8 @@ public class Attribute {
 			return FLOAT_SIZE;
 		} else if (type == Attribute.Type.Double) {
 			return DOUBLE_SIZE;
+		} else if (type == Attribute.Type.DateTime){
+			return LONG_SIZE;
 		}
 		
 		return size;

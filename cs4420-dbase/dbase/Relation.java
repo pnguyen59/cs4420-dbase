@@ -116,7 +116,7 @@ public class Relation {
 
 	public boolean addRecord (ByteBuffer block, String record) {
     	//Parse the record to be inserted into its single attributes
-    	String [] attributeValues = record.split("/\\s/");
+    	String [] attributeValues = record.split(",");
     	
     	//GEt the start of the record
     	int start = this.getLastRecordStart();
@@ -130,7 +130,7 @@ public class Relation {
     		//Find out what kind it is, write it to the block.
     		if (currentAttribute.getType() == Attribute.Type.Int) {
     			block.putInt(start, Integer.parseInt(
-    				attributeValues[attribute]));
+    				attributeValues[attribute].trim()));
     		} else if (currentAttribute.getType() == Attribute.Type.Char) {
     			writeString(block, attributeValues[attribute], start,
     					currentAttribute.getSize());
