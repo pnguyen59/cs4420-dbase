@@ -9,6 +9,8 @@
 
 package dbase;
 
+import java.util.Scanner;
+
 /**
  *
  * @author andrewco
@@ -33,36 +35,63 @@ public class Database {
      * @param command The command to parse and possible sent off somewhere.
      * @return Whether or not the query could be parsed correctly.
      */
-    public boolean parseCommand(final String command) {
+    public String parseCommand(final String command) {
     	//Split the command into an array of strings
     	String [] splitCommand = command.split(" ");
-    	
+    	System.out.println(splitCommand[1]);
     	//TODO send the result to SystemCatalog
-    	if (splitCommand[0].compareToIgnoreCase("SELECT") == 1) {
-    		
-    	} else if (splitCommand[0].compareToIgnoreCase("CREATE") == 1) {
-    		if (splitCommand[1].compareToIgnoreCase("TABLE") == 1){
-    			return catalog.createTable(command, "key");
-    		} else if (splitCommand[1].compareToIgnoreCase("INDEX") == 1){
-    			//TODO: Parse command and pass to createIndex()
-    			//catalog.createIndex(command, "key");
-    			return true;
+    	if (splitCommand[0].compareToIgnoreCase("SELECT") == 0) {
+    		if (command.toLowerCase().compareToIgnoreCase("TABLE")== 0){
+    			return catalog.selectFromTable(command).toString();
+    		} else if (command.toLowerCase().compareToIgnoreCase("INDEX")== 0){
+    			return catalog.selectFromIndex(command).toString();
+    		}  else if (command.toLowerCase().compareToIgnoreCase("CATALOG")== 0){
+    			return catalog.selectFromCatalog(command).toString();
     		} else {
-    			return false;
+    			return "Command not recognized";
+    		}
+    	} else if (splitCommand[0].compareToIgnoreCase("CREATE") == 0) {
+    		if (splitCommand[1].compareToIgnoreCase("TABLE") == 0){
+    			if( catalog.createTable(command, "key")){
+    				return "Table Successfully Created";
+    			} else {
+    				return "Error Creating Table";
+    			}
+    		} else if (splitCommand[1].compareToIgnoreCase("INDEX") == 0){
+    			if (catalog.createIndex(command)){
+    				return "Index Successfully Created";
+    			} else {
+    				return "Error Creating Index";
+    			}
+    			
+    		} else {
+    			return "Command not Recognized";
     		}
     		
-    	} else if (splitCommand[0].compareToIgnoreCase("INSERT") == 1) {
-    		
+    	} else if (splitCommand[0].compareToIgnoreCase("INSERT") == 0) {
+    		if (catalog.insert(command)){
+    			return "Record successfully inserted";
+    		} else {
+    			return "Error inserting record";
+    		}
     	}
     	
-        return false;
+        return "Command not Recognized";
     }
     
     /**The main function for the whole dealie.
      * @param ARGVS  Any parameters passed from the command line.
      */
     public static void main(final String [] ARGVS) {
-    	
+    	String input =  "";
+    	Database db = new Database();
+    	while (!input.toLowerCase().equals("exit")){
+    		Scanner sc = new Scanner(System.in).useDelimiter("\n");
+    		input = sc.next();
+    		System.out.println(input);
+    		System.out.println(db.parseCommand(input));
+    		
+    	}
     }
     
 }
