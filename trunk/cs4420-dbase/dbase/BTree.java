@@ -652,28 +652,28 @@ public class BTree {
 		
                     if(split) 
                     {
-			Node node = new Node();
-			node.leafNode = 0;
-			node.keyCount = 1;
-			node.keys[0] = key;
-			node.pointers[1] = ptr;
-			node.pointers[0] = getRootBlock(index);
-			setRootBlock(index, indexTable[index].allocBlock++);
-			
-			MappedByteBuffer mbb = MapBlock(indexTable[index].fileChannel,getRootBlock(index),c.BLOCKSIZE);
-			mbb.putShort(node.leafNode);
-			mbb.putShort(node.keyCount);
-			
-			for(int i = 0; i<node.keys.length;i++)
-			{
-				mbb.putLong(node.keys[i]);
-			}
-			for(int j=0;j<node.pointers.length;j++)
-			{
-				mbb.putLong(node.pointers[j]);
-			}
-		
-			WriteHead(index);
+						Node node = new Node();
+						node.leafNode = 0;
+						node.keyCount = 1;
+						node.keys[0] = key;
+						node.pointers[1] = ptr;
+						node.pointers[0] = getRootBlock(index);
+						setRootBlock(index, indexTable[index].allocBlock++);
+						
+						MappedByteBuffer mbb = MapBlock(indexTable[index].fileChannel,getRootBlock(index),c.BLOCKSIZE);
+						mbb.putShort(node.leafNode);
+						mbb.putShort(node.keyCount);
+						
+						for(int i = 0; i<node.keys.length;i++)
+						{
+							mbb.putLong(node.keys[i]);
+						}
+						for(int j=0;j<node.pointers.length;j++)
+						{
+							mbb.putLong(node.pointers[j]);
+						}
+					
+						WriteHead(index);
                     }
 
                     setCurrentBlock(index,-1);

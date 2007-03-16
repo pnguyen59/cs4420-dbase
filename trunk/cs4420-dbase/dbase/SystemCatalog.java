@@ -120,6 +120,7 @@ public class SystemCatalog {
         	}
         }
         
+        //if it works open the appropriate type of index, duplicate or not
         if (rel == null || rel.containsIndex("./"+Indexname+".if")){
         	return false;
         } else if (aType!=Attribute.Type.Int && aType!=Attribute.Type.Long){
@@ -139,6 +140,7 @@ public class SystemCatalog {
         	
         }
         
+        //Iterate through the Relation and insert the values into the index.
         String[] record;
         String keystr;
         long key;
@@ -150,14 +152,13 @@ public class SystemCatalog {
         	address = it.getAddress();
         	b.Insert(idx, key, address);
         }
-        
-        //TODO put in the iteration/insert algorythm here.
+        it.close();
         
         return true;
     }
     
     /**
-     *returns an Iterato on the given relation.
+     *Returns an Iterator on the given relation.
      *
      *@param relation the relation to be used
      *
