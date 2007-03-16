@@ -249,25 +249,107 @@ public class SystemCatalog {
      *@return The Table in String format.
      */
     public String [] selectFromTable(String selection) {
+
+    	//Parse out the desired data fields from the select
+    	String [] attributes = parseSelectAttributes(selection);
+    	for (int i = 0; i < attributes.length; i++) {
+    		System.out.println(attributes[i]);
+    	}
     	
-    	//First thing to do, get the selection condition or whatever out 
-    	//of the selection string, the part surrounded by [ ]
-    	String [] commands = selection.split("\\[");
-    	int whereIndex;
+    	//Parse out the desired table to work on and various parts of the
+    	//Select statement
+    	String table = parseSelectTable(selection);
+    	System.out.println(table);
+    	String whereClause = parseWhereClause(selection);
+    	System.out.println(whereClause);
+    	String conditionAttribute = parseConditionAttribute(whereClause);
+    	System.out.println(conditionAttribute);
+    	//Get the variable, what we are comparing the attribute against
+    	String variable = parseComparison(whereClause);
+    	System.out.println(variable);
     	
+    	//Get the relation that this is working on and the index of the
+    	//Attribute under scrutiny
+    	long relationID = RelationHolder.
+    		getRelationHolder().getRelationByName(table);
+    	Relation relation = RelationHolder.
+    		getRelationHolder().getRelation(relationID);
+    	int attributeIndex = relation.getIndexByName(conditionAttribute);
+    	
+    	//Now see which records of this relation match
+    	Iterator iterator = relation.open();
+    	
+    	while(iterator.hasNext()) {
+    		String [] values = iterator.getNext();
+    		//Now just see if they are the same
+    		if (values[attributeIndex].equalsIgnoreCase(variable)) {
+    	    	for (int i = 0; i < values.length; i++) {
+    	    		System.out.print(values[i]);
+    	    	}
+    	    	System.out.print();
+    		} 		
+    	}
+    	
+        return null;
+    }
+    
+    private String parseSelectTable(final String selection) {
+    	//Fist thing to do is to find the relation that this thing works on.
+    	String [] commands = selection.split("\\s");
+    	//Find the workd "TABLE" and we know the word after that
+    	//is the relation.
+    	for (int index = 0; index < commands.length; index++) {
+    		if (commands[index].equalsIgnoreCase("TABLE")) {
+    			return commands[index + 1];
+    		}
+    	}
+    	return null;
+    }
+    
+    private String parseWhereClause(final String selection) {
     	//Find the where statement.
+    	String [] commands = selection.split("\\[");
+    	
     	for (int index = 0; index < commands.length; index++) {
     		String [] splitCommand = commands[index].split("\\s");
     		for (int word = 0; word < splitCommand.length; word++) {
     			if (splitCommand[word].equalsIgnoreCase("Where")) {
-    				whereIndex = index;
+    				return commands[index];
     			}
     		}
     	}
+    	return null;
+    }
+    
+    private String [] parseSelectAttributes(final String selection) {
+    	//Split up the selection statement
+    	String [] commands = selection.split("\\s");
+    	//And the return array
+    	String attributes = "";
     	
-    	//If we don't have a where, then select all from the spec
-    	
-        return null;
+    	//Start on index 1 because that's where the attributes start
+    	for (int word = 1; word < commands.length; word++) {
+    		if (commands[word].equalsIgnoreCase("FROM")) {
+    			break;
+    		} else { 
+    			attributes = attributes + " " + commands[word];
+    		}
+    	}
+    	return attributes.split("\\s");
+    }
+    
+    private String parseConditionAttribute(final String condition) {
+    	//TODO allow it to handle more than the word after the where.
+    	//At this point it should be the second word
+    	return condition.split("\\s")[1]; 	
+    }
+    
+    private String parseComparison(String condition) {
+    	return (condition.split("\\s"))[4];
+    }
+    
+    private boolean meetsConditon(final String condition, 
+    		final String [] relation) {
     }
     
     /**
@@ -377,6 +459,7 @@ public class SystemCatalog {
     
     public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
+    	RelationHolder holder = RelationHolder.getRelationHolder(); 
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
     	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
     	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefg)");
