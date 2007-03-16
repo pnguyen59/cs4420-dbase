@@ -136,6 +136,7 @@ public class StorageManager {
     	channel = openFile(file);
     	
 		//Get the FileChannel for the specified relation
+    	
 		
 		//If the block is outside of the file then exit.
 		isBlockInRange(channel, block);
