@@ -134,20 +134,9 @@ public class StorageManager {
     	String file = currentrelation.getFilename();
     	
 		//Get the FileChannel for the specified relation
-		channel = currentrelation.getChannel();
 		
 		//If the block is outside of the file then exit.
 		isBlockInRange(channel, block);
-		channel = relationholder.getRelation(relation).getChannel();
-		if (channel != null) {
-			try {
-					buffer = channel.map(
-					FileChannel.MapMode.READ_WRITE, 
-					block * BLOCK_SIZE, BLOCK_SIZE);
-				} catch (Exception e) {
-					System.out.println("Blah.");
-				}
-		} else {
 		//In this try/catch block, we try to read in the specified block from
 		//the file
 		try {
@@ -155,11 +144,12 @@ public class StorageManager {
 			buffer = channel.map(
 					FileChannel.MapMode.READ_WRITE, 
 					block * BLOCK_SIZE, BLOCK_SIZE);
+			channel.close();
 		} catch (IOException e) {
 			System.out.println("Couldn't get bytes from file " + file);
 			System.exit(1);
 		}
-		}
+		
 		
         return buffer.duplicate();
     }
@@ -262,6 +252,7 @@ public class StorageManager {
     	try {
     		//Write the given block to the specified address in the file
     		channel.write(block, address * BLOCK_SIZE);
+    		channel.close();
     	} catch (IOException exception) {
     		System.out.println("Couldn't write to file " + file + ".");
     		System.out.println(exception);
