@@ -208,9 +208,10 @@ public class Relation {
     		//Find out what kind it is, write it to the block.
     		if (currentAttribute.getType() == Attribute.Type.Int) {
     			block.putInt(start, Integer.parseInt(
-    					attributeValues[attribute]));
+    				attributeValues[attribute]));
     		} else if (currentAttribute.getType() == Attribute.Type.Char) {
-    			//TODO Add strings to the block
+    			writeString(block, attributeValues[attribute], start,
+    					currentAttribute.getSize());
     		} else if (currentAttribute.getType() == Attribute.Type.Long) {
     			block.putLong(start, Long.parseLong(
     				attributeValues[attribute]));
@@ -226,6 +227,7 @@ public class Relation {
     		start += currentAttribute.getSize();
     	}
     	
+    	//Return that the record was added to the relation.
 		return true;
 	}
 	
@@ -317,6 +319,37 @@ public class Relation {
 		}
 		//If it doesn't then return false.
 		return false;
+	}
+	
+	/**This method will write the given string to the given block a the given
+	 * position, and will fill in the rest of the space for this attribute
+	 * with '\0'.  
+	 * @param block The block to write these to.
+	 * @param chars The string of characters to write.
+	 * @param start Where this CHAR should be written in the block.
+	 * @param size This size of this CHAR() attribute, in bytes.
+	 * @return
+	 */
+	private boolean writeString(final ByteBuffer block, 
+		final String chars, int start, final int size) {
+		
+		//Loop through the String, writing the characters as ints.
+		for (int index = 0; index < chars.length();  index++) {
+			//Get the char at the index character
+			char character = chars.charAt(index);
+			block.putInt(start, (int) character);
+			//Then add the size of an int to start
+			start += 2;
+		}
+		//After all of the members of the string have been written, fill
+		//in the rest of the space with '\O'
+		for (int nulls = 0; nulls < (size - chars.length()); nulls++) {
+			block.putInt(start, (int) BufferManager.NULL_CHARACTER);
+			start += 2;
+		}
+		
+		//Then return true;
+		return true;
 	}
 	
 }
