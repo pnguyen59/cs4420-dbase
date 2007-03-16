@@ -718,17 +718,27 @@ public class SystemCatalog {
     	return returnArray;
     }
     
-	/**
-     *Returns the rows from an Index
-     *
-     *@param selection the code from the user
-     *
-     *@return The Index in String format.
-     */
-    public String [] selectFromIndex(String selection) {
-    	//TODO Implement Printout.
-        return null;
-    }
+    /**
+    *Returns the rows from an Index
+    *
+    *@param selection the code from the user
+    *
+    *@return The Index in String format.
+    */
+   public String selectFromIndex(String selection) {
+   	BTree bt = new BTree();
+   	String[] splitter = selection.split(";")[0].split(" ");
+   	String indexname = splitter[splitter.length-1];
+   	String relationname = splitter[splitter.length-2];
+   	Relation rel = relationHolder.getRelation(relationHolder.getRelationByName(relationname));
+   	//rel.getIndexFileByName();
+   	
+   	int idx = bt.OpenIndex(indexname, true);
+   	String str = bt.stringRepresentation(idx);
+   	bt.CloseIndex(idx);
+       return str;
+   }
+
 	
 	/**
      *Returns the rows from a Table
@@ -759,10 +769,9 @@ public class SystemCatalog {
     	
     	//Get the relation that this is working on and the index of the
     	//Attribute under scrutiny
-    	long relationID = RelationHolder.
-    		getRelationHolder().getRelationByName(table);
-    	Relation relation = RelationHolder.
-    		getRelationHolder().getRelation(relationID);
+    	long relationID = relationHolder.getRelationByName(table);
+    	Relation relation = relationHolder.getRelation(relationID);
+    	System.out.println(relationHolder);
     	int attributeIndex = relation.getIndexByName(conditionAttribute);
     	
     	//Now see which records of this relation match

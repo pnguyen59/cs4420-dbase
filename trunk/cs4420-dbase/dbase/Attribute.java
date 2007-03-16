@@ -231,7 +231,7 @@ public class Attribute {
 				char ch = name.charAt(j);
 				buf.putChar(j*2,ch);
 			} else {
-				buf.putChar(j*2,' ');
+				buf.putChar(j*2,BufferManager.NULL_CHARACTER);
 			}
 		}
 		buf.putLong(30,ID);
