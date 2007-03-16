@@ -133,6 +133,8 @@ public class StorageManager {
 		Relation currentrelation = relationholder.getRelation(relation);
     	String file = currentrelation.getFilename();
     	
+    	channel = openFile(file);
+    	
 		//Get the FileChannel for the specified relation
 		
 		//If the block is outside of the file then exit.
