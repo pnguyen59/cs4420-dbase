@@ -85,6 +85,11 @@ public class Relation {
 		return att;
 	}
 	
+	public void addAttribute(Attribute att){
+		attributes.add(att);
+		modifydate = (new Date()).getTime();
+	}
+	
 	/**This method is responsible for adding a CHAR attribute to this
 	 * relation.
 	 * @param name What we're calling the attribute
