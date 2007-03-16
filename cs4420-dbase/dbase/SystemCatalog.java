@@ -541,7 +541,7 @@ public class SystemCatalog {
 	}
 	
     
-    public static void main(String[] args){
+    /*public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
     	RelationHolder holder = RelationHolder.getRelationHolder(); 
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
@@ -558,7 +558,7 @@ public class SystemCatalog {
     	while (it.hasNext()){
     		String[] r2 = it.getNext();
     		System.out.println(r2[1]);
-    	}*/
+    	}
     	String [] results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
     	//System.out.println();
     	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
@@ -588,5 +588,5 @@ public class SystemCatalog {
     		System.out.print(results[i] + "\n");
     	}
     	System.out.println();
-    }
+    }*/
 }
