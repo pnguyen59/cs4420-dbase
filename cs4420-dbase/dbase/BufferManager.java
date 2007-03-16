@@ -112,7 +112,7 @@ public class BufferManager {
      * @param physical The physical address of the block.
      * @return Whether or not the block was successfully added to the buffer.
      */
-    private boolean addToBuffer(final ByteBuffer block,
+    private long addToBuffer(final ByteBuffer block,
     		final long physical) {
     	//First get a space in the buffer to add the new block to.
     	long logicalAddress = freeSpace();
@@ -123,7 +123,7 @@ public class BufferManager {
     	//Then set its clock value to 1
     	lookUpTable[(int) logicalAddress][TIME_INDEX] = 1;
     	
-    	return true;
+    	return logicalAddress;
     }
     
     /**Pins a block currently in memory.
@@ -149,6 +149,24 @@ public class BufferManager {
     	}
     	//not found
     	return false;
+    }
+    
+    /**Pins a block currently in memory.
+     *@param logical the logical address to be pinned.
+     *@return Whether or not the block was successfully pinned.
+     */    
+    public boolean pin(final long logical) {
+    	//make physical address
+    	long address = logical;
+    	//look for that address
+    	 			//see if it is pinned
+    			if (lookUpTable[(int)address][TIME_INDEX] != (long) -1) {
+    				//found and unpinned
+    				lookUpTable[(int)address][TIME_INDEX] = -1;
+    				return true;
+    			}
+    			//found but not pinned
+    			return false;
     }
     
     /**Reads a block from memory, will load block into memory if not already in
@@ -197,7 +215,8 @@ public class BufferManager {
     	//to get it for us.
     	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.REL_OFFSET));
     	//Then we need to put it in the buffer because it was just read.
-    	addToBuffer(result, block);
+    	pin(addToBuffer(result, block));
+    	
     	    	
         return result;
     }
@@ -222,7 +241,7 @@ public class BufferManager {
     	//to get it for us.
     	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.ATT_OFFSET));
     	//Then we need to put it in the buffer because it was just read.
-    	addToBuffer(result, block);
+    	pin(addToBuffer(result, block));
     	    	
         return result;
     }
