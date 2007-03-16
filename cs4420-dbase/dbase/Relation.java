@@ -65,6 +65,7 @@ public class Relation {
 		attributes = new ArrayList<Attribute>();
 		creationdate = (new Date()).getTime();
 		modifydate = (new Date()).getTime();
+		blockTotal = 0;
 	}
 
 	/**This method is responsible for adding an attribute to the method
@@ -116,7 +117,7 @@ public class Relation {
 
 	public boolean addRecord (ByteBuffer block, String record) {
     	//Parse the record to be inserted into its single attributes
-    	String [] attributeValues = record.split(",");
+    	String [] attributeValues = record.substring(record.indexOf("(")+1,record.indexOf(")")).split(",");
     	
     	//GEt the start of the record
     	int start = this.getLastRecordStart();
@@ -132,7 +133,7 @@ public class Relation {
     			block.putInt(start, Integer.parseInt(
     				attributeValues[attribute].trim()));
     		} else if (currentAttribute.getType() == Attribute.Type.Char) {
-    			writeString(block, attributeValues[attribute], start,
+    			writeString(block, attributeValues[attribute].trim(), start,
     					currentAttribute.getSize());
     		} else if (currentAttribute.getType() == Attribute.Type.Long) {
     			block.putLong(start, Long.parseLong(
@@ -145,15 +146,85 @@ public class Relation {
         			attributeValues[attribute]));
         	}
     		
+    		
+    		
     		//Then for the next attribute, move past this one's size.
     		start += currentAttribute.getSize();
     		modifydate = (new Date()).getTime();
     	}
     	
+    	System.out.println(block.asCharBuffer());
+    	
     	//Return that the record was added to the relation.
 		return true;
 	}
+	
+	public boolean addRecord (ByteBuffer block, String record, String attribute) {
+    	//Parse the record to be inserted into its single attributes
+    	String [] attributeValues = record.substring(record.indexOf("(")+1,record.indexOf(")")).split(",");
+    	String [] attributeNames = attribute.substring(attribute.indexOf("(")+1,attribute.indexOf(")")).split(",");
+    	//GEt the start of the record
+    	int start = this.getLastRecordStart();
+    	
+    	//Go through the attributes add add the things.
+    	for (int j = 0; j < attributeNames.length; j++) {
+    		
+    		
+    		
+    		//Get the current attribute from the list of attributes.
+    		Attribute currentAttribute = getAttributeByName(attributeNames[j].trim());
+    		
+    		start = getAttributeBlockPosition(currentAttribute);
+    		
+    		//Find out what kind it is, write it to the block.
+    		if (currentAttribute.getType() == Attribute.Type.Int) {
+    			block.putInt(start, Integer.parseInt(
+    				attributeValues[j].trim()));
+    		} else if (currentAttribute.getType() == Attribute.Type.Char) {
+    			writeString(block, attributeValues[j].trim(), start,
+    					currentAttribute.getSize());
+    		} else if (currentAttribute.getType() == Attribute.Type.Long) {
+    			block.putLong(start, Long.parseLong(
+    				attributeValues[j]));
+    		} else if (currentAttribute.getType() == Attribute.Type.Float) {
+    			block.putFloat(start, Float.parseFloat(
+    				attributeValues[j]));
+    		} else if (currentAttribute.getType() == Attribute.Type.Double) {
+    			block.putDouble(start, Double.parseDouble(
+        			attributeValues[j]));
+        	}
+    		
+    		//Then for the next attribute, move past this one's size.
+    		start += currentAttribute.getSize();
+    		modifydate = (new Date()).getTime();
+    	}
+    	
+    	System.out.println(block.asCharBuffer());
+    	
+    	//Return that the record was added to the relation.
+		return true;
+	}
+	
+	public int getAttributeBlockPosition(Attribute att){
+		if (attributes.indexOf(att)== -1) return -1;
+		else {
+			int size = 0;
+			for (int j=0; j<attributes.indexOf(att); j++){
+				size += attributes.get(j).getSize();
+			}
+			return size;
+		}
+	}
 
+	public Attribute getAttributeByName(String name){
+		for (int j=0; j< attributes.size(); j++){
+			if (attributes.get(j).getName().equals(name)){
+				return attributes.get(j);
+			}
+		}
+		return null;
+	}
+	
 	public void close() {
 		//TODO Closes the iterator thingy.
 	}

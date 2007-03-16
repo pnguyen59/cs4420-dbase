@@ -200,7 +200,7 @@ public class SystemCatalog {
      *@return whether it was successfully added.
      */
     public boolean insert(String insertion) {
-    	String relationname = insertion.substring(insertion.indexOf(" ", insertion.toLowerCase().indexOf("into"))+1, insertion.indexOf("("));
+    	String relationname = insertion.split(" ")[2];
         int ID = relationHolder.getRelationByName(relationname);
         insert(ID, insertion);
     	return true;
@@ -288,7 +288,19 @@ public class SystemCatalog {
     			relation.getBlocktotal() - 1);
     	
     	//Then ask relation to insert the record in this block for us
-    	relation.addRecord(block, record);
+    	if (record.toLowerCase().indexOf("values") < record.indexOf("(")){
+    		// there are no attributes given
+    		relation.addRecord(block, record);
+    	} else{
+    		int oparan = record.indexOf("(");
+    		int cparan = record.indexOf(")")+1;
+    		String attlist = record.substring(oparan, cparan);
+    		oparan = record.indexOf("(", cparan);
+    		cparan = record.indexOf(")", oparan)+1;
+    		String vallist = record.substring(oparan, cparan);
+    		relation.addRecord(block, vallist, attlist);
+    	}
+    	
 
     	return true;
     }
@@ -324,7 +336,7 @@ public class SystemCatalog {
     public static void main(String[] args){
     	SystemCatalog sc = new SystemCatalog();
     	sc.createTable("CREATE TABLE table_name(anint int)", "key");
-    	sc.createTable("CREATE TABLE t(abool boolean, anint int, achar char 50)", "key");
-    	sc.insert("INSERT INTO t(false, 10, abcdefg)");
+    	sc.createTable("CREATE TABLE t(anint int, achar char 50)", "key");
+    	sc.insert("INSERT INTO t (achar) VALUES(abcdefg)");
     }
 }
