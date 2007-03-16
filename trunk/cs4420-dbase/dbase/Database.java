@@ -38,7 +38,6 @@ public class Database {
     public String parseCommand(final String command) {
     	//Split the command into an array of strings
     	String [] splitCommand = command.split(" ");
-    	//TODO send the result to SystemCatalog
     	if (splitCommand[0].compareToIgnoreCase("SELECT") == 0) {
     		if (splitCommand[3].toLowerCase().compareToIgnoreCase("TABLE")== 0){
     			return catalog.selectFromTable(command).toString();
