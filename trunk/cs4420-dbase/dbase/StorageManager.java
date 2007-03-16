@@ -153,6 +153,37 @@ public class StorageManager {
         return buffer.duplicate();
     }
     
+    /**
+     * A reader designed specifically for Catalog use.
+     * @param catalog The Catalog FileChannel.
+     * @param block The block to load.
+     * @return The ByteBuffer needed.
+     */
+    public ByteBuffer read(FileChannel catalog, final long block) {   	
+    	
+    	MappedByteBuffer buffer = null;
+		FileChannel channel = null;
+    	
+		//Get the FileChannel for the specified relation
+		channel = catalog;
+		
+		//If the block is outside of the file then exit.
+		isBlockInRange(channel, block);
+		
+		//In this try/catch block, we try to read in the specified block from
+		//the file
+		try {
+			buffer = channel.map(
+					FileChannel.MapMode.READ_ONLY, 
+					block * BLOCK_SIZE, BLOCK_SIZE);
+		} catch (IOException e) {
+			System.out.println("Couldn't get bytes from file.");
+			System.exit(1);
+		}
+		
+        return buffer.duplicate();
+    }
+    
     /**Reads in the first block of the specified relation.
      * @param relation The ID of the relation to scan.
      * @return The first block of the relation as a MappedByteBuffer.
@@ -222,6 +253,32 @@ public class StorageManager {
     		channel.write(block, address * BLOCK_SIZE);
     	} catch (IOException exception) {
     		System.out.println("Couldn't write to file " + file + ".");
+    		System.out.println(exception);
+    		System.exit(1);
+    	}
+
+        return true;
+    }
+    
+    
+    /**
+     * Used to write for only Catalogs.
+     * @param catalog The FileChannel of the Catalog.
+     * @param address The address of the block
+     * @param block The byteBuffer to write
+     * @return whether the write was successful.
+     */
+    public boolean write(FileChannel catalog, final long address, 
+    		final ByteBuffer block) {
+    	
+    	FileChannel channel = catalog;
+    	
+    	//Now try to write the block to the file with the specified address
+    	try {
+    		//Write the given block to the specified address in the file
+    		channel.write(block, address * BLOCK_SIZE);
+    	} catch (IOException exception) {
+    		System.out.println("Couldn't write to file.");
     		System.out.println(exception);
     		System.exit(1);
     	}
