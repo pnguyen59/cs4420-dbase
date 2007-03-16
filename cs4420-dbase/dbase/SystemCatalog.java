@@ -71,7 +71,7 @@ public class SystemCatalog {
     			type = Attribute.Type.Undeclared;
     		}
     		
-    		Attribute att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    		Attribute att = rel.addAttribute(attributename, type);
     		attributes.add(att);
     	}
     	
