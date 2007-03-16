@@ -214,7 +214,7 @@ public class BufferManager {
     	
     	//If it isn't already in the buffer, then we need to ask storage manager
     	//to get it for us.
-    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.REL_OFFSET));
+    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.REL_OFFSET)/(StorageManager.BLOCK_SIZE / SystemCatalog.REL_REC_SIZE));
     	//Then we need to put it in the buffer because it was just read.
     	pin(addToBuffer(result, block));
     	
@@ -240,7 +240,7 @@ public class BufferManager {
     	
     	//If it isn't already in the buffer, then we need to ask storage manager
     	//to get it for us.
-    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.ATT_OFFSET));
+    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.ATT_OFFSET)/(StorageManager.BLOCK_SIZE));
     	//Then we need to put it in the buffer because it was just read.
     	pin(addToBuffer(result, block));
     	    	

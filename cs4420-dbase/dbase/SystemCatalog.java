@@ -52,10 +52,12 @@ public class SystemCatalog {
     	try {
     		FileChannel relcat = StorageManager.openFile(relationcatalog);
     		FileChannel attcat = StorageManager.openFile(attributecatalog);
+    		System.out.println("Loaded em again");
     		relsize = (int) (relcat.size() / (int) StorageManager.BLOCK_SIZE);
     		attsize = (int) (attcat.size() / (int) StorageManager.BLOCK_SIZE);
     		relcat.close();
     		attcat.close();
+    		System.out.println("Closed em.");
     	} catch(IOException e) {
     		System.exit(1);
     	}
@@ -66,8 +68,10 @@ public class SystemCatalog {
     	Relation rel;
     	for(int i = 0; i < relsize; i++) {
     		relbuffer = buffer.readRel(relationcatalog, relationmarker * StorageManager.BLOCK_SIZE + REL_OFFSET);
+    		System.out.println("Error Isn't Here.");
     		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; j++) {
     			if (relbuffer.getChar(relationpos) == BufferManager.NULL_CHARACTER) {
+    				System.out.println("Didn't Load Shit.");
     				break;
     			}
     			for (int k = 0; k < 15; k++) {
@@ -77,6 +81,7 @@ public class SystemCatalog {
     				relationpos += Attribute.CHAR_SIZE;
     			}
     			ID = relbuffer.getInt(relationpos);
+    			System.out.println(ID);
     			rel = new Relation(relname, ID);
     			relationHolder.addRelation(rel);
     			relationpos += Attribute.INT_SIZE;
@@ -88,6 +93,7 @@ public class SystemCatalog {
     			relationpos += Attribute.INT_SIZE;
     			rel.setBlocktotal(relbuffer.getInt(relationpos));
     			relationpos += Attribute.INT_SIZE;
+    			relname = "";
     			String index = "";
     			for(int l = 0; l < 10; l++) {
     				if (relbuffer.getInt(relationpos) != -1){
@@ -113,7 +119,8 @@ public class SystemCatalog {
     	ByteBuffer attbuffer;
     	int attposition = 0;
     	 for (int i = 0; i < attsize; i++) {
-    		 attbuffer = buffer.readRel(attributecatalog, attributemarker * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		 attbuffer = buffer.readAtt(attributecatalog, attributemarker * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+//    		 System.out.println("Error Isn't Here Either.");
     		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
     			 if (attbuffer.getChar(attposition) == BufferManager.NULL_CHARACTER) {
     				 break;
@@ -139,12 +146,15 @@ public class SystemCatalog {
     			 attposition += Attribute.INT_SIZE;
     			 
     			 Attribute used = new Attribute(name, aID, rID, type, nullable, distinct, length);
+//    			 System.out.println("" + used.getType());
     			 attributes.add(used);
+    			 System.out.println(rID);
     			 relationHolder.getRelation(rID).addAttribute(used);
     			 
     		 }
     		 attposition = 0;
     	 }
+//    	 System.out.println("Finished Loading");
     }
     
     /**
@@ -197,14 +207,21 @@ public class SystemCatalog {
     		ByteBuffer entry = att.writeCrapToBuffer();
     		//Determine which block this thing belongs in.
     		//How man bytes in is this attribute?
-    		int bytes = (int) att.getID() * ATT_REC_SIZE;
-    		int blockNum = bytes / StorageManager.BLOCK_SIZE;
-    		int offset = bytes % StorageManager.BLOCK_SIZE;
+    		int blockNum = (int)att.getID() / (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
+    		int offset = (int)att.getID() % (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
     		//System.out.println(blockNum);
     		//System.out.println(attributecatalog);
-    		//System.out.println(att.getID());
-    		ByteBuffer block = buffer.readAtt(attributecatalog, blockNum);
-    		block.put(entry.array(), offset, ATT_REC_SIZE);
+    		
+    		
+    		byte [] byter = new byte [StorageManager.BLOCK_SIZE];
+    		ByteBuffer temp = buffer.readAtt(attributecatalog, blockNum * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		temp.put(byter);
+    		byte [] temp2 = entry.array();
+    		int bytenum  = (int)offset * ATT_REC_SIZE;
+    		for (int i = bytenum; i < bytenum + ATT_REC_SIZE; i++) {
+    		byter[i] = temp2[i-bytenum];
+    		}
+    		ByteBuffer block = ByteBuffer.wrap(byter);
     		buffer.writeAttCatalog(attributecatalog, blockNum, block);
     		
     	}
@@ -247,7 +264,7 @@ public class SystemCatalog {
     	Iterator it = null;
     	BTree b = new BTree();
     	
-    	System.out.println("This had better get called");
+//    	System.out.println("This had better get called");
     	
     	StorageManager.openFile(""+Indexname+".if");
     	
@@ -271,7 +288,7 @@ public class SystemCatalog {
         	}
         }
         
-        System.out.println(relation);
+//        System.out.println(relation);
         
         //if it works open the appropriate type of index, duplicate or not
         if (rel == null || rel.containsIndex(""+Indexname)){
@@ -449,7 +466,7 @@ public class SystemCatalog {
     private String parseConditionAttribute(final String condition) {
     	//TODO allow it to handle more than the word after the where.
     	//At this point it should be the second word
-    	System.out.println(condition);
+//    	System.out.println(condition);
     	return condition.split("\\s")[1]; 	
     }
     
@@ -565,58 +582,65 @@ public class SystemCatalog {
 	private void writeoutRel(ByteBuffer buffer2, int rID) {
 		long blocknum = rID / (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
 		long recordnum = rID % (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
+		byte [] bytes = new byte [StorageManager.BLOCK_SIZE];
 		ByteBuffer temp = buffer.readRel(relationcatalog, blocknum * StorageManager.BLOCK_SIZE + REL_OFFSET);
-		temp.put(buffer2.array(), (int)(recordnum * REL_REC_SIZE), REL_REC_SIZE);
-		buffer.writeRelCatalog(relationcatalog, blocknum, temp);
+		temp.put(bytes);
+		byte [] temp2 = buffer2.array();
+		int bytenum  = (int)recordnum * REL_REC_SIZE;
+		for (int i = bytenum; i < bytenum + REL_REC_SIZE; i++) {
+		bytes[i] = temp2[i-bytenum];
+		}
+		ByteBuffer temp3 = ByteBuffer.wrap(bytes);
+		buffer.writeRelCatalog(relationcatalog, blocknum, temp3);
 	}
 	
     
-    public static void main(String[] args){
-    	SystemCatalog sc = new SystemCatalog();
-    	RelationHolder holder = RelationHolder.getRelationHolder(); 
-    	sc.createTable("CREATE TABLE table_name(anint int)", "key");
-    	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
-    	sc.insert("INSERT INTO t (achar2, achar, anint) VALUES(a1, abcdefg, 10)");
-    	sc.createIndex("CREATE INDEX bob ON t (anint)");
-    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefh)");
-    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefi)");
-    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a2, abcdefj)");
-    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a3, abcdefk)");
-    	//System.out.println(RelationHolder.getRelationHolder());
-    	Relation r = RelationHolder.getRelationHolder().getRelation(1);
-    	Iterator it = r.open();
-    	while (it.hasNext()){
-    		String[] r2 = it.getNext();
-    		System.out.println(r2[1]);
-    	}
-    	String [] results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
-    	//System.out.println();
-    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
-    		for (int i = 0; i < results.length; i++) {
-    			System.out.print(results[i] + "\n");
-    	}
-    	System.out.println();
-    	
-    	results = sc.selectFromTable("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
-    	//System.out.println();
-    	System.out.println("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
-    		for (int i = 0; i < results.length; i++) {
-    			System.out.print(results[i] + "\n");
-    	}
-    	System.out.println();
-    	
-    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
-    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
-    	for (int i = 0; i < results.length; i++) {
-    		System.out.print(results[i] + "\n");
-    	}
-    	System.out.println();
-    	
-    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
-    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
-    	for (int i = 0; i < results.length; i++) {
-    		System.out.print(results[i] + "\n");
-    	}
-    	System.out.println();
-    }
+//    public static void main(String[] args){
+//    	SystemCatalog sc = new SystemCatalog();
+//    	RelationHolder holder = RelationHolder.getRelationHolder(); 
+//    	sc.createTable("CREATE TABLE table_name(anint int)", "key");
+//    	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
+//    	sc.insert("INSERT INTO t (achar2, achar, anint) VALUES(a1, abcdefg, 10)");
+//    	sc.createIndex("CREATE INDEX bob ON t (anint)");
+//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefh)");
+//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefi)");
+//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a2, abcdefj)");
+//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a3, abcdefk)");
+//    	//System.out.println(RelationHolder.getRelationHolder());
+//    	Relation r = RelationHolder.getRelationHolder().getRelation(1);
+//    	Iterator it = r.open();
+//    	while (it.hasNext()){
+//    		String[] r2 = it.getNext();
+////    		System.out.println(r2[1]);
+//    	}
+//    	String [] results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
+//    	//System.out.println();
+//    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
+//    		for (int i = 0; i < results.length; i++) {
+//    			System.out.print(results[i] + "\n");
+//    	}
+//    	System.out.println();
+//    	
+//    	results = sc.selectFromTable("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
+//    	//System.out.println();
+//    	System.out.println("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
+//    		for (int i = 0; i < results.length; i++) {
+//    			System.out.print(results[i] + "\n");
+//    	}
+//    	System.out.println();
+//    	
+//    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
+//    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
+//    	for (int i = 0; i < results.length; i++) {
+//    		System.out.print(results[i] + "\n");
+//    	}
+//    	System.out.println();
+//    	
+//    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
+//    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
+//    	for (int i = 0; i < results.length; i++) {
+//    		System.out.print(results[i] + "\n");
+//    	}
+//    	System.out.println();
+//    }
 }
