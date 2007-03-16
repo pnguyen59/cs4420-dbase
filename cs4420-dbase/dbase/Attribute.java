@@ -3,6 +3,7 @@
  */
 package dbase;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
@@ -197,6 +198,32 @@ public class Attribute {
 	
 	public void setValues(ArrayList values) {
 		this.values = values;
+	}
+	
+	public ByteBuffer writeCrapToBuffer(){
+		ByteBuffer buf = ByteBuffer.wrap(new byte[SystemCatalog.ATT_REC_SIZE]);
+		for (int j=0; j<15; j++){
+			if (j<name.length()){
+				char ch = name.charAt(j);
+				buf.putChar(j*2,ch);
+			} else {
+				buf.putChar(j*2,' ');
+			}
+		}
+		buf.putLong(30,ID);
+		
+		if (nullable)buf.putChar(38,'t');
+		else buf.putChar(38, 'f');
+		
+		buf.putChar(40,type.toString().charAt(0));
+		
+		buf.putLong(42,parent);
+		
+		buf.putInt(50,distinct);
+		
+		buf.putInt(54,length);
+		
+		return buf;
 	}
 	
 	public String toString(){
