@@ -194,7 +194,18 @@ public class SystemCatalog {
     		attributes.add(att);
     		
     		//Now get the entry for this biotch in the attribute catalog
-    		//ByteBuffer entry = att.writeCrapToBuffer();
+    		ByteBuffer entry = att.writeCrapToBuffer();
+    		//Determine which block this thing belongs in.
+    		//How man bytes in is this attribute?
+    		int bytes = (int) att.getID() * ATT_REC_SIZE;
+    		int blockNum = bytes / StorageManager.BLOCK_SIZE;
+    		int offset = bytes % StorageManager.BLOCK_SIZE;
+    		//System.out.println(blockNum);
+    		//System.out.println(attributecatalog);
+    		//System.out.println(att.getID());
+    		ByteBuffer block = buffer.readAtt(attributecatalog, blockNum);
+    		block.put(entry.array(), offset, ATT_REC_SIZE);
+    		buffer.writeAttCatalog(attributecatalog, blockNum, block);
     		
     	}
     	
