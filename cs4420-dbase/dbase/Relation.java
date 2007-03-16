@@ -39,7 +39,7 @@ public class Relation {
 	private int records;
 	
 	/**The indexed attributes of this relation.*/
-	private ArrayList<Attribute> indexed;
+	private ArrayList<Integer> indexed;
 	
 	/**The Attributes of this relation.*/
 	private ArrayList<Attribute> attributes;
@@ -278,7 +278,7 @@ public class Relation {
 		return ID;
 	}
 
-	public ArrayList<Attribute> getIndexed() {
+	public ArrayList<Integer> getIndexed() {
 		return indexed;
 	}
 
@@ -436,7 +436,7 @@ public class Relation {
 		this.creationdate = creationdate;
 	}
 	
-	public void setIndexed(ArrayList<Attribute> indexed) {
+	public void setIndexed(ArrayList<Integer> indexed) {
 		modifydate = (new Date()).getTime();
 		this.indexed = indexed;
 	}
@@ -591,7 +591,32 @@ public class Relation {
 		//Return the parsed records
 		return recordList;
 	}
+	
+	public void addIndex(int j){
+		indexed.add(new Integer(j));
+	}
 
+	public void writeCrapToBuffer(){
+		ByteBuffer buf = ByteBuffer.wrap(new byte[SystemCatalog.REL_REC_SIZE]);
+		for (int j=0; j<15; j++){
+			if (j<relationname.length()){
+				char ch = relationname.charAt(j);
+				buf.putChar(j*2,ch);
+			}
+		}
+		
+		buf.putLong(30, creationdate);
+		buf.putLong(38,modifydate);
+		buf.putInt(46,records);
+		buf.putInt(50, blockTotal);
+		int j = 0;
+		for (j=0; j<indexed.size(); j++){
+			buf.putInt(54+j*4, indexed.get(j).intValue());
+		}
+		
+		}
+	
+	
 	public int getBlockTotal() {
 		return blockTotal;
 	}
