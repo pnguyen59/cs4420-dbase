@@ -628,17 +628,17 @@ public class Relation {
 				buf.putChar(j*2,' ');
 			}
 		}
-		
-		buf.putLong(30, creationdate);
-		buf.putLong(38,modifydate);
-		buf.putInt(46,records);
-		buf.putInt(50, blockTotal);
+		buf.putInt(30,ID);
+		buf.putLong(34, creationdate);
+		buf.putLong(42,modifydate);
+		buf.putInt(50,records);
+		buf.putInt(54, blockTotal);
 		int j = 0;
 		for (j=0; j < indexed.size()&&j<10; j++){
-			buf.putInt(54+j*4, indexed.get(j).intValue());
+			buf.putInt(58+j*4, indexed.get(j).intValue());
 		} 
 		while (j<10){
-			buf.putInt(54+j*4, -1);
+			buf.putInt(58+j*4, -1);
 			j++;
 		}
 		
@@ -646,9 +646,9 @@ public class Relation {
 			for (int k=0; k<15; k++){
 				if (j<indexFiles.get(j).length()){
 					char ch = indexFiles.get(j).charAt(k);
-					buf.putChar(94+k*2+j*30,ch);
+					buf.putChar(98+k*2+j*30,ch);
 				} else {
-					buf.putChar(94+k*2+j*30,' ');
+					buf.putChar(98+k*2+j*30,' ');
 				}
 			}
 		}
