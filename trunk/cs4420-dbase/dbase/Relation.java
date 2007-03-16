@@ -293,6 +293,10 @@ public class Relation {
 	
 	public String [] parseRecord(final ByteBuffer record) {
 		
+		//Create the array of Strings that will hold the attributes from this
+		String [] parsed = new String [attributes.size()];
+		String parsedAttribute;
+		
 		//Start at the first byte of this record, cause we should be realtively
 		//sure the record starts there.
 		int start = 0;
@@ -300,11 +304,56 @@ public class Relation {
 		//For each attribute in this relation, parse it out of this record
 		for (int attributeID = 0; 
 			attributeID < attributes.size(); attributeID++) {
-			//Read the attribute in from the ByteBuffer
+	    	//Found what kind of attribute the current one is
+			Attribute currentAttribute = attributes.get(attributeID);
 			
+			//Then get the bytes for the attribute
+			if (currentAttribute.getType() == Attribute.Type.Int) {
+				parsedAttribute = Integer.toString(record.getInt(start));
+			} else if (currentAttribute.getType() == Attribute.Type.Char) {
+				parsedAttribute = parseString(record, start, 
+						currentAttribute.getSize());
+			} else if (currentAttribute.getType() == Attribute.Type.Long) {
+				parsedAttribute = Long.toString(record.getLong(start));
+			} else if (currentAttribute.getType() == Attribute.Type.Float) {
+				parsedAttribute = Float.toString(record.getFloat(start));
+			} else if (currentAttribute.getType() == Attribute.Type.Double) {
+				parsedAttribute = Double.toString(record.getDouble(start));
+			}
+			
+			//Then increment start by the size of this attribute so we get the
+			//next one
+			start += currentAttribute.getSize();
+	    	
 		} 
 		
 		return null;
+	}
+	
+	/**This method will parse a string out of a record, if you tell it where
+	 * it starts and how long the string is.
+	 * @param record The record containing the string.
+	 * @param start Where the string starts in the record, in bytes.
+	 * @param size  The size of the string in bytes.
+	 * @return
+	 */
+	public static String parseString(final ByteBuffer record, final int start, 
+			final int size) {
+		
+		//Loop through the record, getting thigs out as integers and casting
+		//them as characters.
+		String total = "";
+		int offset = start;
+		
+		for (int current = 0;  current < size; current++) {
+			//Get the next character from the record and add it to the total
+			char next = record.getChar(offset);
+			total = total + next;
+			
+			//Increment the start so it gets the next character
+			offset += Attribute.CHAR_SIZE;
+		}
+		return total;	
 	}
 	
 	public void setBlocktotal(int blocktotal) {
