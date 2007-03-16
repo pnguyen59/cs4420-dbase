@@ -340,10 +340,18 @@ public class SystemCatalog {
      *
      *@return The Iterator
      */
-//    public Iterator getIterator(String relation) {
-//    	//TODO Implement and uncomment out
-//        return null;
-//    }
+      public Iterator getIterator(String relation) {
+    	int ID = relationHolder.getRelationByName("relation");
+    	if (ID == -1){
+    		return null;
+    	}
+    	Relation rel = relationHolder.getRelation(ID);
+    	if (rel == null){
+    		return null;
+    	}
+    	
+        return rel.open();
+    }
     
     /**
      *Inserts a record into a relation and possibl an index.
