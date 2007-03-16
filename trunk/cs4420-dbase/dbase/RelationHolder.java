@@ -14,7 +14,11 @@ public class RelationHolder {
 	
 	/** The List of Relations */
 	
-	private static ArrayList<Relation> relations;
+	private ArrayList<Relation> relations;
+	
+	/** */
+	private static RelationHolder me;
+	
 	
 	/**
 	 * Standard Constructor
@@ -29,7 +33,12 @@ public class RelationHolder {
 	 * @return The static RelationHolder.
 	 */
 	public synchronized static RelationHolder getRelationHolder() {
-		return new RelationHolder();
+		if (me == null) {
+			me = new RelationHolder();
+			return me;
+		} else {
+			return me;
+		}
 	}
 	
 	/**
