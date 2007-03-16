@@ -67,6 +67,7 @@ public class Relation {
 		creationdate = (new Date()).getTime();
 		modifydate = (new Date()).getTime();
 		blockTotal = 0;
+		indexFiles = new ArrayList<String>();
 	}
 
 	/**This method is responsible for adding an attribute to the method
@@ -78,6 +79,7 @@ public class Relation {
 	public Attribute addAttribute(String name, Attribute.Type type, int newID) {
 		//Determine the ID of this attribute
 		Attribute att = new Attribute(name, type, newID);
+		att.setParent(ID);
 		attributes.add(att);
 		modifydate = (new Date()).getTime();
 		return att;
@@ -95,6 +97,7 @@ public class Relation {
 			final int newID, final int length) {
 		//Determine the ID of this attribute
 		Attribute att = new Attribute(name, type, newID, length);
+		att.setParent(ID);
 		attributes.add(att);
 		modifydate = (new Date()).getTime();
 		return att;

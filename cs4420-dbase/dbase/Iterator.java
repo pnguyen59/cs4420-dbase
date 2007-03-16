@@ -17,7 +17,7 @@ public class Iterator {
 	BufferManager buffer = BufferManager.getBufferManager(); 
 	
 	/**The block that this iterator is currently working on.*/
-	private long currentBlock = 0;
+	private long currentBlock = -1;
 	
 	/**The next record that this iterator will return from its current block.*/
 	private int nextRecord = 0;
@@ -56,10 +56,9 @@ public class Iterator {
 		//this block
 		//The relations per block is block size / relation size
 		int recordsPerBlock = relation.getRecordsPerBlock();
-		if (nextRecord >= recordsPerBlock * currentBlock) {
-			block = buffer.read(relation.getID(), currentBlock);
-			currentBlock++;
-			System.out.println(block.toString());
+		if (nextRecord >= recordsPerBlock * (currentBlock + 1)) {
+			block = buffer.read(relation.getID(), ++currentBlock);
+			System.out.println("BLEAH");
 		}
 		
 		//If it isn't then find the record's bytes within this block
@@ -75,6 +74,7 @@ public class Iterator {
 			subbuffer[i] = bytes[(nextRecord % relation.getRecordsPerBlock()) + i];
 		}
 		
+		nextRecord++;
 		String[] returnable = relation.parseRecord(ByteBuffer.wrap(subbuffer));
 		return returnable;
 	}
@@ -84,10 +84,12 @@ public class Iterator {
 	 * @return If there is another record.
 	 */
 	public boolean hasNext() {
-		if (currentBlock >= relation.getBlocktotal()) {
+		if (currentBlock > relation.getBlocktotal()) {
+			System.out.println("Case 1");
 			return false;
 		}else if (currentBlock == relation.getBlocktotal() - 1){
 			if (nextRecord >= relation.getRecords()) {
+				System.out.println("Case 2");
 				return false;
 			} else {
 				return true;
