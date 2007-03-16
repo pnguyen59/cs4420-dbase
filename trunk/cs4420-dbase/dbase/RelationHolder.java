@@ -25,7 +25,7 @@ public class RelationHolder {
 	 *
 	 */
 	private RelationHolder() {
-		relations = new ArrayList<Relation>();
+		if (relations == null)relations = new ArrayList<Relation>();
 	}
 	
 	/**

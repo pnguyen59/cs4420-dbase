@@ -56,13 +56,15 @@ public class Iterator {
 		//this block
 		//The relations per block is block size / relation size
 		int recordsPerBlock = relation.getRecordsPerBlock();
-		if (nextRecord > recordsPerBlock * currentBlock) {
+		if (nextRecord >= recordsPerBlock * currentBlock) {
 			block = buffer.read(relation.getID(), currentBlock);
 			currentBlock++;
+			System.out.println(block.toString());
 		}
 		
 		//If it isn't then find the record's bytes within this block
-		byte [] bytes = block.array();
+		byte [] bytes = new byte[block.capacity()];
+		block.get(bytes);
 		//Find out how many records there are in this block
 		long blockRecords = Math.min(relation.getRecords() 
 			- ((long) (currentBlock) * (long) recordsPerBlock),
