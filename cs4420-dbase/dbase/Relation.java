@@ -651,4 +651,5 @@ public class Relation {
 	public int getBlockTotal() {
 		return blockTotal;
 	}
+	
 }

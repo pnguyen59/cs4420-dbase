@@ -61,8 +61,11 @@ public class SystemCatalog {
     	int ID;
     	Relation rel;
     	for(int i = 0; i < relsize; i++) {
-    		relbuffer = buffer.readRel(relationcatalog, relationmarker + REL_OFFSET);
+    		relbuffer = buffer.readRel(relationcatalog, relationmarker * StorageManager.BLOCK_SIZE + REL_OFFSET);
     		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; j++) {
+    			if (relbuffer.getChar(relationpos) == BufferManager.NULL_CHARACTER) {
+    				break;
+    			}
     			for (int k = 0; k < 15; k++) {
     				if (relbuffer.getChar(relationpos) != BufferManager.NULL_CHARACTER) {
     					relname += relbuffer.getChar(relationpos);
@@ -81,13 +84,46 @@ public class SystemCatalog {
     			relationpos += Attribute.INT_SIZE;
     			rel.setBlocktotal(relbuffer.getInt(relationpos));
     			relationpos += Attribute.INT_SIZE;
+    			String index = "";
     			for(int l = 0; l < 10; l++) {
-    				
+    				if (relbuffer.getInt(relationpos) != -1){
+    					rel.addIndex(relbuffer.getInt(relationpos));
+    					relationpos += Attribute.INT_SIZE;
+    				}
     			}
-    			
+    			for (int m = 0; m < 10; m++) {
+    				for (int n = 0; n < 15; n++) {
+    					if (relbuffer.getChar(relationpos) != BufferManager.NULL_CHARACTER) {
+    					index += relbuffer.getChar(relationpos);
+    					}
+    					relationpos += Attribute.CHAR_SIZE;
+    				}
+    				rel.addIndex(index);
+    				index = new String();
+    			}
+    			relationpos = 0;
+    			relationmarker++;
     		}
     		
     	}
+    	ByteBuffer attbuffer;
+    	int attposition = 0;
+    	 for (int i = 0; i < attsize; i++) {
+    		 attbuffer = buffer.readRel(attributecatalog, attributemarker * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
+    			 if (attbuffer.getChar(attposition) == BufferManager.NULL_CHARACTER) {
+    				 break;
+    			 }
+    			 String name = "";
+    			 for (int k = 0; k < 15; k++) {
+    				 if (attbuffer.getChar( attposition) != BufferManager.NULL_CHARACTER) {
+    					 name += attbuffer.getChar(attposition);
+    					 attposition += Attribute.CHAR_SIZE;
+    				 }
+    			 }
+    			 
+    		 }
+    	 }
     }
     
     /**
