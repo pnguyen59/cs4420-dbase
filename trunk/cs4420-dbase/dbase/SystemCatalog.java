@@ -318,7 +318,7 @@ public class SystemCatalog {
     		
     		byte [] byter = new byte [StorageManager.BLOCK_SIZE];
     		ByteBuffer temp = buffer.readAtt(attributecatalog, blockNum * StorageManager.BLOCK_SIZE + ATT_OFFSET);
-    		temp.put(byter);
+    		//temp.put(byter);
     		byte [] temp2 = entry.array();
     		int bytenum  = (int)offset * ATT_REC_SIZE;
     		for (int i = bytenum; i < bytenum + ATT_REC_SIZE; i++) {
@@ -521,10 +521,10 @@ public class SystemCatalog {
     	//First see which catalog they want to select from, attribute or
     	//relation.
     	String [] parsedSelection = selection.split("\\s");
-    	if (parsedSelection[4].equalsIgnoreCase(SELECT_ATTRIBUTE_CATALOG)) {
+    	if (parsedSelection[3].equalsIgnoreCase(SELECT_ATTRIBUTE_CATALOG)) {
     		catalogSelection = selectFromAttributeCatalog(selection);
     	} 
-    	if (parsedSelection[4].equalsIgnoreCase(SELECT_RELATION_CATALOG)) {
+    	if (parsedSelection[3].equalsIgnoreCase(SELECT_RELATION_CATALOG)) {
 			catalogSelection = selectFromRelationCatalog(selection);
 		}
 
@@ -794,7 +794,7 @@ public class SystemCatalog {
 		long recordnum = rID % (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
 		byte [] bytes = new byte [StorageManager.BLOCK_SIZE];
 		ByteBuffer temp = buffer.readRel(relationcatalog, blocknum * StorageManager.BLOCK_SIZE + REL_OFFSET);
-		temp.put(bytes);
+		//temp.put(bytes);
 		byte [] temp2 = buffer2.array();
 		int bytenum  = (int)recordnum * REL_REC_SIZE;
 		for (int i = bytenum; i < bytenum + REL_REC_SIZE; i++) {
