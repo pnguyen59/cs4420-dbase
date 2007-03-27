@@ -682,8 +682,8 @@ public class Relation {
 			}
 		}
 		
-		System.out.println("Wrote relation data ending on byte "
-			+ currentPosition + "...");
+		System.out.println("Wrote relation data for " 
+				+ this.relationname + "...");
 		return entry;
 	}
 	
