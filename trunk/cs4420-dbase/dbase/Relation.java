@@ -503,7 +503,7 @@ public class Relation {
 		//Loop through the String, writing the characters as ints.
 		for (int index = 0; index < chars.length();  index++) {
 			//Get the char at the index
-			System.out.println(block);
+			//System.out.println(block);
 			block.putChar(offset, chars.charAt(index));
 			//System.out.println("Putting character " + chars.charAt(index)
 			//	+ " at " + offset);

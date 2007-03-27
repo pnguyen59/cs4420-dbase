@@ -6,7 +6,6 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-
 package dbase;
 
 
@@ -86,7 +85,7 @@ public class SystemCatalog {
     				relationpos += Attribute.CHAR_SIZE;
     			}
     			ID = relbuffer.getInt(relationpos);
-    			System.out.println(ID);
+    			//System.out.println(ID);
     			Relation rel = new Relation(relname, ID);
     			relationHolder.addRelation(rel);
     			relationpos += Attribute.INT_SIZE;
@@ -142,7 +141,8 @@ public class SystemCatalog {
     			 attposition += Attribute.LONG_SIZE;
     			 char nullable = attbuffer.getChar(attposition);
     			 attposition += Attribute.CHAR_SIZE;
-    			 char type = attbuffer.getChar(attposition);
+    			 Attribute.Type type = Attribute.charToType(
+    					 attbuffer.getChar(attposition));
     			 attposition += Attribute.CHAR_SIZE;
     			 long rID = attbuffer.getLong(attposition);
     			 attposition += Attribute.LONG_SIZE;
@@ -197,7 +197,7 @@ public class SystemCatalog {
     	
 //    	System.out.println("This had better get called");
     	
-    	StorageManager.openFile(""+Indexname+".if");
+    	StorageManager.openFile("" + Indexname + ".if");
     	
     	int idx;
         ArrayList <Relation> relations = relationHolder.getRelations();
@@ -265,13 +265,12 @@ public class SystemCatalog {
     
     /**
      *Creates a new table in the Catalog as well as a file for it.
-     *
      *@param relation the name and atributes still in code format
-     *@param the attribute to sort by possibly, probably not (may be removed)
-     *
+     *@param key the attribute to sort by possibly, probably not
+     * (may be removed)
      *@return whether the table was created correctly.
      */
-    public boolean createTable(String relation, String key) {
+    public boolean createTable(final String relation, final String key) {
     	//Parse out the name of the relation from the statement
     	String relationName;
     	relationName = relation.substring(
@@ -282,20 +281,21 @@ public class SystemCatalog {
     	//new relation with it and add it to relationHolder
     	Relation newRelation = new Relation(relationName, 
     			relationHolder.getSmallestUnusedID());
+    	System.out.println("Adding new relation " + newRelation.getName()
+    			+ "...");
     	relationHolder.addRelation(newRelation);
-    	
-    	//Start getting all of the attributes out of the statement
-    	Attribute newAttribute;
     	writeoutRel(newRelation.writeCrapToBuffer(), newRelation.getID());
     	
     	//Find out where the ()'s enclosing the list of attributes is
+    	//Start getting all of the attributes out of the statement
     	StringTokenizer st = new StringTokenizer(
-    		relation.substring(
-    				relation.indexOf("(") + 1, relation.indexOf(")")), ",");
+    		relation.substring(relation.indexOf("(") + 1,
+    		relation.indexOf(")")), 
+    		",");
     	
     	//While there are more attributes in the list, add them to the relation
     	while (st.hasMoreTokens()) {
-    		
+
     		//Get the next attribute definition out of the tokenizer and 
     		//find its name, type and size
     		String currentAttribute = st.nextToken().trim();
@@ -313,33 +313,38 @@ public class SystemCatalog {
     		
     		//Create the new attribute and add it to the list of attributes
     		//Create it with 0 distinct values as it is entirely new.
-    		newAttribute = new Attribute(attributeName,
+    		System.out.println("Adding attribute " + attributeName 
+    				+ " to relation " + newRelation.getName() + "...");
+    		Attribute newAttribute = new Attribute(attributeName,
     				getSmallestUnusedAttributeID(), newRelation.getID(),
     				newAttributeType, 't', 0, size);
     		newRelation.addAttribute(newAttribute);
     		attributes.add(newAttribute);
     		
-    		//Now get the entry for this biotch in the attribute catalog
-    		ByteBuffer entry = newAttribute.writeCrapToBuffer();
     		
+    		//Add the entry fo this attribute to the catalog. 
     		//Determine which block this thing belongs in.
     		int blockNumber = (int) newAttribute.getID() 
     			/ (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
     		//How many bytes into the block is this attribute?
-    		int offset = (int) newAttribute.getID() 
-    			% (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
-    		
+    		int offset = ((int) newAttribute.getID() 
+    			% (StorageManager.BLOCK_SIZE / ATT_REC_SIZE)) * ATT_REC_SIZE;
+    		/*System.out.println("Adding attribute " + attributeName 
+    				+ " to the attribute catalog at block " + blockNumber
+    				+ " and byte " + offset + "...");*/
+    		//Now get the entry for this biotch in the attribute catalog
+    		ByteBuffer entry = newAttribute.writeCrapToBuffer();
     		//Get the block that this new attribute should be recorded in
     		ByteBuffer block = buffer.readAttributeCatalog(
-    				SELECT_ATTRIBUTE_CATALOG, blockNumber);
+    			SELECT_ATTRIBUTE_CATALOG, blockNumber);
     		//Put the new attribute at the correct place in the block
-    		block.put(entry.array(), offset, ATT_REC_SIZE);
+    		byte [] array = entry.array();
+    		for (int index = 0; index < array.length; index++) {
+    			block.put(index + offset, array[index]);
+    		}
     	}
     	
-    	
     	//System.out.println(relationHolder);
-    	
-    	
         return true;
     }
     
@@ -505,7 +510,7 @@ public class SystemCatalog {
     	String whereClause = "";
     	
     	for (int index = 0; index < commands.length; index++) {
-    		if (commands[index].equalsIgnoreCase("WHERE")) {
+    		if (commands[index].equalsIgnoreCase("[WHERE")) {
     			for (int word = index; word < commands.length; word++) {
     				whereClause += commands[word] + " ";
     			}
@@ -741,9 +746,9 @@ public class SystemCatalog {
 	   //rel.getIndexFileByName();
 
 	   int idx = bt.OpenIndex(indexname, true);
-	   //String str = bt.(idx);
+	   //tring str = bt.;
 	   bt.CloseIndex(idx);
-	   return str;
+	   return "POOP";
    }
 
 	
@@ -765,11 +770,11 @@ public class SystemCatalog {
     	//Parse out the desired table to work on and various parts of the
     	//Select statement
     	String table = parseSelectTable(selection);
-    	//System.out.println(table);
+    	System.out.println("Selecting from table " + table);
     	String whereClause = parseWhereClause(selection);
-    	//System.out.println(whereClause);
+    	System.out.println(whereClause);
     	String conditionAttribute = parseConditionAttribute(whereClause);
-    	//System.out.println(conditionAttribute);
+    	System.out.println("On attribute " + conditionAttribute);
     	//Get the variable, what we are comparing the attribute against
     	String variable = parseComparison(whereClause);
     	//System.out.println(variable);
@@ -822,52 +827,53 @@ public class SystemCatalog {
 	
 	
     
-//    public static void main(String[] args){
-//    	SystemCatalog sc = new SystemCatalog();
-//    	RelationHolder holder = RelationHolder.getRelationHolder(); 
-//    	sc.createTable("CREATE TABLE table_name(anint int)", "key");
-//    	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
-//    	sc.insert("INSERT INTO t (achar2, achar, anint) VALUES(a1, abcdefg, 10)");
-//    	sc.createIndex("CREATE INDEX bob ON t (anint)");
-//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefh)");
-//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefi)");
-//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a2, abcdefj)");
-//    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a3, abcdefk)");
-//    	//System.out.println(RelationHolder.getRelationHolder());
-//    	Relation r = RelationHolder.getRelationHolder().getRelation(1);
-//    	Iterator it = r.open();
-//    	while (it.hasNext()){
-//    		String[] r2 = it.getNext();
-////    		System.out.println(r2[1]);
-//    	}
-//    	String [] results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
-//    	//System.out.println();
-//    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
-//    		for (int i = 0; i < results.length; i++) {
-//    			System.out.print(results[i] + "\n");
-//    	}
-//    	System.out.println();
-//    	
-//    	results = sc.selectFromTable("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
-//    	//System.out.println();
-//    	System.out.println("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
-//    		for (int i = 0; i < results.length; i++) {
-//    			System.out.print(results[i] + "\n");
-//    	}
-//    	System.out.println();
-//    	
-//    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
-//    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
-//    	for (int i = 0; i < results.length; i++) {
-//    		System.out.print(results[i] + "\n");
-//    	}
-//    	System.out.println();
-//    	
-//    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
-//    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
-//    	for (int i = 0; i < results.length; i++) {
-//    		System.out.print(results[i] + "\n");
-//    	}
-//    	System.out.println();
-//    }
+    public static void main(String[] args){
+    	SystemCatalog sc = new SystemCatalog();
+    	//RelationHolder holder = RelationHolder.getRelationHolder(); 
+    	sc.createTable("CREATE TABLE table_name(anint int)", "key");
+    	sc.createTable("CREATE TABLE t(anint int, achar char 10, achar2 char 20)", "key");
+    	sc.insert("INSERT INTO t (achar2, achar, anint) VALUES(a1, abcdefg, 10)");
+    	//sc.createIndex("CREATE INDEX bob ON t (anint)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefh)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a1, abcdefi)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a2, abcdefj)");
+    	sc.insert("INSERT INTO t (achar2, achar) VALUES(a3, abcdefk)");
+    	//System.out.println(RelationHolder.getRelationHolder());
+    	Relation r = RelationHolder.getRelationHolder().getRelation(1);
+    	Iterator it = r.open();
+    	while (it.hasNext()){
+    		String[] r2 = it.getNext();
+    		System.out.println(r2[1]);
+    	}
+    	System.out.println("Trying select statements");
+    	String [] results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
+    	System.out.println();
+    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
+    		for (int i = 0; i < results.length; i++) {
+    			System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
+    	
+    	results = sc.selectFromTable("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
+    	System.out.println();
+    	System.out.println("SELECT achar FROM TABLE t [WHERE achar2 = a3]");
+    		for (int i = 0; i < results.length; i++) {
+    			System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
+    	
+    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
+    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a5]");
+    	for (int i = 0; i < results.length; i++) {
+    		System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
+    	
+    	results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
+    	System.out.println("SELECT achar2 FROM TABLE t [WHERE achar2 = a1]");
+    	for (int i = 0; i < results.length; i++) {
+    		System.out.print(results[i] + "\n");
+    	}
+    	System.out.println();
+    }
 }

@@ -127,7 +127,7 @@ public class Attribute {
 	/**This method will take in a character, and will return the 
 	 * Attribute.Type value corresponding to that character.
 	 * @param charType The first letter of the type.
-	 * @return The type from the first letter.
+	 * @return The type from the first letter.   
 	 */
 	public static Attribute.Type charToType(final char charType) {
 		
