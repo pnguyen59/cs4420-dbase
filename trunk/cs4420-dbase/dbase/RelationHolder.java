@@ -63,6 +63,7 @@ public class RelationHolder {
 	 * @return A boolean of whether or not the Relation was successfully added.
 	 */
 	public boolean addRelation(Relation newrelation) {
+		//System.out.println("Adding relation " + newrelation);
 		return relations.add(newrelation);
 	}
 	
