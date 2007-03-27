@@ -556,7 +556,9 @@ public class Relation {
 		//Look at the first byte of each record and stop when we find a 
 		//blank one.
 		int recordsFound = 0;
-		byte [] blockArray = block.array();
+		//Dupe the block
+		ByteBuffer duplicate = block.duplicate();
+		byte [] blockArray = duplicate.array();
 		
 		//Loop, making sure we don't go beyond the block
 		while (recordsFound < getRecordsPerBlock()) {
@@ -621,6 +623,10 @@ public class Relation {
 		indexed.add(new Integer(j));
 	}
 
+	/**This will return a ByteBuffer representation of the metadata for this 
+	 * relation.
+	 * @return A byte buffer containing the schema of this relaion.
+	 */
 	public ByteBuffer writeCrapToBuffer(){
 		ByteBuffer entry = ByteBuffer.wrap(new byte[SystemCatalog.REL_REC_SIZE]);
 		int currentPosition = 0;
