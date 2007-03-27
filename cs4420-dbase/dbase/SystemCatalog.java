@@ -22,9 +22,9 @@ import java.util.StringTokenizer;
 
 public class SystemCatalog {
     
-	public final static String SELECT_ATTRIBUTE_CATALOG = "ATTRIBUTE_CATALOG";
+	public final static String SELECT_ATTRIBUTE_CATALOG = "ATTRIBUTE_CATALOG.ac";
 	
-	public final static String SELECT_RELATION_CATALOG = "RELATION_CATALOG";
+	public final static String SELECT_RELATION_CATALOG = "RELATION_CATALOG.ac";
 	
     public final static long ATT_OFFSET = (long)Math.pow(2, 31);
     
@@ -71,23 +71,51 @@ public class SystemCatalog {
     	int ID;
     	//Relation rel;
     	for(int i = 0; i < relsize; i++) {
-    		relbuffer = buffer.readRel(relationcatalog, relationmarker * StorageManager.BLOCK_SIZE + REL_OFFSET);
-    		System.out.println("Error Isn't Here.");
+    		
+    		//Load the block for this relation and duplicate it
+    		relbuffer = buffer.readRel(relationcatalog, 
+    				(relationmarker * REL_REC_SIZE) 
+    				/ StorageManager.BLOCK_SIZE);
+    		relbuffer = relbuffer.duplicate();
+    		
+    		//Find the position within this block
+    		relationpos = ((int) relationmarker * REL_REC_SIZE)
+    			% StorageManager.BLOCK_SIZE;
+    		
+    		//System.out.println("Error Isn't Here.");
     		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; j++) {
-    			if (relbuffer.getChar(relationpos) == BufferManager.NULL_CHARACTER) {
-    				System.out.println("Null character encountered");
+//    			Check the entire length of the record.  If there is one
+    			//non-null, there is a record
+    			ByteBuffer nullCheckBuffer = relbuffer.duplicate();
+    			boolean lastRecord = true;
+    			for (int index = relationpos; 
+    				index < relationpos + ATT_REC_SIZE; index++) {
+    				if ((char) (nullCheckBuffer.get(index)) != '\0') {
+    					lastRecord = false;
+    				}
+    			}
+    			if (lastRecord) {
+    				System.out.println("Loaded all relation data...");
     				break;
     			}
+    			
+    			//Say which record we are loading
+    			System.out.println("Loading relation " + relationmarker
+    				+ " at block " + 1 + " and byte " + relationpos);
+    			
     			for (int k = 0; k < 15; k++) {
     				if (relbuffer.getChar(relationpos) != BufferManager.NULL_CHARACTER) {
     					relname += relbuffer.getChar(relationpos);
     				}
     				relationpos += Attribute.CHAR_SIZE;
     			}
+    			
     			ID = relbuffer.getInt(relationpos);
     			//System.out.println(ID);
     			Relation rel = new Relation(relname, ID);
     			relationHolder.addRelation(rel);
+    			//Print that we loaded the relation.
+    			System.out.println("Loaded relation " + relname + "...");
     			relationpos += Attribute.INT_SIZE;
     			rel.setCreationdate(relbuffer.getLong(relationpos));
     			relationpos += Attribute.LONG_SIZE;
@@ -102,34 +130,48 @@ public class SystemCatalog {
     			for(int l = 0; l < 10; l++) {
     				if (relbuffer.getInt(relationpos) != -1){
     					rel.addIndex(relbuffer.getInt(relationpos));
-    					relationpos += Attribute.INT_SIZE;
     				}
+					relationpos += Attribute.INT_SIZE;
     			}
     			for (int m = 0; m < 10; m++) {
     				for (int n = 0; n < 15; n++) {
     					if (relbuffer.getChar(relationpos) != BufferManager.NULL_CHARACTER) {
-    					index += relbuffer.getChar(relationpos);
+    						index += relbuffer.getChar(relationpos);
     					}
     					relationpos += Attribute.CHAR_SIZE;
     				}
     				rel.addIndex(index);
     				index = new String();
     			}
+    			relationmarker++;	
     			
     		}
     		relationpos = 0;
-			relationmarker++;
-    		
     	}
     	ByteBuffer attbuffer;
     	int attposition = 0;
     	 for (int i = 0; i < attsize; i++) {
-    		 attbuffer = buffer.readAttributeCatalog(attributecatalog, attributemarker * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		 attbuffer = buffer.readAttributeCatalog(
+    			attributecatalog, 
+    			(attributemarker * ATT_REC_SIZE) / StorageManager.BLOCK_SIZE);
+    		 attbuffer = attbuffer.duplicate();
 //    		 System.out.println("Error Isn't Here Either.");
     		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
-    			 if (attbuffer.getChar(attposition) == BufferManager.NULL_CHARACTER) {
+
+    			 //Check the entire length of the record.  If there is one
+    			 //non-null, there is a record
+    			 ByteBuffer nullCheckBuffer = attbuffer.duplicate();
+    			 boolean lastRecord = true;
+    			 for (int index = attposition; 
+    			 	index < attposition + ATT_REC_SIZE; index++) {
+    				if ((char) (nullCheckBuffer.get(index)) != '\0') {
+    					lastRecord = false;
+    				}
+    			 }
+    			 if (lastRecord) {
     				 break;
     			 }
+    			 
     			 String name = "";
     			 for (int k = 0; k < 15; k++) {
     				 if (attbuffer.getChar( attposition) != BufferManager.NULL_CHARACTER) {
@@ -154,7 +196,8 @@ public class SystemCatalog {
     			 Attribute used = new Attribute(name, aID, rID, type, nullable, distinct, length);
 //    			 System.out.println("" + used.getType());
     			 attributes.add(used);
-    			 System.out.println(rID);
+    			 System.out.println("Loading attribute " + name 
+    					 + " to relation " + rID);
     			 relationHolder.getRelation(rID).addAttribute(used);
     			 
     		 }
@@ -770,11 +813,11 @@ public class SystemCatalog {
     	//Parse out the desired table to work on and various parts of the
     	//Select statement
     	String table = parseSelectTable(selection);
-    	System.out.println("Selecting from table " + table);
+    	//System.out.println("Selecting from table " + table);
     	String whereClause = parseWhereClause(selection);
-    	System.out.println(whereClause);
+    	//System.out.println(whereClause);
     	String conditionAttribute = parseConditionAttribute(whereClause);
-    	System.out.println("On attribute " + conditionAttribute);
+    	//System.out.println("On attribute " + conditionAttribute);
     	//Get the variable, what we are comparing the attribute against
     	String variable = parseComparison(whereClause);
     	//System.out.println(variable);
@@ -783,7 +826,7 @@ public class SystemCatalog {
     	//Attribute under scrutiny
     	long relationID = relationHolder.getRelationByName(table);
     	Relation relation = relationHolder.getRelation(relationID);
-    	System.out.println(relationHolder);
+    	//System.out.println(relationHolder);
     	int attributeIndex = relation.getIndexByName(conditionAttribute);
     	
     	//Now see which records of this relation match
@@ -810,19 +853,25 @@ public class SystemCatalog {
         return total.split("\\n");
     }
 	
-	private void writeoutRel(ByteBuffer buffer2, int rID) {
-		long blocknum = rID / (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
-		long recordnum = rID % (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
-		byte [] bytes = new byte [StorageManager.BLOCK_SIZE];
-		ByteBuffer temp = buffer.readRel(relationcatalog, blocknum * StorageManager.BLOCK_SIZE + REL_OFFSET);
-		//temp.put(bytes);
-		byte [] temp2 = buffer2.array();
-		int bytenum  = (int)recordnum * REL_REC_SIZE;
-		for (int i = bytenum; i < bytenum + REL_REC_SIZE; i++) {
-		bytes[i] = temp2[i-bytenum];
+    //TODO severly beat whoever wrote this.  It is shit.
+	private void writeoutRel(ByteBuffer entry, int rID) {
+		
+		//Find out which block this relations meatadat should go in
+		long blockNumber = rID / (StorageManager.BLOCK_SIZE / REL_REC_SIZE);
+		int offset = rID % (StorageManager.BLOCK_SIZE / REL_REC_SIZE)
+			* REL_REC_SIZE;
+		
+		//Get the block to write this relations metadata to from the buffer
+		ByteBuffer block = buffer.readRel(
+				relationcatalog, blockNumber);
+
+		//Now actually write the relations data into the block
+		byte [] array = entry.array();
+		for (int index = 0; index < array.length; index++) {
+			block.put(index + offset, array[index]);
 		}
-		ByteBuffer temp3 = ByteBuffer.wrap(bytes);
-		buffer.writeRelCatalog(relationcatalog, blocknum, temp3);
+		
+		buffer.writeRelCatalog(relationcatalog, blockNumber, block);
 	}
 	
 	
@@ -841,10 +890,10 @@ public class SystemCatalog {
     	//System.out.println(RelationHolder.getRelationHolder());
     	Relation r = RelationHolder.getRelationHolder().getRelation(1);
     	Iterator it = r.open();
-    	while (it.hasNext()){
+    	/*while (it.hasNext()){
     		String[] r2 = it.getNext();
     		System.out.println(r2[1]);
-    	}
+    	}*/
     	System.out.println("Trying select statements");
     	String [] results = sc.selectFromTable("SELECT achar2 FROM TABLE t [WHERE achar = abcdefg]");
     	System.out.println();
@@ -875,5 +924,7 @@ public class SystemCatalog {
     		System.out.print(results[i] + "\n");
     	}
     	System.out.println();
+    	
+    	sc.buffer.flush();
     }
 }
