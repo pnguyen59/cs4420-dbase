@@ -125,7 +125,7 @@ public class SystemCatalog {
     	ByteBuffer attbuffer;
     	int attposition = 0;
     	 for (int i = 0; i < attsize; i++) {
-    		 attbuffer = buffer.readAtt(attributecatalog, attributemarker * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		 attbuffer = buffer.readAttributeCatalog(attributecatalog, attributemarker * StorageManager.BLOCK_SIZE + ATT_OFFSET);
 //    		 System.out.println("Error Isn't Here Either.");
     		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
     			 if (attbuffer.getChar(attposition) == BufferManager.NULL_CHARACTER) {
@@ -323,24 +323,17 @@ public class SystemCatalog {
     		ByteBuffer entry = newAttribute.writeCrapToBuffer();
     		
     		//Determine which block this thing belongs in.
-    		int blockNum = (int) newAttribute.getID() 
+    		int blockNumber = (int) newAttribute.getID() 
     			/ (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
     		//How many bytes into the block is this attribute?
     		int offset = (int) newAttribute.getID() 
     			% (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
     		
-    		byte [] byter = new byte [StorageManager.BLOCK_SIZE];
-    		ByteBuffer temp = buffer.readAtt(attributecatalog, 
-    			blockNum * StorageManager.BLOCK_SIZE + ATT_OFFSET);
-    		//temp.put(byter);
-    		byte [] temp2 = entry.array();
-    		int bytenum  = (int)offset * ATT_REC_SIZE;
-    		for (int i = bytenum; i < bytenum + ATT_REC_SIZE; i++) {
-    		byter[i] = temp2[i-bytenum];
-    		}
-    		ByteBuffer block = ByteBuffer.wrap(byter);
-    		buffer.writeAttCatalog(attributecatalog, blockNum, block);
-    		
+    		//Get the block that this new attribute should be recorded in
+    		ByteBuffer block = buffer.readAttributeCatalog(
+    				SELECT_ATTRIBUTE_CATALOG, blockNumber);
+    		//Put the new attribute at the correct place in the block
+    		block.put(entry.array(), offset, ATT_REC_SIZE);
     	}
     	
     	
@@ -581,7 +574,7 @@ public class SystemCatalog {
     	for (int i = 0; i < blocks; i++) {
     		
     		//Get the block for the attribute catalog from the BufferManager
-    		 block = buffer.readAtt(attributecatalog, attributemarker
+    		 block = buffer.readAttributeCatalog(attributecatalog, attributemarker
     				 * StorageManager.BLOCK_SIZE + ATT_OFFSET);
     		 //System.out.println("Error Isn't Here Either.");
     		 
@@ -740,17 +733,17 @@ public class SystemCatalog {
     *@return The Index in String format.
     */
    public String selectFromIndex(String selection) {
-   	BTree bt = new BTree();
-   	String[] splitter = selection.split(";")[0].split(" ");
-   	String indexname = splitter[splitter.length-1];
-   	String relationname = splitter[splitter.length-2];
-   	Relation rel = relationHolder.getRelation(relationHolder.getRelationByName(relationname));
-   	//rel.getIndexFileByName();
-   	
-   	int idx = bt.OpenIndex(indexname, true);
-   	//String str = bt.(idx);
-   	bt.CloseIndex(idx);
-       return str;
+	   BTree bt = new BTree();
+	   String[] splitter = selection.split(";")[0].split(" ");
+	   String indexname = splitter[splitter.length-1];
+	   String relationname = splitter[splitter.length-2];
+	   Relation rel = relationHolder.getRelation(relationHolder.getRelationByName(relationname));
+	   //rel.getIndexFileByName();
+
+	   int idx = bt.OpenIndex(indexname, true);
+	   //String str = bt.(idx);
+	   bt.CloseIndex(idx);
+	   return str;
    }
 
 	
