@@ -342,7 +342,7 @@ public class Relation {
 		int totalSize = 0;
 		for (int attribute = 0; attribute < attributes.size(); attribute++) {
 			//Add the size of each attribute to the total size
-			System.out.println("Read an attribute");
+			//System.out.println("Read an attribute");
 			totalSize += ((Attribute) attributes.get(attribute)).getSize();
 		}
 		return totalSize;
