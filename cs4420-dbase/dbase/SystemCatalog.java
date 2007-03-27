@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
 public class SystemCatalog {
     
 	public final static String SELECT_ATTRIBUTE_CATALOG = "ATTRIBUTE_CATALOG";
@@ -184,7 +185,8 @@ public class SystemCatalog {
      *
      *@return whether the index was created successfully
      */
-    public boolean createIndex(String relation, String attribute, String Indexname, boolean duplicates) {
+    public boolean createIndex(String relation, String attribute,
+    		String Indexname, boolean duplicates) {
         long rID = -1, aID = -1;
     	int i, j;
     	Attribute.Type aType = Attribute.Type.Undeclared;
@@ -270,55 +272,66 @@ public class SystemCatalog {
      *@return whether the table was created correctly.
      */
     public boolean createTable(String relation, String key) {
-    	String relationname;
-    	relationname = relation.substring(relation.indexOf(" ", relation.toLowerCase().indexOf("table"))+1, relation.indexOf("(")).trim();
-    	Relation rel = new Relation(relationname, relationHolder.getSmallestUnusedID());
-    	relationHolder.addRelation(rel);
-    	Attribute att;
-    	writeoutRel(rel.writeCrapToBuffer(), rel.getID());
-    	StringTokenizer st = new StringTokenizer(relation.substring(relation.indexOf("(")+1,relation.indexOf(")")),",");
-    	while (st.hasMoreTokens()){
-    		String currentattribute = st.nextToken().trim();
-    		String attributename = currentattribute.split(" ")[0];
-    		String attributetype = currentattribute.split(" ")[1];
+    	//Parse out the name of the relation from the statement
+    	String relationName;
+    	relationName = relation.substring(
+    		relation.indexOf(" ", relation.toLowerCase().indexOf("table"))
+    		+ 1, relation.indexOf("(")).trim();
+    	
+    	//Get the ID of this new relation from relation holder, create a 
+    	//new relation with it and add it to relationHolder
+    	Relation newRelation = new Relation(relationName, 
+    			relationHolder.getSmallestUnusedID());
+    	relationHolder.addRelation(newRelation);
+    	
+    	//Start getting all of the attributes out of the statement
+    	Attribute newAttribute;
+    	writeoutRel(newRelation.writeCrapToBuffer(), newRelation.getID());
+    	
+    	//Find out where the ()'s enclosing the list of attributes is
+    	StringTokenizer st = new StringTokenizer(
+    		relation.substring(
+    				relation.indexOf("(") + 1, relation.indexOf(")")), ",");
+    	
+    	//While there are more attributes in the list, add them to the relation
+    	while (st.hasMoreTokens()) {
+    		
+    		//Get the next attribute definition out of the tokenizer and 
+    		//find its name, type and size
+    		String currentAttribute = st.nextToken().trim();
+    		String attributeName = currentAttribute.split(" ")[0];
+    		String attributeType = currentAttribute.split(" ")[1];
     		int size = 0;
-    		Attribute.Type type;
-    		if (attributetype.toLowerCase().equals("int")){
-    			type = Attribute.Type.Int;
-    		} else if (attributetype.toLowerCase().equals("long")){
-    			type = Attribute.Type.Long;
-    		} else if (attributetype.toLowerCase().equals("boolean") || attributetype.toLowerCase().equals("bool")){
-    			type = Attribute.Type.Boolean;
-    		} else if (attributetype.toLowerCase().equals("char") || attributetype.toLowerCase().equals("character")){
-    			type = Attribute.Type.Char;
-    			size = Integer.parseInt(currentattribute.split(" ")[2]);
-    		} else if (attributetype.toLowerCase().equals("float")){
-    			type = Attribute.Type.Float;
-    		} else if (attributetype.toLowerCase().equals("double")){
-    			type = Attribute.Type.Double;
-    		} else if (attributetype.toLowerCase().equals("datetime")){
-    			type = Attribute.Type.DateTime;
-    		} else {
-    			type = Attribute.Type.Undeclared;
-    		} if (type == Attribute.Type.Char){
-    			 att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID(), size);
-    		} else {
-    			att = rel.addAttribute(attributename, type, getSmallestUnusedAttributeID());
+    		
+    		//Get the type and create the new attribute for it, checking for the
+    		//size if it turns out to be char.
+    		Attribute.Type newAttributeType 
+    			= Attribute.stringToType(attributeType);
+    		if (newAttributeType == Attribute.Type.Char) {
+    			size = Integer.parseInt(currentAttribute.split(" ")[2]);
     		}
-    		attributes.add(att);
+    		
+    		//Create the new attribute and add it to the list of attributes
+    		//Create it with 0 distinct values as it is entirely new.
+    		newAttribute = new Attribute(attributeName,
+    				getSmallestUnusedAttributeID(), newRelation.getID(),
+    				newAttributeType, 't', 0, size);
+    		newRelation.addAttribute(newAttribute);
+    		attributes.add(newAttribute);
     		
     		//Now get the entry for this biotch in the attribute catalog
-    		ByteBuffer entry = att.writeCrapToBuffer();
-    		//Determine which block this thing belongs in.
-    		//How man bytes in is this attribute?
-    		int blockNum = (int)att.getID() / (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
-    		int offset = (int)att.getID() % (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
-    		//System.out.println(blockNum);
-    		//System.out.println(attributecatalog);
+    		ByteBuffer entry = newAttribute.writeCrapToBuffer();
     		
+    		//Determine which block this thing belongs in.
+    		int blockNum = (int) newAttribute.getID() 
+    			/ (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
+    		//How many bytes into the block is this attribute?
+    		int offset = (int) newAttribute.getID() 
+    			% (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
     		
     		byte [] byter = new byte [StorageManager.BLOCK_SIZE];
-    		ByteBuffer temp = buffer.readAtt(attributecatalog, blockNum * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		ByteBuffer temp = buffer.readAtt(attributecatalog, 
+    			blockNum * StorageManager.BLOCK_SIZE + ATT_OFFSET);
     		//temp.put(byter);
     		byte [] temp2 = entry.array();
     		int bytenum  = (int)offset * ATT_REC_SIZE;
@@ -735,7 +748,7 @@ public class SystemCatalog {
    	//rel.getIndexFileByName();
    	
    	int idx = bt.OpenIndex(indexname, true);
-   	String str = bt.stringRepresentation(idx);
+   	//String str = bt.(idx);
    	bt.CloseIndex(idx);
        return str;
    }
