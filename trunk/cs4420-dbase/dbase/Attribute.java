@@ -123,6 +123,28 @@ public class Attribute {
 		this.distinct = newDistinct;
 		this.length = newLength;
 	}
+	
+	/**This method will take in a character, and will return the 
+	 * Attribute.Type value corresponding to that character.
+	 * @param charType The first letter of the type.
+	 * @return The type from the first letter.
+	 */
+	public static Attribute.Type charToType(final char charType) {
+		
+		String type = String.valueOf(charType);
+		if (type.equalsIgnoreCase("I")) {
+			return Type.Int;
+		} else if (type.equalsIgnoreCase("C")) {
+			return Type.Char;
+		} else if (type.equalsIgnoreCase("D")) {
+			return Type.DateTime;
+		} else if (type.equalsIgnoreCase("L")) {
+			return Type.Long;
+		} else {
+			return null;
+		}
+		
+	}
 
 	public int getCharLength() {
 		return length;
