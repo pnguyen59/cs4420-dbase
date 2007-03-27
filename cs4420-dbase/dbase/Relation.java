@@ -622,41 +622,70 @@ public class Relation {
 	}
 
 	public ByteBuffer writeCrapToBuffer(){
-		ByteBuffer buf = ByteBuffer.wrap(new byte[SystemCatalog.REL_REC_SIZE]);
+		ByteBuffer entry = ByteBuffer.wrap(new byte[SystemCatalog.REL_REC_SIZE]);
+		int currentPosition = 0;
+		
 		for (int j=0; j<15; j++){
-			if (j<relationname.length()){
-				char ch = relationname.charAt(j);
-				buf.putChar(j*2,ch);
+			if (j < relationname.length()){
+				char character = relationname.charAt(j);
+				entry.putChar(j * 2, character);
 			} else {
-				buf.putChar(j*2,BufferManager.NULL_CHARACTER);
+				entry.putChar(j * 2,BufferManager.NULL_CHARACTER);
 			}
-		}
-		buf.putInt(30,ID);
-		buf.putLong(34, creationdate);
-		buf.putLong(42,modifydate);
-		buf.putInt(50,records);
-		buf.putInt(54, blockTotal);
-		int j = 0;
-		for (j=0; j < indexed.size()&&j<10; j++){
-			buf.putInt(58+j*4, indexed.get(j).intValue());
-		} 
-		while (j<10){
-			buf.putInt(58+j*4, -1);
-			j++;
+			currentPosition += Attribute.CHAR_SIZE;
 		}
 		
-		for (j=0; j<indexFiles.size()&&j<10; j++){
-			for (int k=0; k<15; k++){
-				if (j<indexFiles.get(j).length()){
-					char ch = indexFiles.get(j).charAt(k);
-					buf.putChar(98+k*2+j*30,ch);
+		//Write all of the information about this relation
+		entry.putInt(currentPosition, ID);
+		currentPosition += Attribute.INT_SIZE;
+		entry.putLong(currentPosition, creationdate);
+		currentPosition += Attribute.LONG_SIZE;
+		entry.putLong(currentPosition, modifydate);
+		currentPosition += Attribute.LONG_SIZE;
+		entry.putInt(currentPosition, records);
+		currentPosition += Attribute.INT_SIZE;
+		entry.putInt(currentPosition, blockTotal);
+		currentPosition += Attribute.INT_SIZE;
+		
+		//Write all of the indexed attributes
+		int index = 0;
+		for (index = 0; index < indexed.size(); index++) {
+			entry.putInt(currentPosition, indexed.get(index).intValue());
+			currentPosition += Attribute.INT_SIZE;
+		} 
+		//Then blank space for them
+		while (index < 10){
+			entry.putInt(currentPosition, -1);
+			index++;
+			currentPosition += Attribute.INT_SIZE;
+		}
+		
+		//Now write the names of all of the index files, for some reason
+		for (index = 0; index < indexFiles.size(); index++) {
+			for (int character = 0; character < 15; character++) {
+				if (character < indexFiles.get(index).length()) {
+					char ch = indexFiles.get(index).charAt(character);
+					entry.putChar(currentPosition, ch);
+					currentPosition += Attribute.CHAR_SIZE;
 				} else {
-					buf.putChar(98+k*2+j*30, BufferManager.NULL_CHARACTER);
+					entry.putChar(currentPosition, 
+						BufferManager.NULL_CHARACTER);
+					currentPosition += Attribute.CHAR_SIZE;
 				}
 			}
 		}
-		return buf;
+		for (index = 0; index < 10; index++) {
+			for (int character = 0; character < 15; character++) {
+				entry.putChar(currentPosition, 
+					BufferManager.NULL_CHARACTER);
+				currentPosition += Attribute.CHAR_SIZE;
+			}
 		}
+		
+		System.out.println("Wrote relation data ending on byte "
+			+ currentPosition + "...");
+		return entry;
+	}
 	
 	
 	public int getBlockTotal() {
