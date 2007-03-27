@@ -100,8 +100,8 @@ public class SystemCatalog {
     			}
     			
     			//Say which record we are loading
-    			System.out.println("Loading relation " + relationmarker
-    				+ " at block " + 1 + " and byte " + relationpos);
+    			//System.out.println("Loading relation " + relationmarker
+    			//	+ " at block " + 1 + " and byte " + relationpos);
     			
     			for (int k = 0; k < 15; k++) {
     				if (relbuffer.getChar(relationpos) != BufferManager.NULL_CHARACTER) {
@@ -197,7 +197,8 @@ public class SystemCatalog {
 //    			 System.out.println("" + used.getType());
     			 attributes.add(used);
     			 System.out.println("Loading attribute " + name 
-    					 + " to relation " + rID);
+    					 + " to relation " 
+    					 + relationHolder.getRelation(rID).getName());
     			 relationHolder.getRelation(rID).addAttribute(used);
     			 
     		 }
