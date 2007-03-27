@@ -1,3 +1,4 @@
+package dbase;
 /*
 *	CS 4420: Database System Implementation
 *	Class Project - Code for Implementation of Indexing using B+ Trees
@@ -17,7 +18,7 @@
 *	java.nio classes.	
 *
 */
-package dbase;
+
 
 
 import java.io.FileNotFoundException;
