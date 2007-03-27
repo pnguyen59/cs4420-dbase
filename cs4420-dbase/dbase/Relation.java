@@ -170,8 +170,10 @@ public class Relation {
 	
 	public boolean addRecord (ByteBuffer block, String record, String attribute) {
     	//Parse the record to be inserted into its single attributes
-    	String [] attributeValues = record.substring(record.indexOf("(")+1,record.indexOf(")")).split(",");
-    	String [] attributeNames = attribute.substring(attribute.indexOf("(")+1,attribute.indexOf(")")).split(",");
+    	String [] attributeValues = record.substring(
+    		record.indexOf("(")+1,record.indexOf(")")).split(",");
+    	String [] attributeNames = attribute.substring(
+    		attribute.indexOf("(")+1,attribute.indexOf(")")).split(",");
     	//GEt the start of the record
     	int offset = this.getLastRecordStart();
     	
@@ -208,7 +210,7 @@ public class Relation {
     		modifydate = (new Date()).getTime();
     	}
     	
-    	System.out.println(block.asCharBuffer());
+    	//System.out.println(block.asCharBuffer());
     	this.records++;
     	//Return that the record was added to the relation.
 		return true;
