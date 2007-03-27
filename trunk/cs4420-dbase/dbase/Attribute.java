@@ -98,28 +98,30 @@ public class Attribute {
 		this.length = length;
 	}
 
-	public Attribute(String name2, long aid, long rid, char type2, char nullable2, int distinct2, int length2) {
-		this.name = name2;
-		this.ID = aid;
-		this.parent = rid;
-		if (type2 == 'I') {
-			type = Type.Int;
-		} else if (type2 == 'L') {
-			type = Type.Long;
-		} else if (type2 == 'B') {
-			type = Type.Boolean;
-		} else if (type2 == 'C') {
-			type = Type.Char;
-			this.length = length2;
-		} else if (type2 == 'F') {
-			type = Type.Float;
-		} else if (type2 == 'D') {
-			type = Type.DateTime;
-		} else if (type2 == 'U') {
-			type = Type.Undeclared;
-		}
-
-		nullable = (nullable2 == 't');
+	/**Creates a new instance of the type Attribute.  This particular 
+	 * constructor takes in a variable for the length of the attribute,
+	 * making this construct for use with type CHAR only.
+	 * @param newName The name of the new attribute.
+	 * @param newAttributeID The ID of the new attribute.
+	 * @param newRelationID The ID of the relation holding the attribute.
+	 * @param newType The Attribute.Type type of the new attribute.
+	 * @param newNullable Whether or not this attribute can be null.
+	 * @param newDistinct The number of distinct values this attribute has.
+	 * @param newLength The length of this attribute.
+	 */
+	public Attribute(final String newName, final long newAttributeID,
+			final long newRelationID, final Attribute.Type newType, 
+			final char newNullable, final int newDistinct, 
+			final int newLength) {
+		
+		//Assign the things to the new attribute from the constructor
+		this.name = newName;
+		this.ID = newAttributeID;
+		this.parent = newRelationID;
+		this.type = newType;
+		this.nullable = (newNullable == 't');
+		this.distinct = newDistinct;
+		this.length = newLength;
 	}
 
 	public int getCharLength() {
