@@ -229,7 +229,7 @@ public class Attribute {
 	 * @param newType The string representation of the type we want.
 	 * @return The <b>Type</b> representation of the passed string.
 	 */
-	public Type stringToType(final String newType) {
+	public static Type stringToType(final String newType) {
 		
 		Type returnType = Type.Undeclared;
 		
