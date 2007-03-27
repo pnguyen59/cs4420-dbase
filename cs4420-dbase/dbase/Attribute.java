@@ -224,6 +224,37 @@ public class Attribute {
 		this.values = values;
 	}
 	
+	/**This method converts the string representation of a type to the 
+	 * <b>Type</b> representation of the type.
+	 * @param newType The string representation of the type we want.
+	 * @return The <b>Type</b> representation of the passed string.
+	 */
+	public Type stringToType(final String newType) {
+		
+		Type returnType = Type.Undeclared;
+		
+		if (newType.toLowerCase().equalsIgnoreCase("int")) {
+			returnType = Attribute.Type.Int;
+		} else if (newType.toLowerCase().equalsIgnoreCase("long")) {
+			returnType = Attribute.Type.Long;
+		} else if (newType.toLowerCase().equalsIgnoreCase("boolean") 
+				|| newType.toLowerCase().equalsIgnoreCase("bool")) {
+			returnType = Attribute.Type.Boolean;
+		} else if (newType.toLowerCase().equalsIgnoreCase("char") 
+				|| newType.toLowerCase().equalsIgnoreCase("character")) {
+			returnType = Attribute.Type.Char;
+		} else if (newType.toLowerCase().equalsIgnoreCase("float")) {
+			returnType = Attribute.Type.Float;
+		} else if (newType.toLowerCase().equalsIgnoreCase("double")) {
+			returnType = Attribute.Type.Double;
+		} else if (newType.toLowerCase().equalsIgnoreCase("datetime")) {
+			returnType = Attribute.Type.DateTime;
+		} else {
+			returnType = Attribute.Type.Undeclared;
+		}	
+		return returnType;
+	}
+	
 	public ByteBuffer writeCrapToBuffer(){
 		ByteBuffer buf = ByteBuffer.wrap(new byte[SystemCatalog.ATT_REC_SIZE]);
 		for (int j=0; j<15; j++){
