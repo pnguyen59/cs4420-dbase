@@ -214,7 +214,7 @@ public class BufferManager {
     	
     	//If it isn't already in the buffer, then we need to ask storage manager
     	//to get it for us.
-    	ByteBuffer result = storage.read(catalog, (block - SystemCatalog.REL_OFFSET)/(StorageManager.BLOCK_SIZE / SystemCatalog.REL_REC_SIZE));
+    	ByteBuffer result = storage.read(catalog, block);
     	//Then we need to put it in the buffer because it was just read.
     	pin(addToBuffer(result, block));
     	
@@ -230,17 +230,20 @@ public class BufferManager {
      */
     public ByteBuffer readAttributeCatalog(String catalog, final long block) {
     	
+    	//Make the phony physical address for attribute blocks
+    	long physicalAddress = makeAttributeAddress(block);
+    	
     	//Then see if it is already in memory.  If it is then get it from
     	//the buffer and return it.  This is the point of a buffer.
-    	if (isInBuffer(block)) {
-    		return this.getFromBuffer(block);
+    	if (isInBuffer(physicalAddress)) {
+    		return this.getFromBuffer(physicalAddress);
     	}
     	
     	//If it isn't already in the buffer, then we need to ask storage manager
     	//to get it for us.
     	ByteBuffer result = storage.read(catalog, block);
     	//Then we need to put it in the buffer because it was just read.
-    	pin(addToBuffer(result, block));
+    	pin(addToBuffer(result, physicalAddress));
     	    	
         return result;
     }
@@ -401,7 +404,7 @@ public class BufferManager {
      * and the block.
      */
     public static long makeAttributeAddress(final long block) {
-    	return block * SystemCatalog.ATT_OFFSET + block;
+    	return SystemCatalog.ATT_OFFSET + block;
     }
     
     /**This method takes in a physical address, looks up its logical address
