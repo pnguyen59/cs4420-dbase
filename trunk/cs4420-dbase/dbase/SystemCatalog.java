@@ -500,7 +500,11 @@ public class SystemCatalog {
     		relation.addRecord(block, vallist, attlist);
     	}
     	
-
+    	//Update the record for this relation
+    	ByteBuffer entry = relation.writeCrapToBuffer();
+    	writeoutRel(entry, relation.getID());
+    	
+    	
     	return true;
     }
     
