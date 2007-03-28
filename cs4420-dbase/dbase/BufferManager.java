@@ -202,9 +202,11 @@ public class BufferManager {
      * @param block the block number.
      * @return The ByteBuffer denoted.
      */
-    public ByteBuffer readRel(String catalog, final long block) {
+    public ByteBuffer readRelationCatalog(final String catalog, 
+    		final long block) {
     	
     	//First generate the physical address of the block
+    	long physical = makeRelationAddress(block);
     	
     	//Then see if it is already in memory.  If it is then get it from
     	//the buffer and return it.  This is the point of a buffer.
@@ -394,18 +396,29 @@ public class BufferManager {
      */
     public static long makePhysicalAddress(final int relation,
     		final long block) {
-    	return block * BLOCK_ADDRESS_OFFSET + relation;
+    	return block + BLOCK_ADDRESS_OFFSET * (relation + 1);	
     }
     
-    /**This method will translate an attribute block number in that
+    /**This method will translate an attribute catalog block number
      * into a physical address.
-     * @param block The block in that relation.
+     * @param block The block in the attribute catalog.
      * @return The physical address produced by the combination of the relation
      * and the block.
      */
     public static long makeAttributeAddress(final long block) {
     	return SystemCatalog.ATT_OFFSET + block;
     }
+    
+    /**This method will translate a relation catalog block number
+     * into a physical address.
+     * @param block The block in the relation catalog.
+     * @return The physical address produced by the combination of the relation
+     * and the block.
+     */
+    public static long makeRelationAddress(final long block) {
+    	return SystemCatalog.REL_OFFSET + block;
+    }
+    
     
     /**This method takes in a physical address, looks up its logical address
      * in the buffer and returns the MappedByteBuffer representing the 
