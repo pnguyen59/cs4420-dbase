@@ -239,6 +239,8 @@ public class Relation {
 	public int getIndexByName(final String name) {
 		for (int index = 0; index < attributes.size(); index++) {
 			Attribute current = (Attribute) attributes.get(index);
+			//System.out.println("Comparing " + name +
+				//	" and " + current.getName());
 			if (name.equalsIgnoreCase(current.getName())) {
 				return index;
 			}
