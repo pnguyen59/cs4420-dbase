@@ -523,8 +523,9 @@ public class SystemCatalog {
     }
     
     private String parseComparison(String condition) {
-    	String tail = condition.split("\\s")[3];
-    	System.out.println(tail);
+    	String tail = condition.split("\\s+")[3];
+    	//System.out.println("Condition of select: " + condition + "...");
+    	//System.out.println("Tail found to be " + tail + "...");
     	return (tail.split("\\]"))[0];
     }
     
@@ -577,8 +578,8 @@ public class SystemCatalog {
     			}
     		}
     	}
-    	System.out.println("Found the WHERE clause to be " + whereClause
-    			+ "...");
+    	//System.out.println("Found the WHERE clause to be " + whereClause
+    	//		+ "...");
     	
     	return whereClause;
     }
@@ -862,8 +863,8 @@ public class SystemCatalog {
         	//}
     		//System.out.println(attributeIndex);
 			String value = values[attributeIndex].trim();
-			System.out.println("Comparing " + value + " and "
-    				+ variable);
+			//System.out.println("Comparing " + value + " and "
+    		//		+ variable);
     		if (value.equalsIgnoreCase(variable)) {
     	    	//for (int i = 0; i < values.length; i++) {
     	    		//System.out.println( "Value: " + values[i]);
@@ -908,7 +909,7 @@ public class SystemCatalog {
     	//Make a whole mess of tables
     	int tables = 9;
     	String tableNumber = "TABLE_NUMBER_";
-    	for (int table = 1; table <= tables; table++) {
+    	/*for (int table = 1; table <= tables; table++) {
         	sc.createTable("CREATE TABLE " + tableNumber + table 
         		+ " (CHAR" + table + " CHAR 5)", "key");
     	}
@@ -922,14 +923,14 @@ public class SystemCatalog {
     			sc.insert(insert);
     			System.out.println(insert);
     		}
-    	}
+    	}*/
     	
     	sc.buffer.flush();
     	
-    	for (int table = 2; table <= tables; table++) {
+    	for (int table = 1; table <= tables; table++) {
     		String select = "SELECT * FROM TABLE " + tableNumber + table;
     		select = select + " [WHERE CHAR" + table + " = ";
-    		select = select + " " + 1 * table + "]";
+    		select = select + " " + 3 * table + "]";
     		System.out.println(select);
     		String [] result = sc.selectFromTable(select);
     		for (int index = 0; index < result.length; index++) {
