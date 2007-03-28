@@ -573,6 +573,9 @@ public class SystemCatalog {
     			}
     		}
     	}
+    	System.out.println("Found the WHERE clause to be " + whereClause
+    			+ "...");
+    	
     	return whereClause;
     }
     
