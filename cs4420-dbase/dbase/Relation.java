@@ -126,7 +126,8 @@ public class Relation {
 
 	public boolean addRecord (ByteBuffer block, String record) {
     	//Parse the record to be inserted into its single attributes
-    	String [] attributeValues = record.substring(record.indexOf("(")+1,record.indexOf(")")).split(",");
+    	String [] attributeValues =
+    		record.substring(record.indexOf("(")+1,record.indexOf(")")).split(",");
     	
     	//GEt the start of the record
     	int start = this.getLastRecordStart();
@@ -154,21 +155,22 @@ public class Relation {
     			block.putDouble(start, Double.parseDouble(
         			attributeValues[attribute]));
         	}
-    		
-    		
-    		
+    		  		
     		//Then for the next attribute, move past this one's size.
     		start += currentAttribute.getSize();
     		modifydate = (new Date()).getTime();
     	}
     	
-    	System.out.println(block.asCharBuffer());
+    	//System.out.println("Added a record to relation " + relationname
+    	//		+ " Block now contains " + block.asCharBuffer() + "...");
     	this.records++;
     	//Return that the record was added to the relation.
 		return true;
 	}
 	
-	public boolean addRecord (ByteBuffer block, String record, String attribute) {
+	public boolean addRecord(final ByteBuffer block, final String record, 
+		final String attribute) {
+		
     	//Parse the record to be inserted into its single attributes
     	String [] attributeValues = record.substring(
     		record.indexOf("(")+1,record.indexOf(")")).split(",");
@@ -179,13 +181,15 @@ public class Relation {
     	
     	//Go through the attributes add add the things.
     	for (int j = 0; j < attributeNames.length; j++) {
-    		
-    		
-    		
+    			
     		//Get the current attribute from the list of attributes.
-    		Attribute currentAttribute = getAttributeByName(attributeNames[j].trim());
+    		Attribute currentAttribute = 
+    			getAttributeByName(attributeNames[j].trim());
     		
     		int start = offset + getAttributeBlockPosition(currentAttribute);
+    		
+    		//System.out.println("Adding attribute " + attributeNames[j] 
+    		//	+ " a byte " + start  + "...");
     		
     		//Find out what kind it is, write it to the block.
     		if (currentAttribute.getType() == Attribute.Type.Int) {
@@ -210,17 +214,18 @@ public class Relation {
     		modifydate = (new Date()).getTime();
     	}
     	
-    	//System.out.println(block.asCharBuffer());
+    	//System.out.println("Added a record to relation " + relationname
+    	//		+ " Block now contains " + block.asCharBuffer() + "...");
     	this.records++;
     	//Return that the record was added to the relation.
 		return true;
 	}
 	
 	public int getAttributeBlockPosition(Attribute att){
-		if (attributes.indexOf(att)== -1) return -1;
+		if (attributes.indexOf(att) == -1) return -1;
 		else {
 			int size = 0;
-			for (int j=0; j<attributes.indexOf(att); j++){
+			for (int j = 0; j < attributes.indexOf(att); j++){
 				size += attributes.get(j).getSize();
 			}
 			return size;
@@ -596,11 +601,12 @@ public class Relation {
 			}
 			
 			if (lastRecord) {
+				//System.out.println("All records in block found...");
 				break;
 			}		
 		} //End looking for records
 		
-		//System.out.println("Found " + recordsFound + " records");
+		//ystem.out.println("Found " + recordsFound + " records");
 		
 		//Now parse the records and add them to the list to return
 		String [][] recordList = new String [recordsFound][attributes.size()];
