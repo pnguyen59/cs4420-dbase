@@ -56,14 +56,14 @@ public class SystemCatalog {
     	try {
     		FileChannel relcat = StorageManager.openFile(relationcatalog);
     		FileChannel attcat = StorageManager.openFile(attributecatalog);
-    		System.out.println("Loaded em again");
+    		//System.out.println("Loaded em again");
     		relsize = (int) (relcat.size() / (int) StorageManager.BLOCK_SIZE);
     		attsize = (int) (attcat.size() / (int) StorageManager.BLOCK_SIZE);
-    		System.out.println(relsize);
-    		System.out.println(attsize);
+    		//System.out.println(relsize);
+    		//System.out.println(attsize);
     		relcat.close();
     		attcat.close();
-    		System.out.println("Closed em.");
+    		//System.out.println("Closed em.");
     	} catch(IOException e) {
     		System.exit(1);
     	}
@@ -76,7 +76,7 @@ public class SystemCatalog {
 
     		//Load the block for this relation and duplicate it
     		relbuffer = buffer.readRelationCatalog(relationcatalog, i);
-    		System.out.println(relbuffer.asCharBuffer());
+    		//System.out.println(relbuffer.asCharBuffer());
     		relbuffer = relbuffer.duplicate();
     		
     		System.out.println("Loading relation data from block " + i
@@ -172,10 +172,9 @@ public class SystemCatalog {
     	ByteBuffer attbuffer;
     	int attposition = 0;
     	 for (int i = 0; i < attsize; i++) {
-    		 attbuffer = buffer.readAttributeCatalog(
-    			attributecatalog, 
-    			(attributemarker * ATT_REC_SIZE) / StorageManager.BLOCK_SIZE);
+    		 attbuffer = buffer.readAttributeCatalog(attributecatalog, i);
     		 attbuffer = attbuffer.duplicate();
+    		 attposition = 0;
 //    		 System.out.println("Error Isn't Here Either.");
     		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
 
@@ -223,7 +222,6 @@ public class SystemCatalog {
     			 relationHolder.getRelation(rID).addAttribute(used);
     			 
     		 }
-    		 attposition = 0;
     	 }
 //    	 System.out.println("Finished Loading");
     }
@@ -395,26 +393,8 @@ public class SystemCatalog {
     		newRelation.addAttribute(newAttribute);
     		attributes.add(newAttribute);
     		
-    		//Add the entry fo this attribute to the catalog. 
-    		//Determine which block this thing belongs in.
-    		int blockNumber = (int) newAttribute.getID() 
-    			/ (StorageManager.BLOCK_SIZE / ATT_REC_SIZE);
-    		//How many bytes into the block is this attribute?
-    		int offset = ((int) newAttribute.getID() 
-    			% (StorageManager.BLOCK_SIZE / ATT_REC_SIZE)) * ATT_REC_SIZE;
-    		/*System.out.println("Adding attribute " + attributeName 
-    				+ " to the attribute catalog at block " + blockNumber
-    				+ " and byte " + offset + "...");*/
-    		//Now get the entry for this biotch in the attribute catalog
-    		ByteBuffer entry = newAttribute.writeCrapToBuffer();
-    		//Get the block that this new attribute should be recorded in
-    		ByteBuffer block = buffer.readAttributeCatalog(
-    			SELECT_ATTRIBUTE_CATALOG, blockNumber);
-    		//Put the new attribute at the correct place in the block
-    		byte [] array = entry.array();
-    		for (int index = 0; index < array.length; index++) {
-    			block.put(index + offset, array[index]);
-    		}
+    		//Write the new attribute to the catalog
+    		writeOutAttribute(newAttribute);
     	}
     	
     	//System.out.println(relationHolder);
@@ -965,8 +945,8 @@ public class SystemCatalog {
 		int recordInBlock = rID % recordsPerBlock;
 		int offSet = recordInBlock * REL_REC_SIZE;
 		
-		System.out.println("Writing relation information to block "
-			+ blockNumber + " at offset " + offSet + "...");
+		//System.out.println("Writing relation information to block "
+		//	+ blockNumber + " at offset " + offSet + "...");
 		
     	//See if this relation record will start a new block
     	if (offSet == 0) {
@@ -983,9 +963,47 @@ public class SystemCatalog {
 		for (int index = 0; index < array.length; index++) {
 			block.put(index + offSet, array[index]);
 		}
-		System.out.println(block.asCharBuffer());
+		//System.out.println(block.asCharBuffer());
 		
 		buffer.writeRelCatalog(relationcatalog, blockNumber, block);
+	}
+	
+	public boolean writeOutAttribute(Attribute attribute) {
+		//Add the entry fo this attribute to the catalog. 
+		
+		//Find out which block this attributes meatadata should go in
+		int recordsPerBlock = StorageManager.BLOCK_SIZE / ATT_REC_SIZE;
+		//System.out.println("Records per block " + recordsPerBlock);
+		long blockNumber = attribute.getID() / recordsPerBlock;
+		int recordInBlock = (int) attribute.getID() % (int) recordsPerBlock;
+		int offSet = recordInBlock * ATT_REC_SIZE;
+		
+		System.out.println("Writing attribute " + attribute.getID()
+				+ " information to block "
+				+ blockNumber + " at offset " + offSet + "...");
+
+		//See if this attribute record will start a new block
+		if (offSet == 0) {
+			buffer.writeAttCatalog(attributecatalog, blockNumber, 
+					BufferManager.getEmptyBlock());
+		}
+		
+		//Get the block to write this relations metadata to from the buffer
+		ByteBuffer block = buffer.readAttributeCatalog(
+			attributecatalog, blockNumber);
+
+		//Now actually write the attributes data into the block
+		ByteBuffer entry = attribute.writeCrapToBuffer();
+		byte [] array = entry.array();
+		for (int index = 0; index < array.length; index++) {
+			block.put(index + offSet, array[index]);
+		}
+		System.out.println("Attribute entry " + entry.asCharBuffer());
+		System.out.println("Block " + block.asCharBuffer());
+		
+		buffer.writeAttCatalog(attributecatalog, blockNumber, block);
+		
+		return true;
 	}
 	
 	
@@ -994,8 +1012,8 @@ public class SystemCatalog {
     	SystemCatalog sc = new SystemCatalog();
 
     	//Make a whole mess of tables
-    	int tables = 12;
-    	String tableNumber = "TABLE_NUMBER_";
+    	int tables = 1000;
+    	String tableNumber = "TABLE_";
     	for (int table = 1; table <= tables; table++) {
         	sc.createTable("CREATE TABLE " + tableNumber + table 
         		+ " (CHAR" + table + " CHAR 5)", "key");
