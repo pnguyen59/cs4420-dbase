@@ -635,11 +635,12 @@ public class Relation {
 	 * relation.
 	 * @return A byte buffer containing the schema of this relaion.
 	 */
-	public ByteBuffer writeCrapToBuffer(){
-		ByteBuffer entry = ByteBuffer.wrap(new byte[SystemCatalog.REL_REC_SIZE]);
+	public ByteBuffer writeCrapToBuffer() {
+		ByteBuffer entry = 
+			ByteBuffer.wrap(new byte[SystemCatalog.REL_REC_SIZE]);
 		int currentPosition = 0;
 		
-		for (int j=0; j<15; j++){
+		for (int j = 0; j < 15; j++){
 			if (j < relationname.length()){
 				char character = relationname.charAt(j);
 				entry.putChar(j * 2, character);
@@ -647,6 +648,7 @@ public class Relation {
 				entry.putChar(j * 2,BufferManager.NULL_CHARACTER);
 			}
 			currentPosition += Attribute.CHAR_SIZE;
+			//System.out.println("Currently writing at " + currentPosition);
 		}
 		
 		//Write all of the information about this relation
@@ -660,18 +662,21 @@ public class Relation {
 		currentPosition += Attribute.INT_SIZE;
 		entry.putInt(currentPosition, blockTotal);
 		currentPosition += Attribute.INT_SIZE;
+		//System.out.println("Currently writing at " + currentPosition);
 		
 		//Write all of the indexed attributes
 		int index = 0;
 		for (index = 0; index < indexed.size(); index++) {
 			entry.putInt(currentPosition, indexed.get(index).intValue());
 			currentPosition += Attribute.INT_SIZE;
+			//System.out.println("Currently writing at " + currentPosition);
 		} 
 		//Then blank space for them
 		while (index < 10){
 			entry.putInt(currentPosition, -1);
 			index++;
 			currentPosition += Attribute.INT_SIZE;
+			//System.out.println("Currently writing at " + currentPosition);
 		}
 		
 		//Now write the names of all of the index files, for some reason
@@ -686,18 +691,26 @@ public class Relation {
 						BufferManager.NULL_CHARACTER);
 					currentPosition += Attribute.CHAR_SIZE;
 				}
-			}
-		}
-		for (index = 0; index < 10; index++) {
-			for (int character = 0; character < 15; character++) {
-				entry.putChar(currentPosition, 
-					BufferManager.NULL_CHARACTER);
-				currentPosition += Attribute.CHAR_SIZE;
+				//System.out.println("Currently writing at " + currentPosition);
 			}
 		}
 		
-		System.out.println("Wrote relation data for " 
-				+ this.relationname + "...");
+		
+		while (index < 10) {
+			index++;
+			for (int character = 0; character < 15; character++) {
+				entry.putChar(currentPosition, 
+					BufferManager.NULL_CHARACTER);
+				//System.out.println("Writing index " + index + " and character "
+				//	+ character);
+				currentPosition += Attribute.CHAR_SIZE;
+			}
+		}
+		//System.out.println("Finished writing indexe names at " 
+		//	+ currentPosition);
+		
+		//System.out.println("Wrote relation data for " 
+		//		+ this.relationname + "...");
 		return entry;
 	}
 	
