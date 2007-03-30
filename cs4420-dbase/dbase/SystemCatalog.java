@@ -59,6 +59,8 @@ public class SystemCatalog {
     		System.out.println("Loaded em again");
     		relsize = (int) (relcat.size() / (int) StorageManager.BLOCK_SIZE);
     		attsize = (int) (attcat.size() / (int) StorageManager.BLOCK_SIZE);
+    		System.out.println(relsize);
+    		System.out.println(attsize);
     		relcat.close();
     		attcat.close();
     		System.out.println("Closed em.");
@@ -73,29 +75,32 @@ public class SystemCatalog {
     	for(int i = 0; i < relsize; i++) {
 
     		//Load the block for this relation and duplicate it
-    		relbuffer = buffer.readRelationCatalog(relationcatalog, 
-    				(relationmarker * REL_REC_SIZE) 
-    				/ StorageManager.BLOCK_SIZE);
+    		relbuffer = buffer.readRelationCatalog(relationcatalog, i);
+    		System.out.println(relbuffer.asCharBuffer());
     		relbuffer = relbuffer.duplicate();
     		
+    		System.out.println("Loading relation data from block " + i
+    			+ "...");
+    		
     		//Find the position within this block
-    		relationpos = ((int) relationmarker * REL_REC_SIZE)
-    			% StorageManager.BLOCK_SIZE;
+    		relationpos = 0;
     		
     		//System.out.println("Error Isn't Here.");
-    		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; j++) {
+    		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; 
+    			j++) {
 //    			Check the entire length of the record.  If there is one
     			//non-null, there is a record
     			ByteBuffer nullCheckBuffer = relbuffer.duplicate();
     			boolean lastRecord = true;
     			for (int index = relationpos; 
-    				index < relationpos + ATT_REC_SIZE; index++) {
+    				index < StorageManager.BLOCK_SIZE; index++) {
     				if ((char) (nullCheckBuffer.get(index)) != '\0') {
     					lastRecord = false;
     				}
     			}
     			if (lastRecord) {
-    				System.out.println("Loaded all relation data...");
+    				System.out.println("Loaded all relation data from block "
+    					+ i + "...");
     				break;
     			}
     			
@@ -110,6 +115,8 @@ public class SystemCatalog {
     				}
     				relationpos += Attribute.CHAR_SIZE;
     			}
+				//System.out.println("Loading relation name at " 
+    			//		+ relationpos);
     			
     			ID = relbuffer.getInt(relationpos);
     			//System.out.println(ID);
@@ -128,6 +135,8 @@ public class SystemCatalog {
     			relationpos += Attribute.INT_SIZE;
     			relname = "";
     			String index = "";
+    			//System.out.println("Relation attributes loaded at byte " 
+        		//		+ relationpos);
     			
     			//Load which attributes are index
     			for(int l = 0; l < 10; l++) {
@@ -136,6 +145,9 @@ public class SystemCatalog {
     				}
 					relationpos += Attribute.INT_SIZE;
     			}
+    			//System.out.println("Indexed attributes loaded at byte " 
+    			//	+ relationpos);
+    			
     			//Load the names of the indexes
     			for (int m = 0; m < 10; m++) {
     				for (int n = 0; n < 15; n++) {
@@ -148,7 +160,8 @@ public class SystemCatalog {
     				rel.addIndex(index);
     				index = new String();
     			}
-    			
+    			//System.out.println("Index names loaded at byte " 
+        		//		+ relationpos);
     			//go to the next relation
     			relationmarker++;	
     			
@@ -329,6 +342,14 @@ public class SystemCatalog {
     		relation.indexOf(" ", relation.toLowerCase().indexOf("table"))
     		+ 1, relation.indexOf("(")).trim();
     	
+    	//If a table with this name already exists, print the error and return
+    	//false
+    	if (relationHolder.getRelationByName(relationName) != -1) {
+    		System.out.println("Table " + relationName
+    			+ " already exists...");
+    		return false;
+    	}
+    	
     	//Get the ID of this new relation from relation holder, create a 
     	//new relation with it and add it to relationHolder and add it to the
     	//catalog
@@ -374,7 +395,6 @@ public class SystemCatalog {
     		newRelation.addAttribute(newAttribute);
     		attributes.add(newAttribute);
     		
-    		
     		//Add the entry fo this attribute to the catalog. 
     		//Determine which block this thing belongs in.
     		int blockNumber = (int) newAttribute.getID() 
@@ -399,6 +419,39 @@ public class SystemCatalog {
     	
     	//System.out.println(relationHolder);
         return true;
+    }
+    
+    
+    /**This method will evaluate an expression passed to it for truth.
+     * @param leftHandSide The left hand side of the operation.
+     * @param rightHandSide The right hand side of the operation.
+     * @param operation The comparison operator.
+     * @return Whether or not the comparison is true;
+     */
+    private boolean evaluateWhereClause(final String leftHandSide,
+    	final String rightHandSide, final String operation) {
+    	
+    	//Trim all of the things
+    	String leftHandTrimmed = leftHandSide.trim();
+    	String rightHandTrimmed = rightHandSide.trim();
+    	String operationTrimmed = operation.trim();
+    	
+    	
+    	//System.out.println("Evaluating " + leftHandTrimmed + " " 
+    	//	+ operationTrimmed + " " + rightHandTrimmed);
+    	
+    	//Now go through the possible operations
+    	if (operationTrimmed.equalsIgnoreCase("=")) {
+    		return (leftHandTrimmed.equalsIgnoreCase(rightHandTrimmed));
+    	} else if (operationTrimmed.equalsIgnoreCase(">")) {
+    		return (Integer.parseInt(leftHandTrimmed) 
+    			> Integer.parseInt(rightHandTrimmed));
+    	} else if (operationTrimmed.equalsIgnoreCase("<")) {
+    		return (Integer.parseInt(leftHandTrimmed) 
+        		< Integer.parseInt(rightHandTrimmed)); 
+    	}
+    	
+    	return false;	
     }
     
     
@@ -522,66 +575,88 @@ public class SystemCatalog {
     	return true;
     }
     
-    private String parseComparison(String condition) {
-    	String tail = condition.split("\\s+")[3];
-    	//System.out.println("Condition of select: " + condition + "...");
-    	//System.out.println("Tail found to be " + tail + "...");
-    	return (tail.split("\\]"))[0];
+    /**This method will parse out the comparison against which the selection
+     * is being made
+     * @param whereClause The WHERE clause.
+     * @return The comparison we are comparing the records against.
+     */ 
+    private String parseComparison(final String whereClause) {
+    	return whereClause.split("\\s+")[3];
+    }
+    
+    /**This method will parse out the operation (=, >, <) which is being used
+     * in the select.
+     * @param whereClause The WHERE clause.
+     * @return The comparison we are comparing the records against.
+     */ 
+    private String parseComparisonOperation(final String whereClause) {
+    	return whereClause.split("\\s+")[2];
     }
     
     private String parseConditionAttribute(final String condition) {
     	//TODO allow it to handle more than the word after the where.
     	//At this point it should be the second word
-//    	System.out.println(condition);
+    	//System.out.println(condition);
     	return condition.split("\\s")[1]; 	
     }
     
-    private String [] parseSelectAttributes(final String selection) {
+    /**This method parses the attributes to be selected from a SELECT
+     * statement and returns them an an array.
+     * @param selection The SELECT statement.
+     * @return The attributes requested from the SELECT.
+     */
+    public String [] parseSelectAttributes(final String selection) {
     	//Split up the selection statement
     	String [] commands = selection.split("\\s");
     	//And the return array
-    	String attributes = "";
+    	String selectAttributes = "";
     	
     	//Start on index 1 because that's where the attributes start
     	for (int word = 1; word < commands.length; word++) {
     		if (commands[word].equalsIgnoreCase("FROM")) {
     			break;
     		} else { 
-    			attributes = attributes + " " + commands[word];
+    			selectAttributes = selectAttributes + " " + commands[word];
     		}
     	}
-    	return attributes.split("\\s");
+    	return selectAttributes.split("\\s");
     }
     
-    private String parseSelectTable(final String selection) {
-    	//Fist thing to do is to find the relation that this thing works on.
-    	String [] commands = selection.split("\\s");
-    	//Find the workd "TABLE" and we know the word after that
-    	//is the relation.
+    /**This method parses out the table from which the selection is being
+     * made and returns it.
+     * @param selection The select statement.
+     * @return The name of the table being selected from.
+     */
+    public String parseSelectTable(final String selection) {
+    	//Fist thing to do is to split up the command on all spaces
+    	String [] commands = selection.split("\\s+");
+    	//Find the word "FROM" and we know the word after that
+    	//is the TABLE key word, or the relation.
     	for (int index = 0; index < commands.length; index++) {
-    		if (commands[index].equalsIgnoreCase("TABLE")) {
-    			return commands[index + 1];
+    		if (commands[index].equalsIgnoreCase("FROM")) {
+    			//If TABLE is the word after from, the word after that is
+    			//the relation, or if no TABLE then it is the relation
+    			if (commands[index + 1].equalsIgnoreCase("TABLE")) {
+    				return commands[index + 2];
+    			} else {
+    				return commands[index + 1];
+    			}
     		}
     	}
     	return null;
     }
     
-    private String parseWhereClause(final String selection) {
-    	//Find the where statement.
-    	String [] commands = selection.split("\\s");
-    	String whereClause = "";
+    /**This method parses and returns the WHERE clause from a SELECT
+     * statement.
+     * @param selection The select statement containing the where clause.
+     * @return The WHERE clause.
+     */
+    public String parseWhereClause(final String selection) {
+    	//First find the index of where
+    	int whereIndex = selection.indexOf("WHERE");
     	
-    	for (int index = 0; index < commands.length; index++) {
-    		if (commands[index].equalsIgnoreCase("[WHERE")) {
-    			for (int word = index; word < commands.length; word++) {
-    				whereClause += commands[word] + " ";
-    			}
-    		}
-    	}
-    	//System.out.println("Found the WHERE clause to be " + whereClause
-    	//		+ "...");
-    	
-    	return whereClause;
+    	//Return the substring after that index
+    	return selection.substring(whereIndex);
     }
     
     
@@ -841,8 +916,9 @@ public class SystemCatalog {
     	String conditionAttribute = parseConditionAttribute(whereClause);
     	//System.out.println("On attribute " + conditionAttribute);
     	//Get the variable, what we are comparing the attribute against
-    	String variable = parseComparison(whereClause);
+    	String comparison = parseComparison(whereClause);
     	//System.out.println(variable);
+    	String operation = parseComparisonOperation(whereClause);
     	
     	//Get the relation that this is working on and the index of the
     	//Attribute under scrutiny
@@ -865,7 +941,7 @@ public class SystemCatalog {
 			String value = values[attributeIndex].trim();
 			//System.out.println("Comparing " + value + " and "
     		//		+ variable);
-    		if (value.equalsIgnoreCase(variable)) {
+    		if (evaluateWhereClause(value, comparison, operation)) {
     	    	//for (int i = 0; i < values.length; i++) {
     	    		//System.out.println( "Value: " + values[i]);
     	    	for (int i = 0; i < values.length; i++) {
@@ -884,19 +960,30 @@ public class SystemCatalog {
 		
 		//Find out which block this relations meatadata should go in
 		int recordsPerBlock = StorageManager.BLOCK_SIZE / REL_REC_SIZE;
+		//System.out.println("Records per block " + recordsPerBlock);
 		long blockNumber = rID / recordsPerBlock;
 		int recordInBlock = rID % recordsPerBlock;
 		int offSet = recordInBlock * REL_REC_SIZE;
 		
+		System.out.println("Writing relation information to block "
+			+ blockNumber + " at offset " + offSet + "...");
+		
+    	//See if this relation record will start a new block
+    	if (offSet == 0) {
+    		buffer.writeRelCatalog(relationcatalog, blockNumber, 
+    			BufferManager.getEmptyBlock());
+    	}
+		
 		//Get the block to write this relations metadata to from the buffer
 		ByteBuffer block = buffer.readRelationCatalog(
-				relationcatalog, blockNumber);
+			relationcatalog, blockNumber);
 
 		//Now actually write the relations data into the block
 		byte [] array = entry.array();
 		for (int index = 0; index < array.length; index++) {
 			block.put(index + offSet, array[index]);
 		}
+		System.out.println(block.asCharBuffer());
 		
 		buffer.writeRelCatalog(relationcatalog, blockNumber, block);
 	}
@@ -907,9 +994,9 @@ public class SystemCatalog {
     	SystemCatalog sc = new SystemCatalog();
 
     	//Make a whole mess of tables
-    	int tables = 9;
+    	int tables = 12;
     	String tableNumber = "TABLE_NUMBER_";
-    	/*for (int table = 1; table <= tables; table++) {
+    	for (int table = 1; table <= tables; table++) {
         	sc.createTable("CREATE TABLE " + tableNumber + table 
         		+ " (CHAR" + table + " CHAR 5)", "key");
     	}
@@ -923,14 +1010,14 @@ public class SystemCatalog {
     			sc.insert(insert);
     			System.out.println(insert);
     		}
-    	}*/
+    	}
     	
     	sc.buffer.flush();
     	
     	for (int table = 1; table <= tables; table++) {
     		String select = "SELECT * FROM TABLE " + tableNumber + table;
-    		select = select + " [WHERE CHAR" + table + " = ";
-    		select = select + " " + 3 * table + "]";
+    		select = select + " WHERE CHAR" + table + " = ";
+    		select = select + " " + 3 * table + "";
     		System.out.println(select);
     		String [] result = sc.selectFromTable(select);
     		for (int index = 0; index < result.length; index++) {
