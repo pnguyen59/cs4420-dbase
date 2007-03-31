@@ -249,7 +249,9 @@ public class StorageManager {
     		final ByteBuffer block) {
 
     	//Get the file for the relation and open the channel to it.
+    	//System.out.println("Relation " + relation);
     	Relation currentrelation = relationholder.getRelation(relation);
+    	//System.out.println("Relation " + currentrelation.getName());
     	String file = currentrelation.getFilename();
     	FileChannel channel = openFile(file);
     	
