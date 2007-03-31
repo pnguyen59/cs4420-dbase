@@ -26,7 +26,7 @@ public class SystemCatalog {
 	public static final String SELECT_ATTRIBUTE_CATALOG 
 		= "ATTRIBUTE_CATALOG.ac";
 	
-	public static final String SELECT_RELATION_CATALOG = "RELATION_CATALOG.ac";
+	public static final String SELECT_RELATION_CATALOG = "RELATION_CATALOG.rc";
 	
 	public static final int MAX_NAME_LENGTH = 15;
 	
