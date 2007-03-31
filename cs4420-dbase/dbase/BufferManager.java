@@ -27,7 +27,7 @@ public class BufferManager {
      * the physical address.  At 1000, this limits the DB to 1000 relations.
      * because the physical sddres takes the form of block*offset+relation.
      */
-    public static final int BLOCK_ADDRESS_OFFSET = 1000;
+    public static final int BLOCK_ADDRESS_OFFSET = 10000;
     
     /**The index indicating the time of a block for the clock algorithm in 
      * the lookUp table.
@@ -100,7 +100,12 @@ public class BufferManager {
 				} else {
 					//if it's not pinned decrement and move on
 					lookUpTable[(int) time][TIME_INDEX]--;
-					time++;
+					if (time == 3999) {
+						System.out.println("Back to 0");
+						time = 0;
+					} else {
+						time++;
+					}
 				}
 			}
 		}
@@ -283,8 +288,8 @@ public class BufferManager {
      */
     public boolean writePhysical(final long address, final ByteBuffer data) {
     	//Just write the specified data to the address specified.
-    	storage.write((int) address % BLOCK_ADDRESS_OFFSET,
-    		address / BLOCK_ADDRESS_OFFSET, data);
+    	storage.write((int) address / BLOCK_ADDRESS_OFFSET,
+    		address % BLOCK_ADDRESS_OFFSET, data);
     	return true;
     }
     
@@ -396,7 +401,8 @@ public class BufferManager {
      */
     public static long makePhysicalAddress(final int relation,
     		final long block) {
-    	return block + BLOCK_ADDRESS_OFFSET * (relation + 1);	
+    	return block + BLOCK_ADDRESS_OFFSET * (relation);	
+    	
     }
     
     /**This method will translate an attribute catalog block number
