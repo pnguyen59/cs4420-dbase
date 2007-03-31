@@ -18,13 +18,20 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 public class SystemCatalog {
     
-	public final static String SELECT_ATTRIBUTE_CATALOG = "ATTRIBUTE_CATALOG.ac";
+	public static final String SELECT_ATTRIBUTE_CATALOG 
+		= "ATTRIBUTE_CATALOG.ac";
 	
-	public final static String SELECT_RELATION_CATALOG = "RELATION_CATALOG.ac";
+	public static final String SELECT_RELATION_CATALOG = "RELATION_CATALOG.ac";
+	
+	public static final int MAX_NAME_LENGTH = 15;
+	
+	public static final int MAX_NAME_SIZE = MAX_NAME_LENGTH 
+		* Attribute.CHAR_SIZE;
 	
     public final static long ATT_OFFSET = (long)Math.pow(2, 31);
     
@@ -51,56 +58,159 @@ public class SystemCatalog {
     public SystemCatalog() {
     	attributes = new ArrayList<Attribute>();
     	buffer = BufferManager.getBufferManager();
-    	int relsize = 0, attsize = 0;
+    	loadRelationCatalog();
+    	loadAttributeCatalog();
+    }
+    
+    private void loadAttributeCatalog() {
     	
+    	ByteBuffer block;
+    	int blockPosition = 0;
+    	int catalogBlocks = 0;
+    	
+    	//Try to find the size of the relation catalog so we know how many
+    	//blocks to load
     	try {
-    		FileChannel relcat = StorageManager.openFile(relationcatalog);
-    		FileChannel attcat = StorageManager.openFile(attributecatalog);
+    		FileChannel relationCatalog = 
+    			StorageManager.openFile(relationcatalog);
     		//System.out.println("Loaded em again");
-    		relsize = (int) (relcat.size() / (int) StorageManager.BLOCK_SIZE);
-    		attsize = (int) (attcat.size() / (int) StorageManager.BLOCK_SIZE);
-    		//System.out.println(relsize);
-    		//System.out.println(attsize);
-    		relcat.close();
-    		attcat.close();
+    		catalogBlocks = 
+    			(int) (relationCatalog.size() 
+    			/ (int) StorageManager.BLOCK_SIZE);
+    		relationCatalog.close();
     		//System.out.println("Closed em.");
-    	} catch(IOException e) {
+    	} catch (IOException e) {
+    		System.out.println("Couldn't read relation catalog file size.");
+    		System.out.println("Exiting...");
     		System.exit(1);
     	}
-    	ByteBuffer relbuffer;
-    	int relationpos = 0;
-    	String relname = "";
-    	int ID;
-    	//Relation rel;
-    	for(int i = 0; i < relsize; i++) {
+    		
+    	
+    	for (int currentBlock = 0; currentBlock < catalogBlocks;
+    		currentBlock++) {
+    		
+    		//Load the current block from the attribute catalog and dup it
+    		block = buffer.readAttributeCatalog(attributecatalog,
+    				currentBlock);
+    		block = block.duplicate();
+    		blockPosition = 0;
 
-    		//Load the block for this relation and duplicate it
-    		relbuffer = buffer.readRelationCatalog(relationcatalog, i);
-    		//System.out.println(relbuffer.asCharBuffer());
-    		relbuffer = relbuffer.duplicate();
-    		
-    		System.out.println("Loading relation data from block " + i
-    			+ "...");
-    		
-    		//Find the position within this block
-    		relationpos = 0;
-    		
-    		//System.out.println("Error Isn't Here.");
-    		for(int j = 0; j < StorageManager.BLOCK_SIZE / REL_REC_SIZE; 
-    			j++) {
-//    			Check the entire length of the record.  If there is one
+    		//Loop through all of the records in the block
+    		for (int currentRecord = 0; currentRecord 
+	    		< StorageManager.BLOCK_SIZE / ATT_REC_SIZE; currentRecord++) {
+
+    			//Check the entire length of the record.  If there is one
     			//non-null, there is a record
-    			ByteBuffer nullCheckBuffer = relbuffer.duplicate();
+    			ByteBuffer nullCheckBuffer = block.duplicate();
     			boolean lastRecord = true;
-    			for (int index = relationpos; 
-    				index < StorageManager.BLOCK_SIZE; index++) {
+    			for (int index = blockPosition; 
+    			index < blockPosition + ATT_REC_SIZE; index++) {
     				if ((char) (nullCheckBuffer.get(index)) != '\0') {
     					lastRecord = false;
     				}
     			}
     			if (lastRecord) {
+    				break;
+    			}
+
+    			//Load the name of the attribute
+    			String name = Relation.parseString(block, blockPosition,
+    				MAX_NAME_SIZE);
+    			blockPosition += MAX_NAME_SIZE;
+    			long attributeID = block.getLong(blockPosition);
+    			blockPosition += Attribute.LONG_SIZE;
+    			char nullable = block.getChar(blockPosition);
+    			blockPosition += Attribute.CHAR_SIZE;
+    			Attribute.Type type = Attribute.charToType(
+    					block.getChar(blockPosition));
+    			blockPosition += Attribute.CHAR_SIZE;
+    			long rID = block.getLong(blockPosition);
+    			blockPosition += Attribute.LONG_SIZE;
+    			int distinct = block.getInt(blockPosition);
+    			blockPosition += Attribute.INT_SIZE;
+    			int length = block.getInt(blockPosition);
+    			blockPosition += Attribute.INT_SIZE;
+
+    			Attribute used = 
+    				new Attribute(name, attributeID, rID, type, 
+    						nullable, distinct, length);
+    			//System.out.println("" + used.getType());
+    			attributes.add(used);
+    			System.out.println("Loading attribute " + name 
+    					+ " to relation " 
+    					+ rID);
+    			relationHolder.getRelation(rID).addAttribute(used);
+
+    		} //End block search
+    	} //End block loading
+    }
+    
+    private void loadRelationCatalog() {
+
+    	//A pointer to the buffer manager for reads
+    	buffer = BufferManager.getBufferManager();
+    	//The number of blocks in the catalogs
+    	int catalogBlocks = 0;
+    	
+    	
+    	//Try to find the size of the relation catalog so we know how many
+    	//blocks to load
+    	try {
+    		FileChannel relationCatalog = 
+    			StorageManager.openFile(relationcatalog);
+    		//System.out.println("Loaded em again");
+    		catalogBlocks = 
+    			(int) (relationCatalog.size() 
+    			/ (int) StorageManager.BLOCK_SIZE);
+    		relationCatalog.close();
+    		//System.out.println("Closed em.");
+    	} catch (IOException e) {
+    		System.out.println("Couldn't read relation catalog file size.");
+    		System.out.println("Exiting...");
+    		System.exit(1);
+    	}
+ 
+    	//Loop through all the blocks in the relation catalog
+    	for (int blockNumber = 0; blockNumber < catalogBlocks; blockNumber++) {
+        	
+        	//The ByteBuffer to hold the block in the relation catalog
+        	ByteBuffer block;
+        	//Start at the first relation metadata record in each block
+        	int blockPosition = 0;
+
+    		//Load the block for this relation and duplicate it
+    		block = buffer.readRelationCatalog(relationcatalog, blockNumber);
+    		//Duplicate the block so that we don't actually remove things
+    		//from the buffer
+    		ByteBuffer duplicateBlock = block.duplicate();
+    		
+    		//Print the block we are loading relation data from 
+    		System.out.println("Loading relation data from block " + blockNumber
+    			+ "...");
+    		
+    		//System.out.println("Error Isn't Here.");
+    		for (int recordNumber = 0; recordNumber 
+    			< StorageManager.BLOCK_SIZE / REL_REC_SIZE; 
+    			recordNumber++) {
+    			
+    			//The name of the relation we are loading
+    			String relationName = "";
+    			
+    			//Make sure that we aren't out of records by checking the entire
+    			//length of the record.  If there is one
+    			//non-null, there is a record
+    			ByteBuffer nullCheckBuffer = duplicateBlock.duplicate();
+    			boolean lastRecord = true;
+    			for (int index = blockPosition; 
+    				index < StorageManager.BLOCK_SIZE; index++) {
+    				if ((char) (nullCheckBuffer.get(index)) != '\0') {
+    					lastRecord = false;
+    					break;
+    				}
+    			}
+    			if (lastRecord) {
     				System.out.println("Loaded all relation data from block "
-    					+ i + "...");
+    					+ blockNumber + "...");
     				break;
     			}
     			
@@ -108,123 +218,58 @@ public class SystemCatalog {
     			//System.out.println("Loading relation " + relationmarker
     			//	+ " at block " + 1 + " and byte " + relationpos);
     			
-    			for (int k = 0; k < 15; k++) {
-    				if (relbuffer.getChar(relationpos) 
-    					!= BufferManager.NULL_CHARACTER) {
-    					relname += relbuffer.getChar(relationpos);
-    				}
-    				relationpos += Attribute.CHAR_SIZE;
-    			}
+    			relationName = Relation.parseString(duplicateBlock, 
+    				blockPosition, MAX_NAME_SIZE);
+    			blockPosition += MAX_NAME_SIZE;
 				//System.out.println("Loading relation name at " 
     			//		+ relationpos);
     			
-    			ID = relbuffer.getInt(relationpos);
-    			//System.out.println(ID);
-    			Relation rel = new Relation(relname, ID);
-    			relationHolder.addRelation(rel);
+    			//Load the relation and name and add it to the catalog
+    			int relationID = duplicateBlock.getInt(blockPosition);
+    			blockPosition += Attribute.INT_SIZE;
+    			Relation newRelation = new Relation(relationName, relationID);
+    			relationHolder.addRelation(newRelation);
     			//Print that we loaded the relation.
-    			System.out.println("Loaded relation " + relname + "...");
-    			relationpos += Attribute.INT_SIZE;
-    			rel.setCreationdate(relbuffer.getLong(relationpos));
-    			relationpos += Attribute.LONG_SIZE;
-    			rel.setModifydate(relbuffer.getLong(relationpos));
-    			relationpos += Attribute.LONG_SIZE;
-    			rel.setRecords(relbuffer.getInt(relationpos));
-    			relationpos += Attribute.INT_SIZE;
-    			rel.setBlocktotal(relbuffer.getInt(relationpos));
-    			relationpos += Attribute.INT_SIZE;
-    			relname = "";
-    			String index = "";
+    			System.out.println("Loaded relation " + relationName + "...");
+    			newRelation.setCreationdate(
+    				duplicateBlock.getLong(blockPosition));
+    			blockPosition += Attribute.LONG_SIZE;
+    			newRelation.setModifydate(
+    				duplicateBlock.getLong(blockPosition));
+    			blockPosition += Attribute.LONG_SIZE;
+    			newRelation.setRecords(duplicateBlock.getInt(blockPosition));
+    			blockPosition += Attribute.INT_SIZE;
+    			newRelation.setBlocktotal(duplicateBlock.getInt(blockPosition));
+    			blockPosition += Attribute.INT_SIZE;
+
     			//System.out.println("Relation attributes loaded at byte " 
         		//		+ relationpos);
     			
-    			//Load which attributes are index
-    			for(int l = 0; l < 10; l++) {
-    				if (relbuffer.getInt(relationpos) != -1){
-    					rel.addIndex(relbuffer.getInt(relationpos));
+    			//Load which attributes are indexed
+    			for (int attribute = 0; attribute < 10; attribute++) {
+    				//If the index isn't -1, then that attribute is indexed
+    				if (duplicateBlock.getInt(blockPosition) != -1) {
+    					newRelation.addIndex(
+    						duplicateBlock.getInt(blockPosition));
     				}
-					relationpos += Attribute.INT_SIZE;
+					blockPosition += Attribute.INT_SIZE;
     			}
     			//System.out.println("Indexed attributes loaded at byte " 
     			//	+ relationpos);
     			
     			//Load the names of the indexes
-    			for (int m = 0; m < 10; m++) {
-    				for (int n = 0; n < 15; n++) {
-    					if (relbuffer.getChar(relationpos) 
-    						!= BufferManager.NULL_CHARACTER) {
-    						index += relbuffer.getChar(relationpos);
-    					}
-    					relationpos += Attribute.CHAR_SIZE;
-    				}
-    				rel.addIndex(index);
-    				index = new String();
+    			String indexName = "";
+    			for (int currentIndex = 0; currentIndex < 10; currentIndex++) {
+    				indexName = Relation.parseString(duplicateBlock, 
+    					blockPosition, MAX_NAME_SIZE);
+    				blockPosition += MAX_NAME_SIZE;
+    				newRelation.addIndex(indexName);
     			}
     			//System.out.println("Index names loaded at byte " 
         		//		+ relationpos);
-    			//go to the next relation
-    			relationmarker++;	
-    			
-    		}
-    		//Start at position 0 for the next block
-    		relationpos = 0;
-    	}
-    	ByteBuffer attbuffer;
-    	int attposition = 0;
-    	 for (int i = 0; i < attsize; i++) {
-    		 attbuffer = buffer.readAttributeCatalog(attributecatalog, i);
-    		 attbuffer = attbuffer.duplicate();
-    		 attposition = 0;
-//    		 System.out.println("Error Isn't Here Either.");
-    		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
-
-    			 //Check the entire length of the record.  If there is one
-    			 //non-null, there is a record
-    			 ByteBuffer nullCheckBuffer = attbuffer.duplicate();
-    			 boolean lastRecord = true;
-    			 for (int index = attposition; 
-    			 	index < attposition + ATT_REC_SIZE; index++) {
-    				if ((char) (nullCheckBuffer.get(index)) != '\0') {
-    					lastRecord = false;
-    				}
-    			 }
-    			 if (lastRecord) {
-    				 break;
-    			 }
-    			 
-    			 String name = "";
-    			 for (int k = 0; k < 15; k++) {
-    				 if (attbuffer.getChar( attposition) != BufferManager.NULL_CHARACTER) {
-    					 name += attbuffer.getChar(attposition);
-    				 }
-    				 attposition += Attribute.CHAR_SIZE;
-    			 }
-    			 long aID = attbuffer.getLong(attposition);
-    			 attposition += Attribute.LONG_SIZE;
-    			 char nullable = attbuffer.getChar(attposition);
-    			 attposition += Attribute.CHAR_SIZE;
-    			 Attribute.Type type = Attribute.charToType(
-    					 attbuffer.getChar(attposition));
-    			 attposition += Attribute.CHAR_SIZE;
-    			 long rID = attbuffer.getLong(attposition);
-    			 attposition += Attribute.LONG_SIZE;
-    			 int distinct = attbuffer.getInt(attposition);
-    			 attposition += Attribute.INT_SIZE;
-    			 int length = attbuffer.getInt(attposition);
-    			 attposition += Attribute.INT_SIZE;
-    			 
-    			 Attribute used = new Attribute(name, aID, rID, type, nullable, distinct, length);
-//    			 System.out.println("" + used.getType());
-    			 attributes.add(used);
-    			 System.out.println("Loading attribute " + name 
-    					 + " to relation " 
-    					 + rID);
-    			 relationHolder.getRelation(rID).addAttribute(used);
-    			 
-    		 }
-    	 }
-//    	 System.out.println("Finished Loading");
-    }
+    		} //End the relation loading loop
+    	} //End the block loading loop	
+    } //End loadRelationCatalog
     
     /**
      * 
@@ -248,81 +293,85 @@ public class SystemCatalog {
      *
      *@return whether the index was created successfully
      */
-    public boolean createIndex(String relation, String attribute,
-    		String Indexname, boolean duplicates) {
-        long rID = -1, aID = -1;
+    public boolean createIndex(String relationName, String attributeName,
+    		String indexName, boolean duplicates) {
+        long relationID = -1, attributeID = -1;
     	int i, j;
-    	Attribute.Type aType = Attribute.Type.Undeclared;
-    	Relation rel =  null;
-    	Attribute att = null;
-    	Iterator it = null;
-    	BTree b = new BTree();
+    	Relation relation;
+    	Attribute.Type attributeType = Attribute.Type.Undeclared;
+    	Attribute attribute = null;
+    	Iterator iterator;
+    	BTree bTree = new BTree();
     	
 //    	System.out.println("This had better get called");
     	
-    	StorageManager.openFile("" + Indexname + ".if");
+    	StorageManager.openFile("" + indexName + ".if");
     	
-    	int idx;
+    	int index;
         ArrayList <Relation> relations = relationHolder.getRelations();
         //Find the rID and aID for use with the indexing.
-    	for (i = 0; i < relations.size(); i++) {
-        	if (relations.get(i).getName().equalsIgnoreCase(relation)) {
-        		rID = relations.get(i).getID();
-        		rel = relations.get(i);
-        		break;
-        	}
-        }
+    	relationID = relationHolder.getRelationByName(relationName);
+    	relation = relationHolder.getRelation(relationID);
         
+    	//Find the attribute
         for (j = 0; j < attributes.size(); j++) {
-        	if (attributes.get(j).getName().equalsIgnoreCase(attribute) && attributes.get(j).getParent() == rID) {
-        		aID = attributes.get(j).getID();
-        		aType = attributes.get(j).getType();
-        		att = attributes.get(j);
+        	if (attributes.get(j).getName().equalsIgnoreCase(attributeName) 
+        		&& attributes.get(j).getParent() == relationID) {
+        		attributeID = attributes.get(j).getID();
+        		attributeType = attributes.get(j).getType();
+        		attribute = attributes.get(j);
         		break;
         	}
         }
         
-//        System.out.println(relation);
+        //If either attribute of relation is null, return false
+        if (relation == null || attribute == null) { 
+        	System.out.println("Couldn't create index " + indexName
+        		+ " on relation " + relationName);
+        }
         
         //if it works open the appropriate type of index, duplicate or not
-        if (rel == null || rel.containsIndex(""+Indexname)){
+        if (relation == null || relation.containsIndex(""+indexName)){
         	return false;
-        } else if (aType!=Attribute.Type.Int && aType!=Attribute.Type.Long){
+        } else if (attributeType !=Attribute.Type.Int 
+        		&& attributeType!=Attribute.Type.Long){
+        	//We only index long and int, no chars
         	return false;
         } else{
 	        if (duplicates) {
-	        	rel.addIndex(Indexname);
-	        	att.setIndex(Indexname.toCharArray());
-	        	idx = b.OpenIndex(""+Indexname+".if", true);
-	        	it = relationHolder.getRelation(rID).open(); 
+	        	//Open an index that does allow duplicates
+	        	relation.addIndex(indexName);
+	        	attribute.setIndex(indexName.toCharArray());
+	        	index = bTree.OpenIndex(""+indexName+".if", true);
+	        	iterator = relationHolder.getRelation(relationID).open(); 
         	} else {
-        		rel.addIndex(Indexname);
-            	att.setIndexd(Indexname.toCharArray());
-            	idx = b.OpenIndex(""+Indexname+".if", false);
-            	it = relationHolder.getRelation(rID).open();
-        	}
-        	
+        		//Open an index that doesn't allow duplicates
+        		relation.addIndex(indexName);
+            	attribute.setIndexd(indexName.toCharArray());
+            	index = bTree.OpenIndex(""+indexName+".if", false);
+            	iterator = relationHolder.getRelation(relationID).open();
+        	}     	
         }
         
-        System.out.println("INSERTING AN INDEX VAL");
         
         //Iterate through the Relation and insert the values into the index.
         String[] record;
-        String keystr;
+        String keyString;
         long key;
         long address;
-        while(it.hasNext()) {
+        while(iterator.hasNext()) {
         	
-        	record = it.getNext();
-        	keystr = record[rel.indexOfAttribute(aID)];
-        	key = Long.parseLong(keystr);
-        	address = it.getAddress();
-        	b.Insert(idx, key, address);
+        	record = iterator.getNext();
+        	keyString = record[relation.indexOfAttribute(attributeID)];
+        	key = Long.parseLong(keyString);
+        	address = iterator.getAddress();
+        	bTree.Insert(index, key, address);
+        	System.out.println("Inserting index value " + key 
+        		+ " with address " + address);
         	
         }
-        b.CloseIndex(idx);
-        it.close();
-        
+        bTree.CloseIndex(index);
+        iterator.close();       
         return true;
     }
     
@@ -699,12 +748,12 @@ public class SystemCatalog {
     	for (int i = 0; i < blocks; i++) {
     		
     		//Get the block for the attribute catalog from the BufferManager
-    		 block = buffer.readAttributeCatalog(attributecatalog, attributemarker
-    				 * StorageManager.BLOCK_SIZE + ATT_OFFSET);
+    		 block = buffer.readAttributeCatalog(attributecatalog, i);
     		 //System.out.println("Error Isn't Here Either.");
     		 
     		 //Loop through the entirety of this attribute block parsing things
-    		 for (int j = 0; j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
+    		 for (int j = 0; 
+    		 	j < StorageManager.BLOCK_SIZE / ATT_REC_SIZE; j++) {
     			 
     			 //If we've come to the end of the attributes then break
     			 if (block.getChar(position) == BufferManager.NULL_CHARACTER) {
@@ -737,8 +786,8 @@ public class SystemCatalog {
     			 position += Attribute.INT_SIZE;
     			 
     			 //Now pack all of the attribute metadata into a string
-    			 String data = name + aID + nullable + type + rID + distinct
-    			 	+ length;
+    			 String data = name + " " + aID + " " + nullable + " " + type 
+    			 	+ " " + rID + " " + distinct + " " + length;
     			 //Add the string to the array
     			 metaData.add(data);
     		 }
@@ -790,8 +839,7 @@ public class SystemCatalog {
     	for (int i = 0; i < blocks; i++) {
     		
     		//Get the block for the attribute catalog from the BufferManager
-    		 block = buffer.readRelationCatalog(relationcatalog, relationmarker
-    				 * StorageManager.BLOCK_SIZE + REL_OFFSET);
+    		 block = buffer.readRelationCatalog(relationcatalog, i);
     		 //System.out.println("Error Isn't Here Either.");
     		 
     		 //Loop through the entirety of this relation block parsing things
@@ -829,11 +877,11 @@ public class SystemCatalog {
     			 int blocktotal = (block.getInt(position));
     			 position += Attribute.INT_SIZE;
     			 
-    			 //Then we need to get the indexed columns
-    			 
     			 //Now pack all of the attribute metadata into a string
-    			 String data = name + ID + creationDate + modifyDate + records
-    			 	+ blocktotal;
+    			 String data = name + " " + ID + " " 
+    			 	+ (new Date(creationDate)).toString() + " " 
+    			 	+ " " + (new Date(modifyDate)).toString() + " " 
+    			 	+ records + " " + blocktotal;
     			 
     			 //Add the string to the array
     			 metaData.add(data);
@@ -1012,11 +1060,11 @@ public class SystemCatalog {
     	SystemCatalog sc = new SystemCatalog();
 
     	//Make a whole mess of tables
-    	int tables = 1000;
+    	int tables = 20;
     	String tableNumber = "TABLE_";
-    	for (int table = 1; table <= tables; table++) {
+    	/*for (int table = 0; table < tables; table++) {
         	sc.createTable("CREATE TABLE " + tableNumber + table 
-        		+ " (CHAR" + table + " CHAR 5)", "key");
+        		+ " (INT" + table + " INT, CHAR" + table + " CHAR 25)", "key");
     	}
     	
     	//Insert shit into all of them
@@ -1028,11 +1076,52 @@ public class SystemCatalog {
     			sc.insert(insert);
     			System.out.println(insert);
     		}
+    	}/*
+    	
+    	/*String [] result = sc.selectFromRelationCatalog("");
+		for (int index = 0; index < result.length; index++) {
+			System.out.println(result[index] + " ");
+		}
+    	
+    	for (int j = 0; j < 500; j++) {
+    		String insert = "INSERT INTO TABLE_3 (INT3, CHAR3) VALUES (" + j + ", MONKEY)";
+    		sc.insert(insert);
+    	}*/
+    	/*String [] result = sc.selectFromRelationCatalog("");
+		for (int index = 0; index < result.length; index++) {
+			System.out.println(result[index] + " ");
+		}*/
+    	
+    	/*for (int j = 0; j < 500000; j++) {
+    		String insert = "INSERT INTO TABLE_4 (INT4, CHAR4) VALUES (" + j + ", MONKEY)";
+    		sc.insert(insert);
+    	}*/
+		
+		//sc.createIndex("CREATE INDEX IDX ON TABLE_2 (INT2) NO DUPLICATES");
+    	for (int j = 0; j < 10; j++) {
+    		String insert = "INSERT INTO TABLE_2 (INT2, CHAR2) VALUES (" + 10 + ", MONKEY)";
+    		sc.insert(insert);
     	}
     	
+		
+    	/*System.out.println("All done");
+    	String select = "SELECT * FROM TABLE_4 WHERE INT4 = 250000";
+    	result = sc.selectFromTable(select);
+		for (int index = 0; index < result.length; index++) {
+			System.out.print(result[index]);
+		}*/
+    	
+    	/*result = sc.selectFromRelationCatalog("");
+		for (int index = 0; index < result.length; index++) {
+			System.out.println(result[index] + " ");
+		}
+		result = sc.selectFromAttributeCatalog("");
+		for (int index = 0; index < result.length; index++) {
+			System.out.println(result[index] + " ");
+		}*/
     	sc.buffer.flush();
     	
-    	for (int table = 1; table <= tables; table++) {
+    	/*for (int table = 1; table <= tables; table++) {
     		String select = "SELECT * FROM TABLE " + tableNumber + table;
     		select = select + " WHERE CHAR" + table + " = ";
     		select = select + " " + 3 * table + "";
@@ -1043,5 +1132,22 @@ public class SystemCatalog {
     		}
     		System.out.println();
     	}
+    	
+ 		String [] result = sc.selectFromAttributeCatalog("");
+		for (int index = 0; index < result.length; index++) {
+			System.out.println(result[index] + " ");
+		}
+		result = sc.selectFromRelationCatalog("");
+		for (int index = 0; index < result.length; index++) {
+			System.out.println(result[index] + " ");
+		}
+		sc.createIndex("TABLE_1", "CHAR1", "WALRUS", true);
+    	
+		//Create some INT tables
+    	for (int table = 1; table <= tables; table++) {
+        	sc.createTable("CREATE TABLE " + "INT_TABLE_" + table 
+        		+ " (INT" + table + " INT)", "key");
+    	}
+    	sc.createIndex("INT_TABLE_1", "INT1", "WALRUS", true);*/
     }
 }
