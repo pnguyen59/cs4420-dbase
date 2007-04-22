@@ -5,6 +5,10 @@ import java.util.StringTokenizer;
 
 public class QueryParser {
 	
+	public static String AND = "AND";
+	
+	public static String OR = "OR";
+	
 	public ArrayList < String > parseQuery(String lowerCaseQuery) {
 		
 		ArrayList < String > parts = new ArrayList < String > ();
@@ -67,8 +71,7 @@ public class QueryParser {
 			tableRow += "\t" + tokens.get(1);
 			tableRow += formQueryTree(tokens.get(2));	
 		} else if (upperCase.contains("CROSSJOIN")) {
-			tableRow = "\nCROSSJOIN\t";
-			
+			tableRow = "\nCROSSJOIN\t";	
 		}
 		
 		return tableRow;	
