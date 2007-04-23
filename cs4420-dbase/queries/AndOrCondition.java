@@ -2,11 +2,13 @@ package queries;
 
 import java.util.ArrayList;
 
-import dbase.Attribute;
-import dbase.Relation;
-
 public class AndOrCondition extends Condition {
 
+	/**This method will parse out the two conditions inside of an AND or an 
+	 * OR statement.
+	 * @param statement The statement to parse.
+	 * @return An array containing the inner statements
+	 */
 	public static String [] parseConditons(final String statement) {
 		
 		String [] conditions = new String [2];
@@ -54,6 +56,11 @@ public class AndOrCondition extends Condition {
 		return parseConditons(statement)[0];
 	}
 	
+	/**This method finds the right hand side of the AND/OR statement passed 
+	 * to it.
+	 * @param statement The AND/OR statement.
+	 * @return The right hand of the statement.
+	 */
 	public static String parseRightHand(final String statement) {
 		return parseConditons(statement)[1];
 	}
@@ -62,24 +69,45 @@ public class AndOrCondition extends Condition {
 	
 	private Condition rightHand;
 	
-	public AndOrCondition(final String newCondition, 
-		final ArrayList < Integer > relationIDs) {
+	/**This will create a new instance of AndOrCondition.
+	 * @param newCondition The condition that the object will represent and
+	 * parse sub conditions from.
+	 * @param relationID The ID of the relation that this condition will be 
+	 * working on, for schema purposes.
+	 */
+	public AndOrCondition(final String newCondition, final int relationID) {
 		super(newCondition);
 		
 		//Set the relation IDs
-		setRelations(relationIDs);
+		setRelation(relationID);
 		
 		//Get the conditions contained within this one.
 		leftHand = Condition.makeCondition(
-			parseLeftHand(newCondition), relationIDs);
+			parseLeftHand(newCondition), relationID);
 		rightHand = Condition.makeCondition(
-			parseRightHand(newCondition), relationIDs);
+			parseRightHand(newCondition), relationID);
 	}
 	
-	@Override
-	public boolean compare(ArrayList < String > tuples) {
-		// TODO Auto-generated method stub
-		return false;
+	/**This method determines whether or not the AndOrCondition is true for the 
+	 * tuple passed to it.  The tuple had <b>BETTER</b> be of the same type of
+	 * relation as this object thinks it is.
+	 * @param tuple The string representation of the tuple.
+	 * @return Wether or not this Condition is true for the tupe.
+	 */
+	public boolean compare(final String tuple) {
+	
+		boolean leftHandEval = leftHand.compare(tuple);
+		boolean rightHandEval = rightHand.compare(tuple);
+		
+		//If an AND then see if both the left and right are true
+		if (comparison.equalsIgnoreCase("AND")) {
+			return (leftHandEval && rightHandEval);
+		} else if (comparison.equalsIgnoreCase("OR")) {
+			return (leftHandEval || rightHandEval);
+		} else {
+			System.out.println("AndOrCondition.compare: Not an AND or an OR");
+			return false;
+		}
 	}
 
 	@Override
