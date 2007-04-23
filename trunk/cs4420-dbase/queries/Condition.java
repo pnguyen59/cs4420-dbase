@@ -31,9 +31,6 @@ public abstract class Condition {
 		}
 	}
 	
-	/**The list of Attributes referenced in this Condition.*/
-	protected ArrayList < Integer > attributes;
-	
 	/**The string representing the type of the comparison, and, or, >, etc.*/
 	protected String comparison;
 	
@@ -47,7 +44,6 @@ public abstract class Condition {
 	 * contained in the Condition.
 	 */
 	public Condition() {
-		this.attributes = new ArrayList < Integer > ();
 		relation = 0;
 	}
 	
