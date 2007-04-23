@@ -14,7 +14,7 @@ public abstract class Condition {
 	 * @return The new Condition.
 	 */
 	public static Condition makeCondition(final String newCondition,
-		final ArrayList < Integer > relationIDs) {
+		final int relationID) {
 		
 		//See what kind of condition it is
 		String upperCase = newCondition.toUpperCase();
@@ -23,9 +23,9 @@ public abstract class Condition {
 		char firstCharacter = noParens.charAt(0);
 		
 		if (firstCharacter == 'A') {
-			return new AndOrCondition(newCondition, relationIDs);
+			return new AndOrCondition(newCondition, relationID);
 		} else if (firstCharacter == 'O') {
-			return new AndOrCondition(newCondition, relationIDs);
+			return new AndOrCondition(newCondition, relationID);
 		} else {
 			return null;
 		}
@@ -41,14 +41,14 @@ public abstract class Condition {
 	protected String condition;
 	
 	/**The list of Relations referenced in this Condition.*/
-	protected ArrayList < Integer > relations;
+	protected int relation;
 	
 	/**This will create a new instance of Condition and initialize the lists
 	 * contained in the Condition.
 	 */
 	public Condition() {
 		this.attributes = new ArrayList < Integer > ();
-		this.relations = new ArrayList < Integer > ();
+		relation = 0;
 	}
 	
 	/**This will create a new instance of Condition, and initialize the field
@@ -62,9 +62,10 @@ public abstract class Condition {
 	
 	/**The absract compare function, i.e. tell whether or not this Condition is
 	 * true.
+	 * @param tuple The tuple to look at.
 	 * @return Whether or not the comparison is true.
 	 */
-	public abstract boolean compare(final ArrayList < String > tuples);
+	public abstract boolean compare(final String tuple);
 	
 	/**This method will return the list of Attributes used in this Condition,
 	 * and any contained within it.
@@ -86,12 +87,12 @@ public abstract class Condition {
 		return this.condition;
 	}
 	
-	/**This method will return the list of Relations referenced in this 
+	/**This method will return the Relations referenced in this 
 	 * Condition and any contained within it.
-	 * @return A list of Relations used in this Condition. 
+	 * @return A the Relation used in this Condition. 
 	 */
-	public ArrayList < Integer > getRelations() {
-		return this.relations;
+	public int getRelation() {
+		return this.relation;
 	}
 	
 	/**This method will set the comparison used in this Condition.
@@ -109,12 +110,12 @@ public abstract class Condition {
 		this.condition = newCondition;
 	}
 	
-	/**This method will set the list of Relations that this Condition 
+	/**This method will set the Relation that this Condition 
 	 * references.
-	 * @param relationIDs The new list of Relations
+	 * @param relationID The new Relation.
 	 */
-	public void setRelations(final ArrayList < Integer > relationIDs) {
-		this.relations = relationIDs;
+	public void setRelation(final int relationID) {
+		this.relation = relationID;
 	}
 }
 
