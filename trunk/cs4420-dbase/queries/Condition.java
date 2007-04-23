@@ -56,6 +56,17 @@ public abstract class Condition {
 		this.condition = newCondition;
 	}
 	
+	/**This will create a new instance of Condition, and initialize the field
+	 * "condition" with the value passed.
+	 * @param newCondition The value for condition in the new Condition object.
+	 * @param newRelation The ID of the Relation this condition works on.
+	 */
+	public Condition(final String newCondition, final int newRelation) {
+		this(newCondition);
+		this.condition = newCondition;
+		setRelation(relation);
+	}
+	
 	/**The absract compare function, i.e. tell whether or not this Condition is
 	 * true.
 	 * @param tuple The tuple to look at.
