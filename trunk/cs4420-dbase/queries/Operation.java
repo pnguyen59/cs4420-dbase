@@ -23,16 +23,14 @@ public abstract class Operation implements TreeNode  {
 		String first = split[1];
 		
 		if (first.equalsIgnoreCase(QueryParser.PROJECT)) {
-			//return new Project(upperCase);
+			return new Project(upperCase);
 		} else if (first.equalsIgnoreCase(QueryParser.CROSSJOIN)) {
 			return new CrossJoin(upperCase);
 		} else if (first.equalsIgnoreCase(QueryParser.SELECT)) {
 			return new Select(upperCase);
 		} else {
-			
+			return new TableOperation(upperCase);
 		}
-		
-		return null;
 	}
 	
 	protected int executionOrder;
