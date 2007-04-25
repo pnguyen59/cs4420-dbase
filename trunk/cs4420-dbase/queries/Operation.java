@@ -33,6 +33,10 @@ public abstract class Operation implements TreeNode  {
 		}
 	}
 	
+	/**This method will make a query table from the Operation (node) given,
+	 * down to the bottom.
+	 */
+	
 	protected int executionOrder;
 	
 	protected Operation parent;
@@ -45,6 +49,10 @@ public abstract class Operation implements TreeNode  {
 	protected Operation tableOne;
 	
 	protected int tableOneAccess;
+	
+	protected Operation tableTwo;
+	
+	protected int tableTwoAccess;
 	
 	protected String type;
 
@@ -122,6 +130,14 @@ public abstract class Operation implements TreeNode  {
 	}
 
 
+	/**This method returns the value of tableTwo.
+	 * @return the tableTwo
+	 */
+	public Operation getTableTwo() {
+		return tableTwo;
+	}
+
+
 	/**This method returns the value of type.
 	 * @return the type
 	 */
@@ -177,9 +193,14 @@ public abstract class Operation implements TreeNode  {
 		this.tableOneAccess = newTableOneAccess;
 	}
 
+	/**This method will set the value of tableTwo.
+	 * @param newTableTwo The new value of tableTwo.
+	 */
+	public void setTableTwo(final Operation newTableTwo) {
+		this.tableTwo = newTableTwo;
+	}
 
 	public void setType(final String newType) {
 		this.type = newType;
 	}
-	
 }
