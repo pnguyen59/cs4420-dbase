@@ -16,6 +16,10 @@ public class Project extends Operation {
 		
 		ArrayList < String > parts = QueryParser.parseStatementParts(statement);
 		
+		for (int index = 0; index < parts.size(); index++) {
+			System.out.println(parts.get(index));
+		}
+		
 		//Find the list of attributes to project
 		attributes = QueryParser.parseQueryAttributes(
 			parts.get(QueryParser.PROJECT_ATTRIBUTES_INDEX));
