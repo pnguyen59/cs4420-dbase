@@ -1,10 +1,40 @@
 package queries;
 
+import java.util.ArrayList;
+
 public class CrossJoin extends Operation {
 
 	protected int tableTwoAccess;
 	
-	protected int tableTwoID;
+	protected Operation tableTwo;
+	
+	public CrossJoin(final String statement) {
+		
+		//Get the relation names out of the statement
+		ArrayList < String > tables = QueryParser.parseRelationNames(statement);
+		
+		//Make the first table a TableOperation, because regardless of the
+		//Number of other joins needed, this one will still join with one
+		//real table
+		tableOne = new TableOperation(tables.get(0));
+		
+		//See how many cross joins are needed to get the results
+		if (tables.size() > 2) {
+			//Make the tables left as a crossjoin
+			String newCrossJoin = "(CROSSJOIN ";
+			for (int index = 1; index < tables.size(); index++) {
+				newCrossJoin += "\"" + tables.get(index) + "\", "; 
+			}
+			newCrossJoin += ")";
+			tableTwo = Operation.makeOperation(newCrossJoin);
+		} else {
+			tableTwo = new TableOperation(tables.get(1));
+		}
+		
+		//Regardless, make both tableOne and tableTwo's parents this.
+		tableOne.setParent(this);
+		tableTwo.setParent(this);
+	}
 	
 	@Override
 	public long calculateCost() {
@@ -26,8 +56,7 @@ public class CrossJoin extends Operation {
 	 * @return The number of children of this node.
 	 */
 	public int getChildCount() {
-		//TODO fix this so it does something.
-		return 0;
+		return tableOne.getChildCount() + tableTwo.getChildCount();
 	}
 	
 	/**Says whether or not the CrossJoin is a Leaf.  
@@ -47,7 +76,6 @@ public class CrossJoin extends Operation {
 		string += this.executionOrder + "\t";
 		string += this.type + "\t";
 		string += "\t";
-		string += tableTwoID + "\t";
 		string += tableOneAccess +"\t";
 		string += tableTwoAccess +"\t";
 		string += "\t";
