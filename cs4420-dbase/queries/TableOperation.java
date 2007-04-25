@@ -1,9 +1,18 @@
 package queries;
 
+import dbase.Relation;
+import dbase.RelationHolder;
+
 public class TableOperation extends Operation {
 
 	private String tableName;
 	
+	/**This will create a new instance of TableOperation.  It will used the 
+	 * thingy sent to represent the name of the table, Relation, or whatever
+	 * you want to call it to name itself.
+	 * @param newTableName  The name of the table this will represent fo
+	 * purposes of the query tree.
+	 */
 	public TableOperation(final String newTableName) {
 		String noQuotes = newTableName.replace("\"", "");
 		String noParens = noQuotes.replace("(", "");
@@ -11,12 +20,30 @@ public class TableOperation extends Operation {
 		tableName = noParens;
 	}
 	
+	/**This method will calculate the cost, that is the size of this
+	 * <code>TableOperation</code>. Basically, it's just the size of the
+	 * relation.
+	 * @return The cost of this operation, essentially the cost of reading
+	 * the whole thing in, in blocks.
+	 */
 	@Override
 	public long calculateCost() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		//Find the relation that this TableOperation uses
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		int relationID = holder.getRelationByName(tableName);
+		Relation relation = holder.getRelation(relationID);
+		
+		//Find out how big this thing is
+		int blocks = relation.getBlocktotal();
+		
+		
+		return blocks;
 	}
 
+	/**Tables will be the leaves of the query tree and never have children.
+	 * @return <code><b>false</b></code> because leaves never have children.
+	 */
 	public boolean getAllowsChildren() {
 		return false;
 	}
@@ -40,6 +67,16 @@ public class TableOperation extends Operation {
 		return true;
 	}
 
+	/**This method will see if this thingy is valid.  In this case, that really
+	 * just means that the table exists.
+	 * @return Whether or not this <code>TableOperaion</code> is valid.
+	 */
+	public boolean isValid() {
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		int relationID = holder.getRelationByName(tableName);
+		return(holder.getRelation(relationID) != null);
+	}
+	
 	/**This method will set the value of tableName.
 	 * @param newTableName The new value of tableName.
 	 */
