@@ -132,7 +132,8 @@ public class QueryParser {
 			//See if it is an open parentheses
 			if (statement.charAt(start) == '(') {
 				
-				opens++;
+				opens = 1;
+				closes = 0;
 				
 				//Find the close of the condition
 				for (int close = start + 1; 
