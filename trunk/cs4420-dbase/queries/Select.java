@@ -1,10 +1,6 @@
 package queries;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
-
-
-import javax.swing.tree.TreeNode;
 
 
 public class Select extends Operation {
