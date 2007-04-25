@@ -5,7 +5,10 @@ public class TableOperation extends Operation {
 	private String tableName;
 	
 	public TableOperation(final String newTableName) {
-		tableName = newTableName;
+		String noQuotes = newTableName.replace("\"", "");
+		String noParens = noQuotes.replace("(", "");
+		noParens = noParens.replace(")", "");
+		tableName = noParens;
 	}
 	
 	@Override
