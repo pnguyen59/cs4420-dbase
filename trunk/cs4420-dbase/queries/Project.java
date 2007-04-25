@@ -26,8 +26,12 @@ public class Project extends Operation {
 		tableOne.setParent(this);
 	}
 	
+	/**This method will return the cost of performing this Project which is
+	 * basically the size of the table it is projecting from in blocks.
+	 * @return The cost of this Project.
+	 */
 	public long calculateCost() {
-		return 1000;
+		return 0;
 	}
 	
 	/**This method will return whether or not the Project allows children as
