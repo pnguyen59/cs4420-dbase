@@ -23,6 +23,42 @@ public class QueryParser {
 	
 	public static final int SELECT_WHERE_INDEX = 1;
 	
+	/**This method will take in a statement as a string, and look for any 
+	 * table names.  Basically anthing surrounded by quotes.
+	 * @param statement The statement.
+	 * @return The tables in the statement.
+	 */
+	public static ArrayList < String > parseRelationNames(
+		final String statement) {
+		ArrayList < String > tableNames = new ArrayList < String > (); 
+
+		//From the statement, find the tables this is joining stuff from
+		//Start by looking for quotes
+		for (int start = 0; start < statement.length(); start++) {
+
+			//Get the starting character
+			char startingChacter = statement.charAt(start);
+
+			//If it is a quote, then find the next one
+			if (startingChacter == '\"') {
+				for (int end = start + 1; end < statement.length(); end++) {
+					//Get the ending character
+					char endingCharacter = statement.charAt(start);
+					if (endingCharacter == '\"') {
+						//If we have found the close then add it to the list
+						//And start over at the next space
+						tableNames.add(statement.substring(start + 1,
+							end + 1));
+						start = end + 1;
+						break;
+					}
+				}
+			} //End if
+		} //End finding tables loop
+		
+		return tableNames;
+	}
+	
 	public static ArrayList < String > parseQueryAttributes(
 		final String query) {
 		
