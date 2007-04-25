@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 public class CrossJoin extends Operation {
 
-	protected Operation tableTwo;
-	
-	protected int tableTwoAccess;
 	
 	public CrossJoin(final String statement) {
 		
@@ -65,13 +62,6 @@ public class CrossJoin extends Operation {
 		return children;
 	}
 	
-	/**This method returns the value of tableTwo.
-	 * @return the tableTwo
-	 */
-	public Operation getTableTwo() {
-		return tableTwo;
-	}
-	
 	/**Says whether or not the CrossJoin is a Leaf.  
 	 * Always false, a CrossJoin is never a Leaf in a query tree.
 	 * @return <code><b>false</b></code> because CrossJoin statements
@@ -79,13 +69,6 @@ public class CrossJoin extends Operation {
 	 */
 	public boolean isLeaf() {
 		return false;
-	}
-
-	/**This method will set the value of tableTwo.
-	 * @param newTableTwo The new value of tableTwo.
-	 */
-	public void setTableTwo(final Operation newTableTwo) {
-		this.tableTwo = newTableTwo;
 	}
 
 	public String toString() {
