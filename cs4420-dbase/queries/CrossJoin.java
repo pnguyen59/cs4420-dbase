@@ -56,7 +56,12 @@ public class CrossJoin extends Operation {
 	 * @return The number of children of this node.
 	 */
 	public int getChildCount() {
-		return tableOne.getChildCount() + tableTwo.getChildCount();
+		
+		int children = 2;
+		children += tableOne.getChildCount();
+		children += tableTwo.getChildCount();
+		
+		return children;
 	}
 	
 	/**Says whether or not the CrossJoin is a Leaf.  
