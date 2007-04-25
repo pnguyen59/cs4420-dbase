@@ -6,10 +6,6 @@ public class Project extends Operation {
 
 	protected ArrayList < String > attributes;
 	
-	public long calculateCost() {
-		return 1000;
-	}
-	
 	/**This will create a new instance of Project.  It will find what to 
 	 * project and from where from the statement passed.
 	 * @param statement The literal of the project statement.
@@ -20,25 +16,17 @@ public class Project extends Operation {
 		
 		ArrayList < String > parts = QueryParser.parseStatementParts(statement);
 		
-		//TODO Find the list of attributes to project
+		//Find the list of attributes to project
+		attributes = QueryParser.parseQueryAttributes(
+			parts.get(QueryParser.PROJECT_ATTRIBUTES_INDEX));
 		
 		//Find the table its coming from
 		tableOne = Operation.makeOperation(
 			parts.get(QueryParser.PROJECT_FROM_INDEX));
 	}
 	
-	public String toString() {
-		
-		String string = ""; 
-		
-		string += this.queryID + "\t";
-		string += this.executionOrder + "\t";
-		string += this.type + "\t";
-		string += tableOneAccess +"\t\t";
-		string += "\t";
-		string += resultTableID;
-		
-		return string;
+	public long calculateCost() {
+		return 1000;
 	}
 	
 	/**This method will return whether or not the Project allows children as
@@ -48,6 +36,13 @@ public class Project extends Operation {
 	 */
 	public boolean getAllowsChildren() {
 		return true;
+	}
+	
+	/**This method returns the value of attributes.
+	 * @return the attributes
+	 */
+	public ArrayList < String > getAttributes() {
+		return attributes;
 	}
 	
 	/**This method will return the number of children that this Project has
@@ -66,6 +61,27 @@ public class Project extends Operation {
 	 */
 	public boolean isLeaf() {
 		return false;
+	}
+
+	/**This method will set the value of attributes.
+	 * @param newAttributes The new value of attributes.
+	 */
+	public void setAttributes(final ArrayList < String > newAttributes) {
+		this.attributes = newAttributes;
+	}
+
+	public String toString() {
+		
+		String string = ""; 
+		
+		string += this.queryID + "\t";
+		string += this.executionOrder + "\t";
+		string += this.type + "\t";
+		string += tableOneAccess +"\t\t";
+		string += "\t";
+		string += resultTableID;
+		
+		return string;
 	}
 	
 }
