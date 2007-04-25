@@ -2,9 +2,6 @@ package queries;
 
 import java.util.ArrayList;
 
-import dbase.Attribute;
-import dbase.Relation;
-
 public abstract class Condition {
 
 	/**This method will return a new subclass of the Condition class, depending
@@ -26,7 +23,7 @@ public abstract class Condition {
 		} else if (firstCharacter == 'O') {
 			return new AndOrCondition(newCondition);
 		} else {
-			return null;
+			return new SimpleCondition(newCondition);
 		}
 	}
 	
