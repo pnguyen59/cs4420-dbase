@@ -19,6 +19,10 @@ public class QueryParser {
 	
 	public static final String PROJECT = "PROJECT";
 	
+	public static final int PROJECT_ATTRIBUTES_INDEX = 0;
+	
+	public static final int PROJECT_FROM_INDEX = 1;
+	
 	public static final String SELECT = "SELECT";
 	
 	public static final int SELECT_FROM_INDEX = 0;
