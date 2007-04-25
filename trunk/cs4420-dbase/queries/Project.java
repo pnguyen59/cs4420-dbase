@@ -20,9 +20,9 @@ public class Project extends Operation {
 		
 		ArrayList < String > parts = QueryParser.parseStatementParts(statement);
 		
-		//Find the list of attributes to project
+		//TODO Find the list of attributes to project
 		
-		//TODO find the table its coming from
+		//Find the table its coming from
 		tableOne = Operation.makeOperation(
 			parts.get(QueryParser.PROJECT_FROM_INDEX));
 	}
@@ -55,8 +55,8 @@ public class Project extends Operation {
 	 * @return The number of children of this node.
 	 */
 	public int getChildCount() {
-		//TODO fix this so it does something.
-		return 0;
+		int childCount = 1 + tableOne.getChildCount();
+		return childCount;
 	}
 	
 	/**Says whether or not the Projection is a Leaf.  
