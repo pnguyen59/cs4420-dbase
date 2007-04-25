@@ -24,6 +24,7 @@ public class Select extends Operation {
 		String sourceStatement = selectionParts.get(
 			QueryParser.SELECT_FROM_INDEX);
 		setTableOne(Operation.makeOperation(sourceStatement));
+		tableOne.setParent(this);
 		
 		//Find the condition from the select.
 		String conditionStatement = selectionParts.get(
