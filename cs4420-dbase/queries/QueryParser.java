@@ -9,6 +9,8 @@ public class QueryParser {
 	
 	public static final String CROSSJOIN = "CROSSJOIN";
 	
+	public static final String EQUAL = "EQ";
+	
 	public static final String GREATER_THAN = "GT";
 	
 	public static final String LESS_THAN = "LT";
@@ -22,6 +24,31 @@ public class QueryParser {
 	public static final int SELECT_FROM_INDEX = 0;
 	
 	public static final int SELECT_WHERE_INDEX = 1;
+	
+	public static ArrayList < String > parseQueryAttributes(
+		final String query) {
+		
+		ArrayList < String > attributes = new ArrayList < String > ();
+		
+		String noSpaces = query.replace(" ", "");
+		
+		//Look for quotes
+		for (int start = 0; start < noSpaces.length(); start++) {
+			
+			char startCharacter = noSpaces.charAt(start);
+			
+			//See if it is a quote
+			if (startCharacter == '\"') {
+				//See if there is an a or QA before hand
+				if (noSpaces.charAt(start - 2) == 'Q') {
+					
+				}
+			}
+			
+		}
+		
+		return attributes;
+	}
 	
 	/**This method will take in a statement as a string, and look for any 
 	 * table names.  Basically anthing surrounded by quotes.
@@ -57,31 +84,6 @@ public class QueryParser {
 		} //End finding tables loop
 		
 		return tableNames;
-	}
-	
-	public static ArrayList < String > parseQueryAttributes(
-		final String query) {
-		
-		ArrayList < String > attributes = new ArrayList < String > ();
-		
-		String noSpaces = query.replace(" ", "");
-		
-		//Look for quotes
-		for (int start = 0; start < noSpaces.length(); start++) {
-			
-			char startCharacter = noSpaces.charAt(start);
-			
-			//See if it is a quote
-			if (startCharacter == '\"') {
-				//See if there is an a or QA before hand
-				if (noSpaces.charAt(start - 2) == 'Q') {
-					
-				}
-			}
-			
-		}
-		
-		return attributes;
 	}
 	
 	/**This method will return the different parts that make up a 
