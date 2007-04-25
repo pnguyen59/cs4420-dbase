@@ -29,27 +29,44 @@ public class QueryParser {
 	
 	public static final int SELECT_WHERE_INDEX = 1;
 	
+	/**This method will find the names of all of the attributes in the thingy
+	 * passed to it.  Looks for QA and A
+	 * @param query The thingy to look for attributes in
+	 * @return The names of the attributes.
+	 */
 	public static ArrayList < String > parseQueryAttributes(
 		final String query) {
 		
 		ArrayList < String > attributes = new ArrayList < String > ();
 		
-		String noSpaces = query.replace(" ", "");
+		//First get rid of parentheses
+		String noParens = query.replace("(", "");
+		noParens = noParens.replace(")", "");
+		//Now split the whole thing up by commas
+		String [] split = noParens.split(",");
 		
-		//Look for quotes
-		for (int start = 0; start < noSpaces.length(); start++) {
+		//Go through the list and find each attribute
+		for (int index = 0; index < split.length; index++) {
 			
-			char startCharacter = noSpaces.charAt(start);
+			String currentAttribute = split[index];
+			currentAttribute = currentAttribute.replace(" ", "");
+			String attributeName = "";
 			
-			//See if it is a quote
-			if (startCharacter == '\"') {
-				//See if there is an a or QA before hand
-				if (noSpaces.charAt(start - 2) == 'Q') {
-					
-				}
+			//See if it is a Q or an A
+			if (currentAttribute.substring(0, 2).equalsIgnoreCase("QA")) {
+				String [] qualifiedAttribute = currentAttribute.split("\"");
+				attributeName += qualifiedAttribute[1] + ".";
+				attributeName += qualifiedAttribute[3];
+				
+			} else {
+				currentAttribute.replace(" ", "");
+				String [] qualifiedAttribute = currentAttribute.split("\"");
+				attributeName += qualifiedAttribute[1];
 			}
-			
+		
+			attributes.add(attributeName);
 		}
+		
 		
 		return attributes;
 	}
