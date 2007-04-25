@@ -23,6 +23,7 @@ public class Project extends Operation {
 		//Find the table its coming from
 		tableOne = Operation.makeOperation(
 			parts.get(QueryParser.PROJECT_FROM_INDEX));
+		tableOne.setParent(this);
 	}
 	
 	public long calculateCost() {
