@@ -16,6 +16,8 @@ public class SimpleCondition extends Condition {
 	public SimpleCondition(final String condition) {
 		super(condition);
 		
+		System.out.println(condition);
+		
 		//See what type of condition this is
 		if (condition.contains(QueryParser.LESS_THAN)) {
 			this.comparison = QueryParser.LESS_THAN;
