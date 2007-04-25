@@ -19,12 +19,13 @@ public abstract class Operation implements TreeNode  {
 		String noParens = noSpaces.replace("(", "");
 		
 		//See what kind of operation this is
-		String [] split = noParens.split("/\\)/");
+		String [] split = noParens.split("\"");
 		String first = split[0];
+		
 		if (first.equalsIgnoreCase(QueryParser.PROJECT)) {
 			//return new Project(upperCase);
 		} else if (first.equalsIgnoreCase(QueryParser.CROSSJOIN)) {
-			//return new CorssJoin(upperCase);
+			return new CrossJoin(upperCase);
 		} else if (first.equalsIgnoreCase(QueryParser.SELECT)) {
 			return new Select(upperCase);
 		} else {
