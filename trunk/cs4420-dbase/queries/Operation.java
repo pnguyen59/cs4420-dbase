@@ -15,12 +15,12 @@ public abstract class Operation implements TreeNode  {
 		
 		//Remove the spaces, open parens and make this thing upper case
 		String upperCase = operation.toUpperCase();
-		String noSpaces = upperCase.replace(" ", "");
-		String noParens = noSpaces.replace("(", "");
+		String noParens = upperCase.replace("(", " ");
 		
 		//See what kind of operation this is
-		String [] split = noParens.split("\"");
-		String first = split[0];
+		//String [] split = noParens.split("\"");
+		String [] split = noParens.split(" ");
+		String first = split[1];
 		
 		if (first.equalsIgnoreCase(QueryParser.PROJECT)) {
 			//return new Project(upperCase);
