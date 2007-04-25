@@ -12,18 +12,34 @@ public abstract class Condition {
 	 */
 	public static Condition makeCondition(final String newCondition) {
 		
+		
+		//No spaces
+		String filteredCondition = newCondition.replace(" ", "");
+		
+		//If there is a "WHERE", destroy it and get rid of the surrounding ()
+		if (newCondition.contains(QueryParser.WHERE)) {
+			//Remove the where
+			filteredCondition = 
+				filteredCondition.replace(QueryParser.WHERE, "");
+			//Find the first and last index of the parens, and destroy them
+			int openIndex = filteredCondition.indexOf("(");
+			int closeIndex = filteredCondition.lastIndexOf(")");
+			filteredCondition 
+				= filteredCondition.substring(openIndex + 1, closeIndex);
+		}
+		
 		//See what kind of condition it is
-		String upperCase = newCondition.toUpperCase();
+		String upperCase = filteredCondition.toUpperCase();
 		String noSpaces = upperCase.replace(" ", "");
 		String noParens = noSpaces.replace("(", "");
 		char firstCharacter = noParens.charAt(0);
 		
 		if (firstCharacter == 'A') {
-			return new AndOrCondition(newCondition);
+			return new AndOrCondition(filteredCondition);
 		} else if (firstCharacter == 'O') {
-			return new AndOrCondition(newCondition);
+			return new AndOrCondition(filteredCondition);
 		} else {
-			return new SimpleCondition(newCondition);
+			return new SimpleCondition(filteredCondition);
 		}
 	}
 	
