@@ -21,8 +21,10 @@ public class TableOperation extends Operation {
 		return false;
 	}
 
+	/**Tables will be the leaves of the query tree and never have children.
+	 * @return 0
+	 */
 	public int getChildCount() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
