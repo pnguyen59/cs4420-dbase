@@ -2,13 +2,13 @@ package queries;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.concurrent.locks.Condition;
+
 
 import javax.swing.tree.TreeNode;
 
 
 public class Select extends Operation {
-
+	
 	protected Condition condition;
 	
 	/**This will create a new instance of Select.  It will use the 
@@ -23,10 +23,14 @@ public class Select extends Operation {
 			QueryParser.parseStatementParts(selectStatement);
 		
 		//Find out what this thing is selecting from
-		
+		String sourceStatement = selectionParts.get(
+			QueryParser.SELECT_FROM_INDEX);
+		setTableOne(Operation.makeOperation(sourceStatement));
 		
 		//Find the condition from the select.
-		
+		String conditionStatement = selectionParts.get(
+			QueryParser.SELECT_WHERE_INDEX);
+		setCondition(Condition.makeCondition(conditionStatement));
 		
 	}
 	
@@ -54,6 +58,14 @@ public class Select extends Operation {
 		return 0;
 	}
 	
+	/**This method returns the value of condition.
+	 * @return the condition
+	 */
+	public Condition getCondition() {
+		return condition;
+	}
+	
+	
 	/**Says whether or not the Selection is a Leaf.  Always false, a Select is 
 	 * never a Leaf in a query tree.
 	 * @return <code<b>false</b></code> because select statements aren't leaves.
@@ -61,7 +73,14 @@ public class Select extends Operation {
 	public boolean isLeaf() {
 		return false;
 	}
-	
+
+	/**This method will set the value of condition.
+	 * @param newCondition The new value of condition.
+	 */
+	public void setCondition(final Condition newCondition) {
+		this.condition = newCondition;
+	}
+
 	public String toString() {
 		
 		String string = ""; 
