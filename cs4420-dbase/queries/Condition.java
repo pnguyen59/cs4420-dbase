@@ -13,8 +13,7 @@ public abstract class Condition {
 	 * @param relationIDs The relations involved in the condition.
 	 * @return The new Condition.
 	 */
-	public static Condition makeCondition(final String newCondition,
-		final int relationID) {
+	public static Condition makeCondition(final String newCondition) {
 		
 		//See what kind of condition it is
 		String upperCase = newCondition.toUpperCase();
@@ -23,9 +22,9 @@ public abstract class Condition {
 		char firstCharacter = noParens.charAt(0);
 		
 		if (firstCharacter == 'A') {
-			return new AndOrCondition(newCondition, relationID);
+			return new AndOrCondition(newCondition);
 		} else if (firstCharacter == 'O') {
-			return new AndOrCondition(newCondition, relationID);
+			return new AndOrCondition(newCondition);
 		} else {
 			return null;
 		}
