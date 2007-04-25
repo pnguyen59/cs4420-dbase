@@ -16,7 +16,9 @@ public class Select extends Operation {
 	 * and what it is selecting from.
 	 * @param selectStatement The definition of the select.
 	 */
-	public Select (final String selectStatement) {
+	public Select(final String selectStatement) {
+		
+		setType(QueryParser.SELECT);
 		
 		//Tet the list of the parts of this select
 		ArrayList < String > selectionParts = 
@@ -30,8 +32,7 @@ public class Select extends Operation {
 		//Find the condition from the select.
 		String conditionStatement = selectionParts.get(
 			QueryParser.SELECT_WHERE_INDEX);
-		setCondition(Condition.makeCondition(conditionStatement));
-		
+		setCondition(Condition.makeCondition(conditionStatement));	
 	}
 	
 	@Override
@@ -54,8 +55,8 @@ public class Select extends Operation {
 	 * @return The number of children of this node.
 	 */
 	public int getChildCount() {
-		//TODO fix this so it does something.
-		return 0;
+		int childCount = 1 + tableOne.getChildCount();
+		return childCount;
 	}
 	
 	/**This method returns the value of condition.
