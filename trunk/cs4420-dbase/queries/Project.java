@@ -2,14 +2,29 @@ package queries;
 
 import java.util.ArrayList;
 
-import dbase.Attribute;
-
 public class Project extends Operation {
 
-	protected ArrayList < Attribute > attributes;
+	protected ArrayList < String > attributes;
 	
 	public long calculateCost() {
 		return 1000;
+	}
+	
+	/**This will create a new instance of Project.  It will find what to 
+	 * project and from where from the statement passed.
+	 * @param statement The literal of the project statement.
+	 */
+	public Project (final String statement) {
+		
+		setType(QueryParser.PROJECT);
+		
+		ArrayList < String > parts = QueryParser.parseStatementParts(statement);
+		
+		//Find the list of attributes to project
+		
+		//TODO find the table its coming from
+		tableOne = Operation.makeOperation(
+			parts.get(QueryParser.PROJECT_FROM_INDEX));
 	}
 	
 	public String toString() {
@@ -19,9 +34,6 @@ public class Project extends Operation {
 		string += this.queryID + "\t";
 		string += this.executionOrder + "\t";
 		string += this.type + "\t";
-		for (int index = 0; index < attributes.size(); index++) {
-			string += attributes.get(index).getName() + ", ";
-		}
 		string += tableOneAccess +"\t\t";
 		string += "\t";
 		string += resultTableID;
