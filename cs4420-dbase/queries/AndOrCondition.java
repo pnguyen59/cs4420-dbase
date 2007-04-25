@@ -75,17 +75,11 @@ public class AndOrCondition extends Condition {
 	 * @param relationID The ID of the relation that this condition will be 
 	 * working on, for schema purposes.
 	 */
-	public AndOrCondition(final String newCondition, final int relationID) {
+	public AndOrCondition(final String newCondition) {
 		super(newCondition);
-		
-		//Set the relation IDs
-		setRelation(relationID);
-		
 		//Get the conditions contained within this one.
-		leftHand = Condition.makeCondition(
-			parseLeftHand(newCondition), relationID);
-		rightHand = Condition.makeCondition(
-			parseRightHand(newCondition), relationID);
+		leftHand = Condition.makeCondition(parseLeftHand(newCondition));
+		rightHand = Condition.makeCondition(parseRightHand(newCondition));
 	}
 	
 	/**This method determines whether or not the AndOrCondition is true for the 
