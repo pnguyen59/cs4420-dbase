@@ -2,9 +2,6 @@ package queries;
 
 import java.util.ArrayList;
 
-import dbase.Relation;
-import dbase.RelationHolder;
-
 public class SimpleCondition extends Condition {
 	
 	/**The left hand side to the simple condition.*/
@@ -34,12 +31,36 @@ public class SimpleCondition extends Condition {
 	}
 	
 	@Override
-	public boolean compare(final String tuple) {
-		
-		//TODO Evaluate the comparison for the tuple passes
-		
-		//Evaluate each side for the tuple
-		
+	public boolean compare(final String[] tupleattnames, final String[] tuplevals) {
+		String leftval = leftHand; //default: treat them as constants
+		String rightval = rightHand;
+		for (int j=0; j<tupleattnames.length; j++){
+			if (leftHand.equals(tupleattnames[j])){
+				leftval = tuplevals[j];
+			}
+			if (rightHand.equals(tupleattnames[j])){
+				rightval = tuplevals[j];
+			}
+		}
+		try{
+			double j = Double.parseDouble(leftval);
+			double k = Double.parseDouble(rightval);
+			if (this.comparison.equals(QueryParser.EQUAL)){
+				return (j==k);
+			} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+				return (j<k);
+			} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+				return (j>k);
+			} 
+		} catch (NumberFormatException e){
+			if (this.comparison.equals(QueryParser.EQUAL)){
+				return leftval.equals(rightval);
+			} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+				return (leftval.compareTo(rightval)<0);
+			} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+				return (leftval.compareTo(rightval)>0);
+			} 
+		}
 		return false;
 	}
 

@@ -2,8 +2,6 @@ package queries;
 
 import java.util.ArrayList;
 
-import dbase.RelationHolder;
-
 
 public class Select extends Operation {
 	

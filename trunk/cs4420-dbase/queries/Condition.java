@@ -84,7 +84,7 @@ public abstract class Condition {
 	 * @param tuple The tuple to look at.
 	 * @return Whether or not the comparison is true.
 	 */
-	public abstract boolean compare(final String tuple);
+	public abstract boolean compare(final String[] tupleattnames, final String[] tuplevals);
 	
 	/**This method will return the list of Attributes used in this Condition,
 	 * and any contained within it.

@@ -89,10 +89,10 @@ public class AndOrCondition extends Condition {
 	 * @param tuple The string representation of the tuple.
 	 * @return Wether or not this Condition is true for the tupe.
 	 */
-	public boolean compare(final String tuple) {
+	public boolean compare(final String[] tupleattnames, final String[] tuplevals) {
 	
-		boolean leftHandEval = leftHand.compare(tuple);
-		boolean rightHandEval = rightHand.compare(tuple);
+		boolean leftHandEval = leftHand.compare(tupleattnames, tuplevals);
+		boolean rightHandEval = rightHand.compare(tupleattnames, tuplevals);
 		
 		//If an AND then see if both the left and right are true
 		if (comparison.equalsIgnoreCase("AND")) {
