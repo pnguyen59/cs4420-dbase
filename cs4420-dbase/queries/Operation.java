@@ -1,9 +1,11 @@
 package queries;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.tree.TreeNode;
 
+import dbase.Attribute;
 import dbase.RelationHolder;
 
 public abstract class Operation implements TreeNode  {
@@ -255,5 +257,10 @@ public abstract class Operation implements TreeNode  {
 
 	public void setType(final String newType) {
 		this.type = newType;
+	}
+
+	public ArrayList<String> getAttributes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
