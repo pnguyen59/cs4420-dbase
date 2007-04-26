@@ -155,6 +155,8 @@ public class Relation {
     			block.putDouble(start, Double.parseDouble(
         			attributeValues[attribute]));
         	}
+    		
+    		currentAttribute.addValue(attributeValues[attribute].trim());
     		  		
     		//Then for the next attribute, move past this one's size.
     		start += currentAttribute.getSize();
@@ -208,6 +210,8 @@ public class Relation {
     			block.putDouble(start, Double.parseDouble(
         			attributeValues[j]));
         	}
+    		
+    		currentAttribute.addValue(attributeValues[j].trim());
     		
     		//Then for the next attribute, move past this one's size.
     		start += currentAttribute.getSize();

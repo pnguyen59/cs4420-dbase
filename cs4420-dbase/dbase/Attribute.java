@@ -37,6 +37,7 @@ public class Attribute {
 	/**The Type of this attribute, e.g. INT, LONG, CHAR, etc.*/
 	private Type type;
 	
+	/**The possible values of this attribute*/
 	private ArrayList values;
 	
 	/**Index names*/
@@ -146,12 +147,26 @@ public class Attribute {
 		
 	}
 
+	/**
+	 * 
+	 * @param obj the value to add
+	 * @return false if it already exists; true if it doesn't
+	 */
+	public boolean addValue(Object obj){
+		if (values.contains(obj)){
+			return false;
+		} else {
+			values.add(obj);
+			return true;
+		}
+	}
+	
 	public int getCharLength() {
 		return length;
 	}
 	
 	public int getDistinct() {
-		return distinct;
+		return values.size();
 	}
 
 	public long getID() {
