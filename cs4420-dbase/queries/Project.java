@@ -18,7 +18,7 @@ public class Project extends Operation {
 		
 		for (int index = 0; index < parts.size(); index++) {
 			System.out.println(parts.get(index));
-		}
+		} 
 		
 		//Find the list of attributes to project
 		attributes = QueryParser.parseQueryAttributes(
@@ -35,7 +35,7 @@ public class Project extends Operation {
 	 * @return The cost of this Project.
 	 */
 	public long calculateCost() {
-		return 0;
+		return ((TableOperation)tableOne).calculateCost();
 	}
 	
 	/**This method will return whether or not the Project allows children as
