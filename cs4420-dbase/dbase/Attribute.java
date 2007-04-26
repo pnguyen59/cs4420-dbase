@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 /**
  * @author gtg471h
- *
+ * TODO make getDistinct work
  */
 public class Attribute {
 	
