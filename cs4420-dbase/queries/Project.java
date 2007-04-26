@@ -2,6 +2,12 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.Attribute;
+import dbase.Database;
+import dbase.Iterator;
+import dbase.Relation;
+import dbase.RelationHolder;
+
 public class Project extends Operation {
 
 	protected ArrayList < String > attributes;
@@ -77,6 +83,33 @@ public class Project extends Operation {
 	 */
 	public void setAttributes(final ArrayList < String > newAttributes) {
 		this.attributes = newAttributes;
+	}
+	
+	public boolean execute(){
+		Relation r = RelationHolder.getRelationHolder().getRelation(this.resultTableID);
+		Relation s = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
+		String attnames = "";
+		if (r == null) return false;
+		for (String st: attributes){
+			Attribute att = s.getAttributeByName(st.trim());
+			r.addAttribute(att.getName(), att.getType(), Database.getCatalog().getSmallestUnusedAttributeID());
+			attnames += st + ", ";
+		}
+		attnames = attnames.substring(0, attnames.length()-2);
+		Iterator it = new Iterator (s);
+		String newattvals = "";
+		while (it.hasNext()){
+			String [] oldattvals = it.getNext();
+			for (int j=0; j<attributes.size(); j++){
+				int idx = s.getIndexByName(attributes.get(j));
+				newattvals += oldattvals[idx] + ", ";
+			}
+			newattvals = newattvals.substring(0, newattvals.length()-2);
+			if (!Database.getCatalog().insert(this.resultTableID, "("+newattvals+")") )return false;
+		}
+		return true;
+		
+		
 	}
 
 	public String toString() {

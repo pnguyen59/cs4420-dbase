@@ -17,7 +17,7 @@ import java.util.Scanner;
  */
 public class Database {
     
-	private SystemCatalog catalog;
+	private static SystemCatalog catalog;
 	
     /** Creates a new instance of Database. */
     public Database() {
@@ -28,6 +28,10 @@ public class Database {
      */
     public void initialize() {
         
+    }
+    
+    public static SystemCatalog getCatalog(){
+    	return catalog;
     }
     
     /**This will look at a command to see if it is valid.  This will be moved

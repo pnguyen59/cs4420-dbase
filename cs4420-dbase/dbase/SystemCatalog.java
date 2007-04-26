@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 public class SystemCatalog {
+	
+	
     
 	public static final String SELECT_ATTRIBUTE_CATALOG 
 		= "ATTRIBUTE_CATALOG.ac";
