@@ -5,8 +5,6 @@ package queries;
 
 import java.util.ArrayList;
 
-import dbase.Attribute;
-
 /**
  * @author gtg471h
  *
