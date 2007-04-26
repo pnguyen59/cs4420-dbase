@@ -35,15 +35,16 @@ public class StorageManagerTest {
 		StorageManager storage = new StorageManager();
 		MappedByteBuffer buffer;
 		
-		buffer = storage.read(0, 0);
+		//buffer = new MappedByteBuffer();
+		//(storage.read(0, 0));
 		
-		for (int i = 0; i < buffer.limit(); i++) {
-			byte byteValue = buffer.get(i);
-			char character = (char) byteValue;
-			System.out.print(character);
-		}
+//		for (int i = 0; i < buffer.limit(); i++) {
+//			byte byteValue = buffer.get(i);
+//			char character = (char) byteValue;
+//			System.out.print(character);
+//		}
 		
-		BufferManager buffer = new BufferManager();
+		dbase.BufferManager bufferman = dbase.BufferManager.getBufferManager();
 	}
 
 	@Test
