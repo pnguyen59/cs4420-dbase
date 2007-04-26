@@ -1,5 +1,7 @@
 package queries;
 
+import java.util.ArrayList;
+
 public class Query {
 
 	private Operation treeRoot;
@@ -24,6 +26,15 @@ public class Query {
 		this.treeRoot = newTreeRoot;
 	}
 	
+	public ArrayList < String > getRelations() {
+		
+		return null;
+	}
+	
+	public ArrayList < String > getAttributes() {
+		
+		return null;
+	}
 	
 	
 	
