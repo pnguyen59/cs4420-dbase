@@ -18,6 +18,7 @@ public class TableOperation extends Operation {
 		String noParens = noQuotes.replace("(", "");
 		noParens = noParens.replace(")", "");
 		tableName = noParens;
+		type = QueryParser.TABLEOPERATION;
 		this.resultTableID = RelationHolder.getRelationHolder().getRelationByName(tableName);
 	}
 	
