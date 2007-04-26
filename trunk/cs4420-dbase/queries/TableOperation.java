@@ -24,7 +24,8 @@ public class TableOperation extends Operation {
 	 * <code>TableOperation</code>. Basically, it's just the size of the
 	 * relation.
 	 * @return The cost of this operation, essentially the cost of reading
-	 * the whole thing in, in blocks.
+	 * the whole thing in, in blocks.  -1 if relation name doesn't exist.  
+	 * -2 if relation ID doesn't give us a relation
 	 */
 	@Override
 	public long calculateCost() {
@@ -32,7 +33,13 @@ public class TableOperation extends Operation {
 		//Find the relation that this TableOperation uses
 		RelationHolder holder = RelationHolder.getRelationHolder();
 		int relationID = holder.getRelationByName(tableName);
+		
+		//check for error condition
+		if (relationID == -1) return -1;
 		Relation relation = holder.getRelation(relationID);
+		
+		//if relation doesn't exist
+		if (relation == null) return -2;
 		
 		//Find out how big this thing is
 		int blocks = relation.getBlocktotal();
