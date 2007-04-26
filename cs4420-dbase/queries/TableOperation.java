@@ -64,6 +64,20 @@ public class TableOperation extends Operation {
 		
 		return uniquevals;
 	}
+	
+	public boolean containsAttribute(String att){
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		int relationID = holder.getRelationByName(tableName);
+		
+		//check for error condition
+		if (relationID == -1) return false;
+		Relation relation = holder.getRelation(relationID);
+		
+		//if relation doesn't exist
+		if (relation == null) return false;
+		
+		return (relation.getAttributeByName(att) != null);
+	}
 
 	/**Tables will be the leaves of the query tree and never have children.
 	 * @return <code><b>false</b></code> because leaves never have children.

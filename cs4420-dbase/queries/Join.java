@@ -41,6 +41,16 @@ public class Join extends Operation {
 		return false;
 	}
 	
+	public long uniqueVals(String att){ 
+		if (tableOne.containsAttribute(att)){ 
+			return tableOne.uniqueVals(att);
+		} else if (tableTwo.containsAttribute(att)){
+			return tableTwo.uniqueVals(att);
+		} else {
+			return -1;
+		}
+	}
+	
 	public String toString() {
 		
 		String string = ""; 
