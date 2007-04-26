@@ -4,6 +4,8 @@ import java.util.Enumeration;
 
 import javax.swing.tree.TreeNode;
 
+import dbase.RelationHolder;
+
 public abstract class Operation implements TreeNode  {
 	
 	/**This method will make a query table from the Operation (node) given,
@@ -129,6 +131,16 @@ public abstract class Operation implements TreeNode  {
 	public int getResultTableID() {
 		return resultTableID;
 	}
+	
+	/**
+	 * Executes the operation
+	 * @return true if it executes properly
+	 */
+	public boolean execute(){
+		return false;
+	}
+	
+	
 
 
 	/**This method returns the value of tableOne.
@@ -200,6 +212,30 @@ public abstract class Operation implements TreeNode  {
 	 */
 	public void setTableOne(final Operation newTableOne) {
 		this.tableOne = newTableOne;
+	}
+	
+	public long uniqueVals(String att){
+		if (tableOne != null){
+			if (tableTwo != null){  //binary?
+				
+				return tableOne.uniqueVals(att);
+			} else {
+				return (tableTwo.uniqueVals(att)*tableOne.uniqueVals(att));
+			}
+			
+		} else{
+			return 1;
+		}
+	}
+	
+	public boolean containsAttribute(String att){
+		if (tableTwo!= null){
+			return (tableOne.containsAttribute(att) || tableTwo.containsAttribute(att));
+		} else if (tableOne != null){
+			return (tableOne.containsAttribute(att));
+		} else {
+			return (RelationHolder.getRelationHolder().getRelation(resultTableID).getAttributeByName(att) != null);
+		}
 	}
 
 

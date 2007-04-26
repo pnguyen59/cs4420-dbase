@@ -69,6 +69,10 @@ public class AndOrCondition extends Condition {
 	
 	private Condition rightHand;
 	
+	public double getMultiplier(){
+		if (this.leftHand.getCondition().equals(QueryParser.))
+	}
+	
 	/**This will create a new instance of AndOrCondition.
 	 * @param newCondition The condition that the object will represent and
 	 * parse sub conditions from.

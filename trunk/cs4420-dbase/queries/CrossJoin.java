@@ -38,8 +38,8 @@ public class CrossJoin extends Operation {
 	
 	@Override
 	public long calculateCost() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return tableOne.calculateCost()*tableTwo.calculateCost();
 	}
 	
 	/**This method will return whether or not the CrossJoin allows children as
