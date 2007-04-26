@@ -7,6 +7,8 @@ public class CrossJoin extends Operation {
 	
 	public CrossJoin(final String statement) {
 		
+		setType(QueryParser.CROSSJOIN);
+		
 		//Get the relation names out of the statement
 		ArrayList < String > tables = QueryParser.parseRelationNames(statement);
 		
@@ -73,16 +75,16 @@ public class CrossJoin extends Operation {
 
 	public String toString() {
 		
-		String string = ""; 
+		String string = "|"; 
 		
-		string += this.queryID + "\t";
-		string += this.executionOrder + "\t";
-		string += this.type + "\t";
-		string += "\t";
-		string += tableOneAccess +"\t";
-		string += tableTwoAccess +"\t";
-		string += "\t";
-		string += resultTableID;
+		string += this.queryID + "\t|";
+		string += this.executionOrder + "\t|";
+		string += this.type + "\t|";
+		string += tableOneAccess +"\t|";
+		string += tableTwoAccess +"\t|";
+		string += "\t|";
+		string += resultTableID + "\t|";
+		string += "\n";
 		
 		return string;
 	}

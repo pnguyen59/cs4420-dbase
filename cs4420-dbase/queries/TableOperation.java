@@ -83,5 +83,9 @@ public class TableOperation extends Operation {
 	public void setTableName(final String newTableName) {
 		this.tableName = newTableName;
 	}
+	
+	public String toString() {
+		return "|" + tableName + "\t|\n";
+	}
 
 }
