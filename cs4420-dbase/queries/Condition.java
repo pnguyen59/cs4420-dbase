@@ -90,7 +90,7 @@ public abstract class Condition {
 	 * and any contained within it.
 	 * @return A list of Attributes used in the Condition.
 	 */
-	public abstract ArrayList < Integer > getAttributes();
+	public abstract ArrayList < String > getAttributes();
 	
 	/**This method will return the comparison used in this Conditon.
 	 * @return The comparison being used.
