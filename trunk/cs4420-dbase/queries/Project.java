@@ -41,7 +41,7 @@ public class Project extends Operation {
 	 * @return The cost of this Project.
 	 */
 	public long calculateCost() {
-		return ((TableOperation)tableOne).calculateCost();
+		return tableOne.calculateCost();
 	}
 	
 	/**This method will return whether or not the Project allows children as
