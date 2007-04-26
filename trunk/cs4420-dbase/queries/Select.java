@@ -34,7 +34,19 @@ public class Select extends Operation {
 	
 	@Override
 	public long calculateCost() {
-		// TODO Auto-generated method stub
+		if (this.getCondition().equals(QueryParser.LESS_THAN) || 
+				this.getCondition().equals(QueryParser.GREATER_THAN)){
+			long br = ((TableOperation)tableOne).calculateCost();
+			if (br%3 == 0) return (br/3);
+			else return ((br/3)+1); //round up
+		} else if (this.getCondition().equals(QueryParser.EQUAL)){
+			long br = ((TableOperation)tableOne).calculateCost();
+			long leftuniquevals = ((TableOperation)tableOne).uniqueVals(this.getCondition().getAttributes().get(0));
+			long rightuniquevals = ((TableOperation)tableOne).uniqueVals(this.getCondition().getAttributes().get(1));
+			long totalvals = leftuniquevals * rightuniquevals;
+			if (br % totalvals == 0)return (br/totalvals);
+			else return ((br/totalvals) + 1);//round up
+		}
 		return 0;
 	}
 	

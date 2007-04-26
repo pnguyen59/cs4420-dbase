@@ -44,7 +44,7 @@ public class SimpleCondition extends Condition {
 	}
 
 	@Override
-	public ArrayList < Integer > getAttributes() {
+	public ArrayList < String > getAttributes() {
 		// TODO Auto-generated method stub
 		return null;
 	}

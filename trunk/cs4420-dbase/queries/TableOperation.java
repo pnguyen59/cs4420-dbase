@@ -47,6 +47,23 @@ public class TableOperation extends Operation {
 		
 		return blocks;
 	}
+	
+	public long uniqueVals(String att){
+//		Find the relation that this TableOperation uses
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		int relationID = holder.getRelationByName(tableName);
+		
+		//check for error condition
+		if (relationID == -1) return -1;
+		Relation relation = holder.getRelation(relationID);
+		
+		//if relation doesn't exist
+		if (relation == null) return -2;
+		
+		long uniquevals = relation.getUniqueVals(att);
+		
+		return uniquevals;
+	}
 
 	/**Tables will be the leaves of the query tree and never have children.
 	 * @return <code><b>false</b></code> because leaves never have children.

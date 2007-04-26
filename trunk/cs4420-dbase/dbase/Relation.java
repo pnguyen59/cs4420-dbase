@@ -718,6 +718,17 @@ public class Relation {
 	public int getBlockTotal() {
 		return blockTotal;
 	}
+	
+	public long getUniqueVals(String att){
+		try {
+			Integer.parseInt(att);
+		} catch (NumberFormatException e){
+			Attribute att1 = getAttributeByName(att);
+			if (att1 == null) return 0;
+			return att1.getDistinct();
+		}
+		return 1;
+	}
 
 	public void setChannel(FileChannel channel) {
 		this.channel = channel;

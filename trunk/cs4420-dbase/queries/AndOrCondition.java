@@ -105,24 +105,24 @@ public class AndOrCondition extends Condition {
 	}
 
 	@Override
-	public ArrayList < Integer > getAttributes() {
+	public ArrayList < String > getAttributes() {
 
 		//Get the leftHand ones
-		ArrayList < Integer > leftHandAttributes = leftHand.getAttributes();
-		ArrayList < Integer > rightHandAttributes = rightHand.getAttributes();
-		ArrayList < Integer > noDuplicates = 
+		ArrayList < String > leftHandAttributes = leftHand.getAttributes();
+		ArrayList < String > rightHandAttributes = rightHand.getAttributes();
+		ArrayList < String > noDuplicates = 
 			(ArrayList) leftHandAttributes.clone();
 		
 		//See if there are any on the right side not in the left side
 		for (int right = 0; right < rightHandAttributes.size(); right++) {
 			
-			int rightAttribute = rightHandAttributes.get(right);
+			String rightAttribute = rightHandAttributes.get(right);
 			boolean duplicate = false;
 			
 			for (int left = 0; left < leftHandAttributes.size(); left++) {
 				
-				int leftAttribute = leftHandAttributes.get(left);
-				if (leftAttribute == rightAttribute) {
+				String leftAttribute = leftHandAttributes.get(left);
+				if (leftAttribute.equals(rightAttribute)) {
 					duplicate = true;
 					break;
 				}	
