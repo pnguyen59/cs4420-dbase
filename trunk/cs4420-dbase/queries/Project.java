@@ -81,14 +81,18 @@ public class Project extends Operation {
 
 	public String toString() {
 		
-		String string = ""; 
+		String string = "|"; 
 		
-		string += this.queryID + "\t";
-		string += this.executionOrder + "\t";
-		string += this.type + "\t";
-		string += tableOneAccess +"\t\t";
-		string += "\t";
-		string += resultTableID;
+		string += this.queryID + "\t|";
+		string += this.executionOrder + "\t|";
+		string += this.type + "\t|";
+		for (int index = 0; index < attributes.size(); index++) {
+			string += attributes.get(index) + ", ";
+		}
+		string += "\t\t|";
+		string += tableOneAccess +"\t|";
+		string += resultTableID + "\t|";
+		string += "\n";
 		
 		return string;
 	}

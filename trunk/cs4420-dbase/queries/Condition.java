@@ -136,5 +136,9 @@ public abstract class Condition {
 	public void setRelation(final int relationID) {
 		this.relation = relationID;
 	}
+	
+	public String toString() {
+		return condition;
+	}
 }
 

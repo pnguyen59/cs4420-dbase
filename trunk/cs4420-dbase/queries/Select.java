@@ -81,15 +81,15 @@ public class Select extends Operation {
 
 	public String toString() {
 		
-		String string = ""; 
+		String string = "|"; 
 		
-		string += this.queryID + "\t";
-		string += this.executionOrder + "\t";
-		string += this.type + "\t";
-		string += condition.toString();
-		string += tableOneAccess +"\t\t";
-		string += "\t";
-		string += resultTableID;
+		string += this.queryID + "\t|";
+		string += this.executionOrder + "\t|";
+		string += this.type + "\t\t|";
+		string += condition.toString() + "\t|";
+		string += tableOneAccess +"\t|";
+		string += resultTableID + "\t|";
+		string += "\n";
 		
 		return string;
 	}

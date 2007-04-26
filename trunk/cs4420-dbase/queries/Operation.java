@@ -6,6 +6,27 @@ import javax.swing.tree.TreeNode;
 
 public abstract class Operation implements TreeNode  {
 	
+	/**This method will make a query table from the Operation (node) given,
+	 * down to the bottom.
+	 * @param node The node to make the table from.
+	 * @return A table.
+	 */
+	public static String generateQueryTable(final Operation node) {
+		
+		String table = "";
+		
+		//Start with the tableOne
+		if (node.getTableOne() != null) {
+			table += generateQueryTable(node.getTableOne());
+		} if (node.getTableTwo() != null) {
+			table += generateQueryTable(node.getTableTwo());
+		}
+		
+		table += node.toString();
+		
+		return table;
+	}
+	
 	/**This method will make an Operation from the literal represenation
 	 * of that operation.
 	 * @param operation The literal represenation of the operation.
@@ -32,10 +53,6 @@ public abstract class Operation implements TreeNode  {
 			return new TableOperation(upperCase);
 		}
 	}
-	
-	/**This method will make a query table from the Operation (node) given,
-	 * down to the bottom.
-	 */
 	
 	protected int executionOrder;
 	
