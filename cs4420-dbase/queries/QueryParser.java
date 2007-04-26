@@ -30,6 +30,10 @@ public class QueryParser {
 	public static final int SELECT_WHERE_INDEX = 1;
 	
 	public static final String WHERE = "WHERE";
+
+	public static final String TABLEOPERATION = "TABLEOPERATION";
+
+	public static final String JOIN = "JOIN";
 	
 	/**This method will find the names of all of the attributes in the thingy
 	 * passed to it.  Looks for QA and A
