@@ -36,30 +36,31 @@ public class Select extends Operation {
 	
 	@Override
 	public long calculateCost() {
-		long div = calculateDivisor(this.getCondition());
+		
 		long br = tableOne.calculateCost();
-		if (br%div == 0)return (br/div);
-		else return ((br/div) + 1); //round up
+		double div = calculateCostHelper(br, this.getCondition());
+		if (div%1 == 0) return (long)div;
+		else return ((long)div + 1);
 	}
 	
-	public long calculateDivisor(Condition con){
+	public double calculateCostHelper(double numblox, Condition con){
 		if (con.getCondition().equals(QueryParser.LESS_THAN) || 
 				con.getCondition().equals(QueryParser.GREATER_THAN)){
-			return 3;
+			return (numblox * 1.0)/3.0;
 		} else if (con.getCondition().equals(QueryParser.EQUAL)){
 			long leftuniquevals = tableOne.uniqueVals(con.getAttributes().get(0));
 			long rightuniquevals = tableOne.uniqueVals(con.getAttributes().get(1));
-			long totalvals = leftuniquevals * rightuniquevals;
-			return totalvals;
+			double totalvals = leftuniquevals * rightuniquevals;
+			return (numblox * 1.0)/totalvals;
 		} else if (con.getCondition().equals(QueryParser.AND)){
 			String left = (AndOrCondition.parseLeftHand(con.getCondition()));
 			String right = (AndOrCondition.parseRightHand(con.getCondition()));
-			return calculateDivisor(Condition.makeCondition(left)) * calculateDivisor(Condition.makeCondition(right));
+			return calculateCostHelper(numblox, Condition.makeCondition(left)) * calculateCostHelper(numblox, Condition.makeCondition(right));
 			
 		} else if (con.getCondition().equals(QueryParser.OR)){
 			String left = (AndOrCondition.parseLeftHand(con.getCondition()));
 			String right = (AndOrCondition.parseRightHand(con.getCondition()));
-			return calculateDivisor(Condition.makeCondition(left)) + calculateDivisor(Condition.makeCondition(right));
+			return calculateCostHelper(numblox, Condition.makeCondition(left)) + calculateCostHelper(numblox, Condition.makeCondition(right));
 		}
 		return 0;
 	}
