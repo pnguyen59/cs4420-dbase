@@ -18,6 +18,7 @@ public class TableOperation extends Operation {
 		String noParens = noQuotes.replace("(", "");
 		noParens = noParens.replace(")", "");
 		tableName = noParens;
+		this.resultTableID = RelationHolder.getRelationHolder().getRelationByName(tableName);
 	}
 	
 	/**This method will calculate the cost, that is the size of this
@@ -102,6 +103,10 @@ public class TableOperation extends Operation {
 
 	public boolean isLeaf() {
 		// TODO Auto-generated method stub
+		return true;
+	}
+	
+	public boolean execute(){
 		return true;
 	}
 

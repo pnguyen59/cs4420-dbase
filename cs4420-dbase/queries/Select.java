@@ -2,6 +2,8 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.RelationHolder;
+
 
 public class Select extends Operation {
 	
@@ -34,18 +36,30 @@ public class Select extends Operation {
 	
 	@Override
 	public long calculateCost() {
-		if (this.getCondition().equals(QueryParser.LESS_THAN) || 
-				this.getCondition().equals(QueryParser.GREATER_THAN)){
-			long br = tableOne.calculateCost();
-			if (br%3 == 0) return (br/3);
-			else return ((br/3)+1); //round up
-		} else if (this.getCondition().equals(QueryParser.EQUAL)){
-			long br = tableOne.calculateCost();
-			long leftuniquevals = tableOne.uniqueVals(this.getCondition().getAttributes().get(0));
-			long rightuniquevals = tableOne.uniqueVals(this.getCondition().getAttributes().get(1));
+		long div = calculateDivisor(this.getCondition());
+		long br = tableOne.calculateCost();
+		if (br%div == 0)return (br/div);
+		else return ((br/div) + 1); //round up
+	}
+	
+	public long calculateDivisor(Condition con){
+		if (con.getCondition().equals(QueryParser.LESS_THAN) || 
+				con.getCondition().equals(QueryParser.GREATER_THAN)){
+			return 3;
+		} else if (con.getCondition().equals(QueryParser.EQUAL)){
+			long leftuniquevals = tableOne.uniqueVals(con.getAttributes().get(0));
+			long rightuniquevals = tableOne.uniqueVals(con.getAttributes().get(1));
 			long totalvals = leftuniquevals * rightuniquevals;
-			if (br % totalvals == 0)return (br/totalvals);
-			else return ((br/totalvals) + 1);//round up
+			return totalvals;
+		} else if (con.getCondition().equals(QueryParser.AND)){
+			String left = (AndOrCondition.parseLeftHand(con.getCondition()));
+			String right = (AndOrCondition.parseRightHand(con.getCondition()));
+			return calculateDivisor(Condition.makeCondition(left)) * calculateDivisor(Condition.makeCondition(right));
+			
+		} else if (con.getCondition().equals(QueryParser.OR)){
+			String left = (AndOrCondition.parseLeftHand(con.getCondition()));
+			String right = (AndOrCondition.parseRightHand(con.getCondition()));
+			return calculateDivisor(Condition.makeCondition(left)) + calculateDivisor(Condition.makeCondition(right));
 		}
 		return 0;
 	}
