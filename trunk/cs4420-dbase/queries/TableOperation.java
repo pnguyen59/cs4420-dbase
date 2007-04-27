@@ -76,8 +76,15 @@ public class TableOperation extends Operation {
 		
 		//if relation doesn't exist
 		if (relation == null) return false;
-		
-		return (relation.getAttributeByName(att) != null);
+		if (Utilities.isQualifiedAttr(att)){
+			if (relation.getName().equals(att.split(".")[0])){
+				return (relation.getAttributeByName(att.split(".")[1]) != null);
+			} else{
+				return false;
+			}
+		} else {
+			return (relation.getAttributeByName(att) != null);
+		}
 	}
 	
 	public ArrayList<String> getAttributes(){
