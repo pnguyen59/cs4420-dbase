@@ -77,6 +77,30 @@ public class QueryParser {
 		return attributes;
 	}
 	
+	/**This method will parse the attributes out of a simple condition, such
+	 * as (a "A") or (qa "B" "C")
+	 * @param The thing to parse the attribute name out of.
+	 * @return The attribute name
+	 */
+	public static String parseAttribute(final String attribute) {
+		
+		//Remove any parens
+		String noParens = attribute.replace(")", "");
+		noParens = noParens.replace("(", "");
+		noParens = noParens.replace(" ", "");
+		
+		//Split it up by quotes
+		String [] split = noParens.split("\"");
+		if (split[0].equalsIgnoreCase("QA")) {
+			return split[1] + "." + split[3];
+		} else if (split[0].equalsIgnoreCase("A")) {
+			return split[1];
+		} else {
+			return null;
+		}
+		
+	}
+	
 	/**This method will take in a statement as a string, and look for any 
 	 * table names.  Basically anthing surrounded by quotes.
 	 * @param statement The statement.
