@@ -130,19 +130,26 @@ public class TableOperation extends Operation {
 		return 0;
 	}
 
+	/**This just returns the required attributes of its parents.
+	 * @return A horses head in Chris's bed.
+	 */
+	public ArrayList < String > getParentAttributes() {
+		return parent.getParentAttributes();
+	}
+	
 	public ArrayList < String > getRelations() {
 		ArrayList < String > relationList = new ArrayList < String > ();
 		relationList.add(tableName);
 		return relationList;
 	}
-	
+
 	/**This method returns the value of tableName.
 	 * @return the tableName
 	 */
 	public String getTableName() {
 		return tableName;
 	}
-
+	
 	public ArrayList < String > getTreeAttributes() {
 		
 		return new ArrayList < String > ();
@@ -171,14 +178,14 @@ public class TableOperation extends Operation {
 		int relationID = holder.getRelationByName(tableName);
 		return(holder.getRelation(relationID) != null);
 	}
-	
+
 	/**This method will set the value of tableName.
 	 * @param newTableName The new value of tableName.
 	 */
 	public void setTableName(final String newTableName) {
 		this.tableName = newTableName;
 	}
-
+	
 	public String toString() {
 		return "";
 	}
