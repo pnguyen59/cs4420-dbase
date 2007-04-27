@@ -32,8 +32,13 @@ public class SystemCatalog {
 	
 	public static final int MAX_NAME_LENGTH = 15;
 	
+	public static final int MAX_PASS_LENGTH = 15;
+	
 	public static final int MAX_NAME_SIZE = MAX_NAME_LENGTH 
 		* Attribute.CHAR_SIZE;
+	
+	public static final int MAX_PASS_SIZE = MAX_PASS_LENGTH 
+	* Attribute.CHAR_SIZE;
 	
     public final static long ATT_OFFSET = (long)Math.pow(2, 31);
     
@@ -41,7 +46,7 @@ public class SystemCatalog {
     
     public final static long REL_OFFSET = (long)Math.pow(2, 30);
     
-    public static final int REL_REC_SIZE = 398;
+    public static final int REL_REC_SIZE = 430;
     /**String Length Maximum*/
     public final static int stringlength = 15;
     private String attributecatalog = "ATTRIBUTE_CATALOG.ac";
@@ -267,6 +272,20 @@ public class SystemCatalog {
     				blockPosition += MAX_NAME_SIZE;
     				newRelation.addIndex(indexName);
     			}
+    			
+    			String relationPass = Relation.parseString(duplicateBlock, 
+        				blockPosition, MAX_PASS_SIZE);
+    			
+    			newRelation.setLockPass(relationPass);
+    			
+    			blockPosition += MAX_PASS_SIZE;
+    			
+    			char locked = duplicateBlock.getChar(blockPosition);
+    			
+    			newRelation.setLockState(((locked == 't') || (locked=='T')));
+    			
+    			blockPosition += Attribute.CHAR_SIZE;
+    			
     			//System.out.println("Index names loaded at byte " 
         		//		+ relationpos);
     		} //End the relation loading loop

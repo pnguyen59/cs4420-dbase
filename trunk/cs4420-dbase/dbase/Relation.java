@@ -17,6 +17,8 @@ import java.util.Date;
 
 public class Relation {
 	
+	
+	
 	/**This method will parse a string out of a record, if you tell it where
 	 * it starts and how long the string is.
 	 * @param record The record containing the string.
@@ -87,6 +89,10 @@ public class Relation {
 	
 	/**The size of one record in this relation in bytes.*/
 	private int size;
+	
+	private boolean isLocked;
+	
+	private String password;
 
 	/**This creates a new instance of relation.
 	 * @param newfilename The file that holds the records of this relation.
@@ -102,6 +108,7 @@ public class Relation {
 		modifydate = (new Date()).getTime();
 		blockTotal = 1;
 		indexFiles = new ArrayList<String>();
+		isLocked = false;
 	}
 	
 	public void addAttribute(Attribute att){
@@ -720,6 +727,7 @@ public class Relation {
 			//System.out.println("Currently writing at " + currentPosition);
 		}
 		
+		
 		//Write all of the information about this relation
 		entry.putInt(currentPosition, ID);
 		currentPosition += Attribute.INT_SIZE;
@@ -775,6 +783,26 @@ public class Relation {
 				currentPosition += Attribute.CHAR_SIZE;
 			}
 		}
+		
+		for (int j = 0; j < 15; j++){
+			if (j < password.length()){
+				char character = password.charAt(j);
+				entry.putChar(currentPosition, character);
+			} else {
+				entry.putChar(currentPosition,BufferManager.NULL_CHARACTER);
+			}
+			currentPosition += Attribute.CHAR_SIZE;
+			//System.out.println("Currently writing at " + currentPosition);
+		}
+		
+		if (this.isLocked){
+			entry.putChar(currentPosition,'t');
+		} else {
+			entry.putChar(currentPosition, 'f');
+		}
+		
+		currentPosition += Attribute.CHAR_SIZE;
+		
 		//System.out.println("Finished writing indexe names at " 
 		//	+ currentPosition);
 		
@@ -782,6 +810,36 @@ public class Relation {
 		//		+ this.relationname + "...");
 		return entry;
 	}
+	
+	public boolean setLock(String password){
+		if (this.isLocked){
+			return false;
+		} else {
+			this.password = password;
+			this.isLocked = true;
+			return true;
+		}
+		
+	}
+	
+	public boolean unLock(String password){
+		if (this.password.equals(password)){
+			this.isLocked = false;
+			return true;
+		} else{
+			return false;
+		}
+	}
+	
+	public void setLockState(boolean state){
+		this.isLocked = state;
+	}
+	
+	public void setLockPass(String pass){
+		this.password = pass;
+	}
+	
+	
 	
 	/**This method will write the given string to the given block a the given
 	 * position, and will fill in the rest of the space for this attribute
@@ -797,7 +855,7 @@ public class Relation {
 		int offset = start;
 		//System.out.println("Offset: " + offset); 
 		//Loop through the String, writing the characters as ints.
-		for (int index = 0; index < chars.length();  index++) {
+		for (int index = 0; index < chars.length() && index<newSize;  index++) {
 			//Get the char at the index
 			//System.out.println(block);
 			block.putChar(offset, chars.charAt(index));
