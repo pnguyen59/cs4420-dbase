@@ -60,7 +60,9 @@ import java.util.ArrayList;
 	 * parses the left-hand side of an AND/OR statement
 	 * @param statement the statement this parses
 	 * @return the left hand side of the statement
-	 */public static String parseLeftHand(final String statement) {
+	 */
+	
+	public static String parseLeftHand(final String statement) {
 		return parseConditons(statement)[0];
 	}
 	

@@ -32,6 +32,11 @@ public class Select extends Operation {
 		setCondition(Condition.makeCondition(conditionStatement));	
 	}
 	
+	public Select()
+	{
+		setType(QueryParser.SELECT);
+	}
+	
 	@Override
 	public long calculateCost() {
 		
