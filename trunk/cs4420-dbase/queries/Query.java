@@ -59,6 +59,7 @@ public class Query {
 		
 		int tempTable = RelationHolder.getRelationHolder().getSmallestUnusedID();
 		String temp = "TEMP";
+		int step = 1;
 		
 		ArrayList < Operation > tree = treeRoot.getPostOrder();
 		
@@ -69,9 +70,25 @@ public class Query {
 			if (!(currentOperation.getType().
 				equalsIgnoreCase(QueryParser.TABLEOPERATION))) {
 				currentOperation.setResultTableID(tempTable);
+				currentOperation.setExecutionOrder(step);
+				step++;
 				tempTable++;
 			}
 		}
+	}
+	
+	public void generateTemporaryTables() {
+		
+		//Get the Post-order version of the tree
+		ArrayList < Operation > tree = treeRoot.getPostOrder();
+		
+		for (int index = 0; index < tree.size(); index++) {
+			
+			Operation currentOperation = tree.get(index);
+			//Tell the currentOperation to make its temporary table
+			currentOperation.generateTemporaryTable();
+		}
+		
 	}
 	
 	public boolean execute(){
