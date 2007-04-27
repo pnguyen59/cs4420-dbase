@@ -421,7 +421,7 @@ public class Relation {
 		
 		//See if it has the . in it
 		if (attributeName.contains(".")) {
-			String [] split = attributeName.split(".");
+			String [] split = attributeName.split("\\.");
 			if (!split[0].equalsIgnoreCase(this.relationname)) {
 				return false;
 			}
