@@ -261,6 +261,8 @@ public class Select extends Operation {
 		for (int index = 0; index < attributes.size(); index++) {
 			result.addAttribute(attributes.get(index));
 		}
+		
+		holder.addRelation(result);
 	}
 }
 
