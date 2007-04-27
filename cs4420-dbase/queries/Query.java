@@ -2,6 +2,7 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.Relation;
 import dbase.RelationHolder;
 
 public class Query {
@@ -87,6 +88,10 @@ public class Query {
 			Operation currentOperation = tree.get(index);
 			//Tell the currentOperation to make its temporary table
 			currentOperation.generateTemporaryTable();
+			
+			Relation relation = RelationHolder.getRelationHolder().
+				getRelation(currentOperation.getResultTableID());
+			System.out.println(relation);
 		}
 		
 	}

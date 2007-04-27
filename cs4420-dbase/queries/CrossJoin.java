@@ -60,11 +60,6 @@ public class CrossJoin extends Operation {
 		Relation left = holder.getRelation(tableOne.getResultTableID());
 		Relation right = holder.getRelation(tableTwo.getResultTableID());
 		
-		/*System.out.println("CROSSJOIN LEFT TABLE: " 
-			+ tableOne.getResultTableID());
-		System.out.println("CROSSJOIN RIGHT TABLE: " 
-			+ tableTwo.getResultTableID());*/
-		
 		//Create the resulting relation
 		Relation result = new Relation(QueryParser.RESULT + resultTableID,
 			resultTableID);
@@ -72,14 +67,37 @@ public class CrossJoin extends Operation {
 		//Add the attributes of each to the result
 		ArrayList < Attribute > attributes = left.getAttributes();
 		for (int index = 0; index < attributes.size(); index++) {
-			result.addAttribute(attributes.get(index));
+			
+			Attribute currentAttribute = attributes.get(index);
+			String currentName = currentAttribute.getName();
+			//If it isn't qualified, make it so
+			if (!(currentName.contains("."))) {
+				currentName = left.getName() + "." + currentName;
+			}
+			
+			//Make a new attribute with the qualified name
+			Attribute newAttribute = new Attribute(
+				currentName, currentAttribute.getType(), 0);
+			
+			result.addAttribute(newAttribute);
 		}
 		attributes = right.getAttributes();
 		for (int index = 0; index < attributes.size(); index++) {
-			result.addAttribute(attributes.get(index));
+			
+			Attribute currentAttribute = attributes.get(index);
+			String currentName = currentAttribute.getName();
+			//If it isn't qualified, make it so
+			if (!(currentName.contains("."))) {
+				currentName = left.getName() + "." + currentName;
+			}
+			
+			//Make a new attribute with the qualified name
+			Attribute newAttribute = new Attribute(
+				currentName, currentAttribute.getType(), 0);
+			
+			result.addAttribute(newAttribute);
 		}
 		
-		//Add the result to the list of relations
 		holder.addRelation(result);
 	}
 	
