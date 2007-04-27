@@ -703,8 +703,8 @@ public class Relation {
 	}
 	
 	public String toString(){
-		return "Relation "+ID+" named: "+this.filename+" with "+attributes.size()
-			+" attributes: "+attributes.toString()+"\n";
+		return "Relation "+ID+" " +this.filename+" with "+attributes.size()
+			+" attributes: "+attributes.toString();
 	}
 
 	/**This will return a ByteBuffer representation of the metadata for this 
