@@ -17,20 +17,63 @@ import java.util.Date;
 
 public class Relation {
 	
+	/**This method will parse a string out of a record, if you tell it where
+	 * it starts and how long the string is.
+	 * @param record The record containing the string.
+	 * @param start Where the string starts in the record, in bytes.
+	 * @param size  The size of the string in bytes.
+	 * @return The string parsed out of this record.
+	 */
+	public static String parseString(final ByteBuffer record, final int start, 
+			final int size) {
+		//System.out.println("Parsing string starting at: " + start 
+		//		+ " and of size " + size);
+		
+		//Loop through the record, getting thigs out as integers and casting
+		//them as characters.
+		String total = "";
+		int offset = start;
+		
+		for (int current = 0;  current < size; current++) {
+			//Get the next character from the record and add it to the total
+			char next = record.getChar(offset);
+			
+			//If it is a null character, then stop her and return what we have.
+			if (next == '\0') {
+				return total;
+			}
+			
+			total = total + next;
+			
+			//Increment the start so it gets the next character
+			offset += Attribute.CHAR_SIZE;
+		}
+		return total;	
+	}
+	
+	/**The Attributes of this relation.*/
+	private ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+	
+	/**The total number of blocks that this relation spans.*/
+	private int blockTotal;
+	
+	/**The FileChannel which maps to this relation and reads from it.*/
+	private FileChannel channel;
+	
+	/**The date that this relation was created.*/
+	private long creationdate;
+	
 	/**The name of the file which holds this relations records.*/
 	private final String filename;
 	
 	/**The internal, autmatically assigned ID of this relation.*/
 	private final int ID;
 	
-	/**The FileChannel which maps to this relation and reads from it.*/
-	private FileChannel channel;
+	/**The indexed attributes of this relation.*/
+	private ArrayList<Integer> indexed = new ArrayList<Integer>(10);
 	
-	/** The Basic information for the Relation */
-	private String relationname;
-	
-	/**The date that this relation was created.*/
-	private long creationdate;
+	/**The names of the index files of this relation.*/
+	private ArrayList<String> indexFiles;;
 	
 	/**The date that this relation was last modified.*/
 	private long modifydate;
@@ -38,22 +81,13 @@ public class Relation {
 	/**The number of records in this relation.*/
 	private int records;
 	
-	/**The indexed attributes of this relation.*/
-	private ArrayList<Integer> indexed = new ArrayList<Integer>(10);
+	/** The Basic information for the Relation */
+	private String relationname;
 	
-	/**The Attributes of this relation.*/
-	private ArrayList<Attribute> attributes = new ArrayList<Attribute>();;
-	
-	/**The names of the index files of this relation.*/
-	private ArrayList<String> indexFiles;
-	
-	/**The total number of blocks that this relation spans.*/
-	private int blockTotal;
 	
 	/**The size of one record in this relation in bytes.*/
 	private int size;
-	
-	
+
 	/**This creates a new instance of relation.
 	 * @param newfilename The file that holds the records of this relation.
 	 * @param newID The unique internal ID of this relation.
@@ -69,7 +103,12 @@ public class Relation {
 		blockTotal = 1;
 		indexFiles = new ArrayList<String>();
 	}
-
+	
+	public void addAttribute(Attribute att){
+		attributes.add(att);
+		modifydate = (new Date()).getTime();
+	}
+	
 	/**This method is responsible for adding an attribute to the method
 	 * @param name what we're calling the attribute
 	 * @param type the type of the attribute
@@ -84,12 +123,7 @@ public class Relation {
 		modifydate = (new Date()).getTime();
 		return att;
 	}
-	
-	public void addAttribute(Attribute att){
-		attributes.add(att);
-		modifydate = (new Date()).getTime();
-	}
-	
+
 	/**This method is responsible for adding a CHAR attribute to this
 	 * relation.
 	 * @param name What we're calling the attribute
@@ -108,6 +142,10 @@ public class Relation {
 		return att;
 	}
 
+	public void addIndex(int j){
+		indexed.add(new Integer(j));
+	}
+	
 	/**This method will add an index file to the list of files maintained by
      * the Relation.
      * @param fileName The name of the index file to add.
@@ -123,7 +161,7 @@ public class Relation {
 		//If it already exists, then don't add it and return false.
 		return false;
 	}
-
+	
 	public boolean addRecord (ByteBuffer block, String record) {
     	//Parse the record to be inserted into its single attributes
     	String [] attributeValues =
@@ -169,7 +207,7 @@ public class Relation {
     	//Return that the record was added to the relation.
 		return true;
 	}
-	
+
 	public boolean addRecord(final ByteBuffer block, final String record, 
 		final String attribute) {
 		
@@ -225,6 +263,25 @@ public class Relation {
 		return true;
 	}
 	
+	public void close() {
+		//TODO Closes the iterator thingy.
+	}
+	
+	/**Checks whether or not this relation contains the specified index file.
+	 * @param fileName The index we are checking.
+	 * @return Whether or not this relation contains the specified index.
+	 */
+	public boolean containsIndex(final String fileName) {
+		//Looop through the list of indexes and see if it contains the file
+		for (int index = 0; index < indexFiles.size(); index++) {
+			if (((String) indexFiles.get(index)).equalsIgnoreCase(fileName)) {
+				return true;
+			}
+		}
+		//If it doesn't then return false.
+		return false;
+	}
+
 	public int getAttributeBlockPosition(Attribute att){
 		if (attributes.indexOf(att) == -1) return -1;
 		else {
@@ -244,39 +301,12 @@ public class Relation {
 		}
 		return null;
 	}
-	
-	public int getIndexByName(final String name) {
-		for (int index = 0; index < attributes.size(); index++) {
-			Attribute current = (Attribute) attributes.get(index);
-			//System.out.println("Comparing " + name +
-				//	" and " + current.getName());
-			if (name.equalsIgnoreCase(current.getName())) {
-				return index;
-			}
-		}
-		return -1;
-	}
-	
-	public void close() {
-		//TODO Closes the iterator thingy.
-	}
-
-	/**Checks whether or not this relation contains the specified index file.
-	 * @param fileName The index we are checking.
-	 * @return Whether or not this relation contains the specified index.
-	 */
-	public boolean containsIndex(final String fileName) {
-		//Looop through the list of indexes and see if it contains the file
-		for (int index = 0; index < indexFiles.size(); index++) {
-			if (((String) indexFiles.get(index)).equalsIgnoreCase(fileName)) {
-				return true;
-			}
-		}
-		//If it doesn't then return false.
-		return false;
-	}
 
 	public int getBlocktotal() {
+		return blockTotal;
+	}
+
+	public int getBlockTotal() {
 		return blockTotal;
 	}
 
@@ -286,7 +316,7 @@ public class Relation {
 	public FileChannel getChannel() {
 		return channel;
 	}
-
+	
 	public long getCreationdate() {
 		return creationdate;
 	}
@@ -297,16 +327,24 @@ public class Relation {
 	public String getFilename() {
 		return filename;
 	}
-	
-	public String getName(){
-		return relationname;
-	}
 
 	/**Returns the internal ID of this relation.
 	 * @return The ID of this relation.
 	 */
 	public int getID() {
 		return ID;
+	}
+
+	public int getIndexByName(final String name) {
+		for (int index = 0; index < attributes.size(); index++) {
+			Attribute current = (Attribute) attributes.get(index);
+			//System.out.println("Comparing " + name +
+				//	" and " + current.getName());
+			if (name.equalsIgnoreCase(current.getName())) {
+				return index;
+			}
+		}
+		return -1;
 	}
 
 	public ArrayList<Integer> getIndexed() {
@@ -329,10 +367,16 @@ public class Relation {
 		return modifydate;
 	}
 
+	public String getName(){
+		return relationname;
+	}
+	
 	public int getRecords() {
 		return records;
 	}
-
+	
+	
+	
 	/**This method returns the number of records of this relation which can
 	 * be placed in one block.
 	 * @return The records of this relation which will fit in one block.
@@ -340,10 +384,11 @@ public class Relation {
 	public int getRecordsPerBlock() {
 		return (StorageManager.BLOCK_SIZE / this.getSize());
 	}
-
+	
 	public String getRelationname() {
 		return relationname;
 	}
+	
 	
 	/**This method will return the size of one record in this relation in 
 	 * bytes.  This is dynamically caclulated using the size of the attributes
@@ -361,180 +406,27 @@ public class Relation {
 		return totalSize;
 	}
 	
-	
-	
-	/**This method calculates whether or not the last block of the relation is
-	 * full and returns the result.  It looks to see if the total number of
-	 * blocks * the records per block is equal to the total number of records.
-	 * @return Whether or not the last block is full.
-	 */
-	public boolean isLastBlockFull() {
-		return ((blockTotal * this.getRecordsPerBlock()) == records);
+	public long getUniqueVals(String att){
+		try {
+			Integer.parseInt(att);
+		} catch (NumberFormatException e){
+			Attribute att1 = getAttributeByName(att);
+			if (att1 == null) return 0;
+			return att1.getDistinct();
+		}
+		return 1;
 	}
 	
-	/**This method opens up an Iterator for this relation.
-	 * @return An instance of Iterator for this relation.
-	 */
-	public Iterator open() {
-		return new Iterator(this);	
-	}
-	
-	
-	public String [] parseRecord(final ByteBuffer record) {
+	public boolean hasAttributeWithName(final String attributeName) {
 		
-		//Create the array of Strings that will hold the attributes from this
-		String [] parsed = new String [attributes.size()];
-		String parsedAttribute = null;
-		
-		//System.out.println();
-		//Start at the first byte of this record, cause we should be realtively
-		//sure the record starts there.
-		int start = 0;
-		
-		//For each attribute in this relation, parse it out of this record
-		for (int attributeID = 0; 
-			attributeID < attributes.size(); attributeID++) {
-	    	//Found what kind of attribute the current one is
-			Attribute currentAttribute = attributes.get(attributeID);
-			
-			//Then get the bytes for the attribute
-			if (currentAttribute.getType() == Attribute.Type.Int) {
-				//System.out.println("Parsing int starting at " + start
-				//		+ " and of size " + Attribute.INT_SIZE);
-				parsedAttribute = Integer.toString(record.getInt(start));
-				//System.out.println("Found int " + parsedAttribute);
-			} else if (currentAttribute.getType() == Attribute.Type.Char) {
-				parsedAttribute = parseString(record, start, 
-						currentAttribute.getSize());
-			} else if (currentAttribute.getType() == Attribute.Type.Long) {
-				parsedAttribute = Long.toString(record.getLong(start));
-			} else if (currentAttribute.getType() == Attribute.Type.Float) {
-				parsedAttribute = Float.toString(record.getFloat(start));
-			} else if (currentAttribute.getType() == Attribute.Type.Double) {
-				parsedAttribute = Double.toString(record.getDouble(start));
+		//See if any of the attributes have this name
+		for (int index = 0; index < attributes.size(); index++) {
+			Attribute currentAttribute = attributes.get(index);
+			if (attributeName.equalsIgnoreCase(currentAttribute.getName())) {
+				return true;
 			}
-			
-			//Then increment start by the size of this attribute so we get the
-			//next one
-			start += currentAttribute.getSize();
-			
-			//Add the parsedAttribute to the array to return
-			parsed[attributeID] = parsedAttribute;
-	    	
-		} 
-		
-		return parsed;
-	}
-	
-	/**This method will parse a string out of a record, if you tell it where
-	 * it starts and how long the string is.
-	 * @param record The record containing the string.
-	 * @param start Where the string starts in the record, in bytes.
-	 * @param size  The size of the string in bytes.
-	 * @return The string parsed out of this record.
-	 */
-	public static String parseString(final ByteBuffer record, final int start, 
-			final int size) {
-		//System.out.println("Parsing string starting at: " + start 
-		//		+ " and of size " + size);
-		
-		//Loop through the record, getting thigs out as integers and casting
-		//them as characters.
-		String total = "";
-		int offset = start;
-		
-		for (int current = 0;  current < size; current++) {
-			//Get the next character from the record and add it to the total
-			char next = record.getChar(offset);
-			
-			//If it is a null character, then stop her and return what we have.
-			if (next == '\0') {
-				return total;
-			}
-			
-			total = total + next;
-			
-			//Increment the start so it gets the next character
-			offset += Attribute.CHAR_SIZE;
 		}
-		return total;	
-	}
-	
-	public void setBlocktotal(int blocktotal) {
-		modifydate = (new Date()).getTime();
-		this.blockTotal = blocktotal;
-	}
-	
-	public void setCreationdate(long creationdate) {
-		modifydate = (new Date()).getTime();
-		this.creationdate = creationdate;
-	}
-	
-	public void setIndexed(ArrayList<Integer> indexed) {
-		modifydate = (new Date()).getTime();
-		this.indexed = indexed;
-	}
-	
-	public void setIndexfiles(ArrayList<String> indexfiles) {
-		modifydate = (new Date()).getTime();
-		this.indexFiles = indexfiles;
-	}
-	
-	public void setModifydate(long modifydate) {
-		
-		this.modifydate = modifydate;
-	}
-	
-	 public void setRecords(int tuples) {
-		 modifydate = (new Date()).getTime();
-		this.records = tuples;
-	}
-	
-    public void setRelationname(String relationname) {
-    	modifydate = (new Date()).getTime();
-		this.relationname = relationname;
-	}
-	
-	public String toString(){
-		return "Relation "+ID+" named: "+this.filename+" with "+attributes.size()
-			+" attributes: "+attributes.toString()+"\n";
-	}
-	
-	/**This method will write the given string to the given block a the given
-	 * position, and will fill in the rest of the space for this attribute
-	 * with '\0'.  
-	 * @param block The block to write these to.
-	 * @param chars The string of characters to write.
-	 * @param start Where this CHAR should be written in the block.
-	 * @param newSize This size of this CHAR() attribute, in bytes.
-	 * @return Whether or not the write was successful.
-	 */
-	public boolean writeString(final ByteBuffer block, 
-		final String chars, final int start, final int newSize) {
-		int offset = start;
-		//System.out.println("Offset: " + offset); 
-		//Loop through the String, writing the characters as ints.
-		for (int index = 0; index < chars.length();  index++) {
-			//Get the char at the index
-			//System.out.println(block);
-			block.putChar(offset, chars.charAt(index));
-			//System.out.println("Putting character " + chars.charAt(index)
-			//	+ " at " + offset);
-			//Then add the size of an int to start
-			offset += Attribute.CHAR_SIZE;
-		}
-		//After all of the members of the string have been written, fill
-		//in the rest of the space with '\O'
-		int stringSize = chars.length() * Attribute.CHAR_SIZE;
-		int nullsToWrite = (newSize - stringSize) / 2;
-		for (int nulls = 0; nulls < nullsToWrite; nulls++) {
-			block.putChar(offset, BufferManager.NULL_CHARACTER);
-			//System.out.println("Putting  null character at " + offset);
-			offset += Attribute.CHAR_SIZE;
-		}
-		
-		//Then return true;
-		return true;
+		return false;
 	}
 	
 	/**This method returns the index of the attribute in this relation with the
@@ -555,6 +447,22 @@ public class Relation {
 		System.out.println("Relation doesn't have the attribute with the"
 				+ " specified ID.");
 		return -1;		
+	}
+	
+	/**This method calculates whether or not the last block of the relation is
+	 * full and returns the result.  It looks to see if the total number of
+	 * blocks * the records per block is equal to the total number of records.
+	 * @return Whether or not the last block is full.
+	 */
+	public boolean isLastBlockFull() {
+		return ((blockTotal * this.getRecordsPerBlock()) == records);
+	}
+	
+	/**This method opens up an Iterator for this relation.
+	 * @return An instance of Iterator for this relation.
+	 */
+	public Iterator open() {
+		return new Iterator(this);	
 	}
 	
 	/**This method takes in a block from this relation, parses out, an returns
@@ -631,8 +539,95 @@ public class Relation {
 		return recordList;
 	}
 	
-	public void addIndex(int j){
-		indexed.add(new Integer(j));
+	 public String [] parseRecord(final ByteBuffer record) {
+		
+		//Create the array of Strings that will hold the attributes from this
+		String [] parsed = new String [attributes.size()];
+		String parsedAttribute = null;
+		
+		//System.out.println();
+		//Start at the first byte of this record, cause we should be realtively
+		//sure the record starts there.
+		int start = 0;
+		
+		//For each attribute in this relation, parse it out of this record
+		for (int attributeID = 0; 
+			attributeID < attributes.size(); attributeID++) {
+	    	//Found what kind of attribute the current one is
+			Attribute currentAttribute = attributes.get(attributeID);
+			
+			//Then get the bytes for the attribute
+			if (currentAttribute.getType() == Attribute.Type.Int) {
+				//System.out.println("Parsing int starting at " + start
+				//		+ " and of size " + Attribute.INT_SIZE);
+				parsedAttribute = Integer.toString(record.getInt(start));
+				//System.out.println("Found int " + parsedAttribute);
+			} else if (currentAttribute.getType() == Attribute.Type.Char) {
+				parsedAttribute = parseString(record, start, 
+						currentAttribute.getSize());
+			} else if (currentAttribute.getType() == Attribute.Type.Long) {
+				parsedAttribute = Long.toString(record.getLong(start));
+			} else if (currentAttribute.getType() == Attribute.Type.Float) {
+				parsedAttribute = Float.toString(record.getFloat(start));
+			} else if (currentAttribute.getType() == Attribute.Type.Double) {
+				parsedAttribute = Double.toString(record.getDouble(start));
+			}
+			
+			//Then increment start by the size of this attribute so we get the
+			//next one
+			start += currentAttribute.getSize();
+			
+			//Add the parsedAttribute to the array to return
+			parsed[attributeID] = parsedAttribute;
+	    	
+		} 
+		
+		return parsed;
+	}
+	
+    public void setBlocktotal(int blocktotal) {
+		modifydate = (new Date()).getTime();
+		this.blockTotal = blocktotal;
+	}
+	
+	public void setChannel(FileChannel channel) {
+		this.channel = channel;
+	}
+	
+	public void setCreationdate(long creationdate) {
+		modifydate = (new Date()).getTime();
+		this.creationdate = creationdate;
+	}
+	
+	public void setIndexed(ArrayList<Integer> indexed) {
+		modifydate = (new Date()).getTime();
+		this.indexed = indexed;
+	}
+	
+	public void setIndexfiles(ArrayList<String> indexfiles) {
+		modifydate = (new Date()).getTime();
+		this.indexFiles = indexfiles;
+	}
+	
+	public void setModifydate(long modifydate) {
+		
+		this.modifydate = modifydate;
+	}
+
+	public void setRecords(int tuples) {
+		 modifydate = (new Date()).getTime();
+		this.records = tuples;
+	}
+	
+	
+	public void setRelationname(String relationname) {
+    	modifydate = (new Date()).getTime();
+		this.relationname = relationname;
+	}
+	
+	public String toString(){
+		return "Relation "+ID+" named: "+this.filename+" with "+attributes.size()
+			+" attributes: "+attributes.toString()+"\n";
 	}
 
 	/**This will return a ByteBuffer representation of the metadata for this 
@@ -718,24 +713,41 @@ public class Relation {
 		return entry;
 	}
 	
-	
-	public int getBlockTotal() {
-		return blockTotal;
-	}
-	
-	public long getUniqueVals(String att){
-		try {
-			Integer.parseInt(att);
-		} catch (NumberFormatException e){
-			Attribute att1 = getAttributeByName(att);
-			if (att1 == null) return 0;
-			return att1.getDistinct();
+	/**This method will write the given string to the given block a the given
+	 * position, and will fill in the rest of the space for this attribute
+	 * with '\0'.  
+	 * @param block The block to write these to.
+	 * @param chars The string of characters to write.
+	 * @param start Where this CHAR should be written in the block.
+	 * @param newSize This size of this CHAR() attribute, in bytes.
+	 * @return Whether or not the write was successful.
+	 */
+	public boolean writeString(final ByteBuffer block, 
+		final String chars, final int start, final int newSize) {
+		int offset = start;
+		//System.out.println("Offset: " + offset); 
+		//Loop through the String, writing the characters as ints.
+		for (int index = 0; index < chars.length();  index++) {
+			//Get the char at the index
+			//System.out.println(block);
+			block.putChar(offset, chars.charAt(index));
+			//System.out.println("Putting character " + chars.charAt(index)
+			//	+ " at " + offset);
+			//Then add the size of an int to start
+			offset += Attribute.CHAR_SIZE;
 		}
-		return 1;
-	}
-
-	public void setChannel(FileChannel channel) {
-		this.channel = channel;
+		//After all of the members of the string have been written, fill
+		//in the rest of the space with '\O'
+		int stringSize = chars.length() * Attribute.CHAR_SIZE;
+		int nullsToWrite = (newSize - stringSize) / 2;
+		for (int nulls = 0; nulls < nullsToWrite; nulls++) {
+			block.putChar(offset, BufferManager.NULL_CHARACTER);
+			//System.out.println("Putting  null character at " + offset);
+			offset += Attribute.CHAR_SIZE;
+		}
+		
+		//Then return true;
+		return true;
 	}
 	
 }
