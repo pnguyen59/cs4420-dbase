@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Join extends Operation {
 
-	protected Condition conditions;
+	protected Condition condition;
 	
 	protected int tableTwoAccess;
 	
@@ -121,5 +121,23 @@ public class Join extends Operation {
 		
 		return tableTwoAttributes;
 		
+	}
+	
+	/**This method will return all of the SimpleConditions of this join,
+	 * and below it.
+	 * @return The SimpleConditions of this Join and of nodes below it.
+	 */
+	public ArrayList < SimpleCondition > getTreeConditions() {
+		
+		//Get the ones for this join
+		ArrayList < SimpleCondition > conditions = condition.getConditions();
+		
+		//The tableOne
+		conditions.addAll(tableOne.getTreeConditions());
+		
+		//The tableTwo
+		conditions.addAll(tableTwo.getTreeConditions());
+		
+		return conditions;
 	}
 }
