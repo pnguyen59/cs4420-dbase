@@ -200,5 +200,30 @@ public class Join extends Operation {
 		return attrs;
 	}
 	
+	/**This method will generate the table schema that results from the
+	 * join we have going on here.
+	 */
+	public void generateTemporaryTable() {
+		
+		//From the RelationHolder, get the IDs of the source relations
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		Relation left = holder.getRelation(tableOne.getResultTableID());
+		Relation right = holder.getRelation(tableTwo.getResultTableID());
+		
+		//Create the resulting relation
+		Relation result = new Relation(QueryParser.RESULT + resultTableID,
+			resultTableID);
+		
+		//Add the attributes of each to the result
+		ArrayList < Attribute > attributes = left.getAttributes();
+		for (int index = 0; index < attributes.size(); index++) {
+			result.addAttribute(attributes.get(index));
+		}
+		attributes = right.getAttributes();
+		for (int index = 0; index < attributes.size(); index++) {
+			result.addAttribute(attributes.get(index));
+		}
+	}
+	
 	
 }
