@@ -147,5 +147,11 @@ public abstract class Condition {
 	public String toString() {
 		return condition;
 	}
+	
+	/**This method will return all of the SimpleConditions 
+	 * contained within this Condition.
+	 * @return The SimpleConditions contained within this Condition.
+	 */ 
+	public abstract ArrayList < SimpleCondition > getConditions();
 }
 
