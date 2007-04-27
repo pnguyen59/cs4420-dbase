@@ -120,8 +120,8 @@ public class Project extends Operation {
 		for (int index = 0; index < attributes.size(); index++) {
 			string += attributes.get(index) + ", ";
 		}
-		string += "\t\t|";
-		string += tableOneAccess +"\t|";
+		string += "|";
+		string += tableOne.getResultTableID() + "\t|";
 		string += resultTableID + "\t|";
 		string += "\n";
 		
