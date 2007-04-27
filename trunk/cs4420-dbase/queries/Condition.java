@@ -14,7 +14,7 @@ public abstract class Condition {
 		
 		
 		//No spaces
-		String filteredCondition = newCondition.replace(" ", "");
+		String filteredCondition = newCondition;//.replace(" ", "");
 		
 		//If there is a "WHERE", destroy it and get rid of the surrounding ()
 		if (newCondition.contains(QueryParser.WHERE)) {
@@ -30,8 +30,8 @@ public abstract class Condition {
 		
 		//See what kind of condition it is
 		String upperCase = filteredCondition.toUpperCase();
-		String noSpaces = upperCase.replace(" ", "");
-		String noParens = noSpaces.replace("(", "");
+		//String noSpaces = upperCase.replace(" ", "");
+		String noParens = upperCase.replace("(", "");
 		char firstCharacter = noParens.charAt(0);
 		
 		if (firstCharacter == 'A') {
@@ -84,7 +84,7 @@ public abstract class Condition {
 	 * @param tuple The tuple to look at.
 	 * @return Whether or not the comparison is true.
 	 */
-	public abstract boolean compare(final String[] tupleattnames, final String[] tuplevals);
+	public abstract boolean compare(final String[] tupleattnames, final String[] tuplevals, final String[] tupletypes);
 	
 	/**This method will return the list of Attributes used in this Condition,
 	 * and any contained within it.
