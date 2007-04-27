@@ -115,6 +115,25 @@ public class CrossJoin extends Operation {
 		
 		return tableTwoAttributes;
 	}
+	
+	/**This method will return all of the SimpleConditions of the nodes (
+	 * Operations) below this CrossJoin
+	 * @return The SimpleConditions of the nodes below this CrossJoin.
+	 */
+	public ArrayList < SimpleCondition > getTreeConditions() {
+		
+		//Get the ones for this join
+		ArrayList < SimpleCondition > conditions = 
+			new ArrayList < SimpleCondition > ();
+		
+		//The tableOne
+		conditions.addAll(tableOne.getTreeConditions());
+		
+		//The tableTwo
+		conditions.addAll(tableTwo.getTreeConditions());
+		
+		return conditions;
+	}
 
 	/**Says whether or not the CrossJoin is a Leaf.  
 	 * Always false, a CrossJoin is never a Leaf in a query tree.
