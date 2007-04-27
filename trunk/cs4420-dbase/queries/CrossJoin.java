@@ -145,9 +145,8 @@ public class CrossJoin extends Operation {
 		string += this.queryID + "\t|";
 		string += this.executionOrder + "\t|";
 		string += this.type + "\t|";
-		string += tableOneAccess +"\t|";
-		string += tableTwoAccess +"\t|";
-		string += "\t|";
+		string += tableOne.getResultTableID() + "\t|";
+		string += tableTwo.getResultTableID() + "\t|";
 		string += resultTableID + "\t|";
 		string += "\n";
 		
