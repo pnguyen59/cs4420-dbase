@@ -103,6 +103,9 @@ public class Select extends Operation {
 		return relations;
 	}
 	
+	public ArrayList<String> getAttributes(){
+		return condition.getAttributes();
+	}
 	
 	public ArrayList < String > getTreeAttributes() {
 		

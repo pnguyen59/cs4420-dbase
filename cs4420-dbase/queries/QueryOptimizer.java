@@ -101,5 +101,9 @@ public class QueryOptimizer {
 			return;
 		}
 	}
+	
+	public static void OptimizeProjects(Operation root, ArrayList<String> attrs){
+		
+	}
 
 }

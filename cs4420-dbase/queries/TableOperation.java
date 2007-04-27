@@ -2,6 +2,7 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.Attribute;
 import dbase.Relation;
 import dbase.RelationHolder;
 
@@ -64,6 +65,25 @@ public class TableOperation extends Operation {
 		if (relation == null) return false;
 		
 		return (relation.getAttributeByName(att) != null);
+	}
+	
+	public ArrayList<String> getAttributes(){
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		int relationID = holder.getRelationByName(tableName);
+		
+		//check for error condition
+		if (relationID == -1) return null;
+		Relation relation = holder.getRelation(relationID);
+		
+		//if relation doesn't exist
+		if (relation == null) return null;
+		
+		ArrayList <Attribute> attr = relation.getAttributes();
+		ArrayList <String> ret = new ArrayList <String>();
+		for (int j=0; j<attr.size(); j++){
+			ret.add(relation.getName()+"."+attr.get(j).getName());
+		}
+		return ret;
 	}
 	
 	public boolean execute(){
