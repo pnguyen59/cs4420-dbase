@@ -259,10 +259,12 @@ public abstract class Operation implements TreeNode  {
 		this.type = newType;
 	}
 
-	public ArrayList<String> getAttributes() {
+	public ArrayList < String > getAttributes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public abstract ArrayList < String > getTreeAttributes();
 	
 	public abstract ArrayList < String > getRelations();
 }

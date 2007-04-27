@@ -28,6 +28,8 @@ public class Query {
 	
 	public ArrayList < String > getRelations() {
 		
+		ArrayList < String > relations = treeRoot.getRelations();
+		
 		return null;
 	}
 	

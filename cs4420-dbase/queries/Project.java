@@ -145,4 +145,30 @@ public class Project extends Operation {
 		return relations;
 	}
 	
+	public ArrayList < String > getTreeAttributes() {
+		
+		//Merge the list of attributes from this one and those below it
+		ArrayList < String > subAttributes = tableOne.getTreeAttributes();
+		
+		//Merge and return the list
+		for (int index = 0; index < attributes.size(); index++) {
+			
+			boolean add = true;
+			for (int inner = 0; inner < subAttributes.size(); inner++) {
+				if (attributes.get(index) == subAttributes.get(inner)) {
+					add = false;
+				}
+			}
+			if (add) {
+				subAttributes.add(attributes.get(index));
+			}
+		}
+		
+		for (int index = 0; index < attributes.size(); index++) {
+			System.out.println("ATTRIBUTE: " + attributes.get(index));
+		}
+		
+		return subAttributes;
+	}
+	
 }
