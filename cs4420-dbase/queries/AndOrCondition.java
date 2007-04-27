@@ -150,5 +150,37 @@ import java.util.ArrayList;
 			}
 		}
 		return noDuplicates;
+
+	}
+	
+	public ArrayList < Condition > getConditions() {
+		
+		//If one side or the other is an AND or an OR, then ask it for its 
+		//conditions
+		ArrayList < Condition > conditions = new ArrayList < Condition > ();
+		
+		if (leftHand.getComparison().equalsIgnoreCase(QueryParser.AND)
+			|| leftHand.getComparison().equalsIgnoreCase(QueryParser.OR)) {
+			ArrayList < Condition > sub = ((AndOrCondition) leftHand).
+				getConditions();
+			for (int index = 0; index < sub.size(); index++) {
+				conditions.add(sub.get(index));
+			}
+		} else {
+			conditions.add(leftHand);
+		}
+		
+		if (rightHand.getComparison().equalsIgnoreCase(QueryParser.AND)
+				|| leftHand.getComparison().equalsIgnoreCase(QueryParser.OR)) {
+				ArrayList < Condition > sub = ((AndOrCondition) rightHand).
+					getConditions();
+				for (int index = 0; index < sub.size(); index++) {
+					conditions.add(sub.get(index));
+				}
+			} else {
+				conditions.add(rightHand);
+		}
+		
+		return conditions;		
 	}
 }
