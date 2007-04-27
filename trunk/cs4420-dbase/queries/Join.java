@@ -2,6 +2,12 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.Attribute;
+import dbase.Database;
+import dbase.Iterator;
+import dbase.Relation;
+import dbase.RelationHolder;
+
 public class Join extends Operation {
 
 	protected Condition condition;
@@ -113,6 +119,53 @@ public class Join extends Operation {
 	 */
 	public boolean isLeaf() {
 		return false;
+	}
+	
+	public boolean execute(){
+		if (! (tableOne.execute() && tableTwo.execute())){
+			return false;
+		} else {
+			Relation r1 = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
+			Relation r2 = RelationHolder.getRelationHolder().getRelation(tableTwo.getResultTableID());
+			ArrayList<Attribute> atts = r1.getAttributes();
+			atts.addAll(r2.getAttributes());
+			ArrayList<String> types =  new ArrayList<String>();
+			ArrayList<String> names =  new ArrayList<String>();
+			for (int j=0; j<atts.size(); j++){
+				types.add(atts.get(j).getType().name());
+				names.add(atts.get(j).getName());
+			}
+			
+			String[] types2 =  new String[0];
+			types2= types.toArray((new String[0]));
+			String[] names2 =  new String[0];
+			names2= names.toArray((new String[0]));
+			
+			Iterator i1 = new Iterator(r1);
+			Iterator i2 = new Iterator(r2);
+			
+			
+			while (i1.hasNext()){
+				String[] r1vals = i1.getNext();
+				while (i2.hasNext()){
+					String[] r2vals = i2.getNext();
+					String[] allvals = new String[r1vals.length+r2vals.length];
+					for (int j=0; j<r1vals.length; j++){
+						allvals[j] = r1vals[j];
+					}
+					for (int j=r1vals.length; j<(r1vals.length+r2vals.length); j++){
+						allvals[j]= r2vals[j-r1vals.length];
+					}
+					if (condition.compare(names2, allvals, types2)){
+						Database.getCatalog().insert(this.resultTableID, names2, allvals);
+					}
+					
+				}
+				
+			}
+			
+			return false;
+		}
 	}
 	
 	public String toString() {
