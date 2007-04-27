@@ -15,14 +15,18 @@ public class CrossJoin extends Operation {
 		//Make the first table a TableOperation, because regardless of the
 		//Number of other joins needed, this one will still join with one
 		//real table
-		tableOne = new TableOperation(tables.get(0));
+		tableOne = Operation.makeOperation(tables.get(0));
 		
 		//See how many cross joins are needed to get the results
 		if (tables.size() > 2) {
 			//Make the tables left as a crossjoin
 			String newCrossJoin = "(CROSSJOIN ";
 			for (int index = 1; index < tables.size(); index++) {
-				newCrossJoin += "\"" + tables.get(index) + "\", "; 
+				newCrossJoin += tables.get(index);
+				//If it is the last one, don't add the comma
+				if (!(index == tables.size() - 1)) {
+					newCrossJoin += ",";
+				}
 			}
 			newCrossJoin += ")";
 			tableTwo = Operation.makeOperation(newCrossJoin);
