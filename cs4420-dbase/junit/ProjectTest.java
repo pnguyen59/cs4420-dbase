@@ -11,6 +11,7 @@ import org.junit.Test;
 import queries.Operation;
 import queries.Project;
 import queries.Select;
+import queries.SimpleCondition;
 import queries.TableOperation;
 
 public class ProjectTest extends TestCase {
@@ -170,6 +171,36 @@ public class ProjectTest extends TestCase {
 		assertTrue("Attribute should have been E, was "
 				+ results.get(3), results.get(3).equalsIgnoreCase("E"));
 		
+	}
+	
+	@Test public void testGetTreeConditions() {
+	
+		System.out.println();
+		System.out.println("testGetTreeConditionsNoConditions");
+		System.out.println();
+		
+		//Give it a thingy with no conditions.  The result should be an empty
+		//list
+		projection = (Project) Operation.makeOperation(oneLevelProject);
+		ArrayList < SimpleCondition > results = projection.getTreeConditions();
+		
+		//See that it is size 0
+		assertTrue("There should be no conditions, but there were" 
+			+ results.size(), results.size() == 0);
+		
+		//Try it with a simple condition
+		projection = (Project) Operation.makeOperation(simpleProjectSelect);
+		results = projection.getTreeConditions();
+		//See that there is one condition
+		assertTrue("There should be 1 condition, but there were" 
+			+ results.size(), results.size() == 1);
+		
+		//Try it with the crazy query
+		projection = (Project) Operation.makeOperation(crazyQuery);
+		results = projection.getTreeConditions();
+		//See that there are 3 conditions		
+		assertTrue("There should be 3 conditions, but there were" 
+			+ results.size(), results.size() == 3);
 	}
 
 }
