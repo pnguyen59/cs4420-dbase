@@ -62,41 +62,6 @@ public class Join extends Operation {
 		return relations;
 	}
 	
-	/**Says whether or not the Join is a Leaf.  
-	 * Always false, a Join is never a Leaf in a query tree.
-	 * @return <code><b>false</b></code> because Join statements
-	 * aren't leaves.
-	 */
-	public boolean isLeaf() {
-		return false;
-	}
-	
-	public String toString() {
-		
-		String string = ""; 
-		
-		string += this.queryID + "\t";
-		string += this.executionOrder + "\t";
-		string += this.type + "\t";
-		string += tableTwoID + "\t";
-		string += tableOneAccess +"\t";
-		string += tableTwoAccess +"\t";
-		string += "\t";
-		string += resultTableID;
-		
-		return string;
-	}
-	
-	public long uniqueVals(String att){ 
-		if (tableOne.containsAttribute(att)){ 
-			return tableOne.uniqueVals(att);
-		} else if (tableTwo.containsAttribute(att)){
-			return tableTwo.uniqueVals(att);
-		} else {
-			return -1;
-		}
-	}
-	
 	public ArrayList < String > getTreeAttributes() {
 		
 		//TODO Also get the attributes from the condition
@@ -139,5 +104,40 @@ public class Join extends Operation {
 		conditions.addAll(tableTwo.getTreeConditions());
 		
 		return conditions;
+	}
+	
+	/**Says whether or not the Join is a Leaf.  
+	 * Always false, a Join is never a Leaf in a query tree.
+	 * @return <code><b>false</b></code> because Join statements
+	 * aren't leaves.
+	 */
+	public boolean isLeaf() {
+		return false;
+	}
+	
+	public String toString() {
+		
+		String string = ""; 
+		
+		string += this.queryID + "\t";
+		string += this.executionOrder + "\t";
+		string += this.type + "\t";
+		string += tableTwoID + "\t";
+		string += tableOneAccess +"\t";
+		string += tableTwoAccess +"\t";
+		string += "\t";
+		string += resultTableID;
+		
+		return string;
+	}
+	
+	public long uniqueVals(String att){ 
+		if (tableOne.containsAttribute(att)){ 
+			return tableOne.uniqueVals(att);
+		} else if (tableTwo.containsAttribute(att)){
+			return tableTwo.uniqueVals(att);
+		} else {
+			return -1;
+		}
 	}
 }
