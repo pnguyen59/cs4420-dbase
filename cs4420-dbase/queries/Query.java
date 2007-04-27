@@ -33,7 +33,7 @@ public class Query {
 	
 	public ArrayList < String > getAttributes() {
 		
-		return null;
+		return treeRoot.getTreeAttributes();
 	}
 	
 	
