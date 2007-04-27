@@ -7,6 +7,7 @@ import dbase.Database;
 import dbase.Iterator;
 import dbase.Relation;
 import dbase.RelationHolder;
+import dbase.SystemCatalog;
 
 public class Project extends Operation {
 
@@ -83,12 +84,21 @@ public class Project extends Operation {
 			resultTableID);
 		RelationHolder.getRelationHolder().addRelation(result);
 		
+		//System.out.println("PROJECT SOURCE:" + source);
+		
 		//For each attribute, get the real thing from the source
 		for (int index = 0; index < attributes.size(); index++) {
 			String currentName = attributes.get(index);
+			
+			//Use tempCurrentName cause it may be qualified
 			Attribute currentAttribute 
 				= source.getAttributeByName(currentName);
-			result.addAttribute(currentAttribute);
+			
+			//Give it the full name when we make it though
+			Attribute newAttribute = new Attribute(
+				currentName, currentAttribute.getType(), 0);
+			
+			result.addAttribute(newAttribute);
 		}
 	}
 	
