@@ -241,6 +241,7 @@ public class Join extends Operation {
 					Attribute newAttribute = new Attribute(
 							leftName, leftAttribute.getType(), 0);
 					result.addAttribute(newAttribute);
+					newAttribute.setParent(leftAttribute.getParent());
 					added = true;
 					break;
 				}
@@ -275,6 +276,7 @@ public class Join extends Operation {
 					//Then create and add it to the new relation
 					Attribute newAttribute = new Attribute(
 						rightName, rightAttribute.getType(), 0);
+					newAttribute.setParent(rightAttribute.getParent());
 					result.addAttribute(newAttribute);
 					added = true;
 					break;
