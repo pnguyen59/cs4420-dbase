@@ -3,7 +3,6 @@ package queries;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class SimpleCondition extends Condition {
 	
@@ -176,6 +175,12 @@ public class SimpleCondition extends Condition {
 	 */
 	public void setRightHand(final String newRightHand) {
 		this.rightHand = newRightHand;
+	}
+	
+	public ArrayList < Condition > getConditions() {
+		ArrayList < Condition > c = new ArrayList < Condition > ();
+		c.add(this);
+		return c;
 	}
 
 }
