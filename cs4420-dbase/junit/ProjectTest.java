@@ -130,6 +130,15 @@ public class ProjectTest extends TestCase {
 				+ results.get(0), results.get(0).equalsIgnoreCase("A"));
 		assertTrue("Table should have been B, was "
 				+ results.get(1), results.get(1).equalsIgnoreCase("B"));
+		
+		
+		String queryString = "(PROJECT (a \"a\") (CROSSJOIN (\"WALRUS\", \"CHICKEN\")))";
+		projection = (Project) Operation.makeOperation(queryString);
+		ArrayList < String > tables = projection.getRelations();
+		assertTrue("Table should be WARLRUS, was "
+				+ tables.get(0), tables.get(0).equalsIgnoreCase("WALRUS"));
+		assertTrue("Table should be CHICKEN, was "
+				+ tables.get(1), tables.get(1).equalsIgnoreCase("CHICKEN"));
 	}
 	
 	@Test 

@@ -1,5 +1,7 @@
 package junit;
 
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 
 import org.junit.After;
@@ -84,6 +86,25 @@ public class CrossJoinTest extends TestCase {
 				+ ((TableOperation)join.getTableTwo()).getTableName(),
 				((TableOperation)join.getTableTwo()).getTableName().
 				equalsIgnoreCase("B"));
+	}
+	
+	@Test 
+	public void testGetRelations() {
+		
+		System.out.println();
+		System.out.println("testCrossJoinThreeTables");
+		System.out.println();
+		
+		join = new CrossJoin(twoTables);
+		
+		ArrayList < String > tables = join.getRelations();
+		
+		assertTrue("Table should be A, was "
+			+ tables.get(0), tables.get(0).equalsIgnoreCase("A"));
+		assertTrue("Table should be B, was "
+				+ tables.get(1), tables.get(1).equalsIgnoreCase("B"));
+		
+		
 	}
 
 }
