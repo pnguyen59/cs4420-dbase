@@ -157,22 +157,21 @@ import java.util.ArrayList;
 	 * It should only return SimpleConditions
 	 * @return The SimpleConditions inside of this AndOrCondition
 	 */
-	public ArrayList < Condition > getConditions() {
+	public ArrayList < SimpleCondition > getConditions() {
 		
 		//If one side or the other is an AND or an OR, then ask it for its 
 		//conditions
-		ArrayList < Condition > conditions = new ArrayList < Condition > ();
+		ArrayList < SimpleCondition > conditions =
+			new ArrayList < SimpleCondition > ();
 		
 		//Get the conditions from the right hand
-		ArrayList < Condition > sub = ((AndOrCondition) leftHand).
-			getConditions();
+		ArrayList < SimpleCondition > sub = leftHand.getConditions();
 		for (int index = 0; index < sub.size(); index++) {
 			conditions.add(sub.get(index));
 		}
 		
 		//Get the conditions from the left hand
-		sub = ((AndOrCondition) rightHand).
-			getConditions();
+		sub = rightHand.getConditions();
 		for (int index = 0; index < sub.size(); index++) {
 			conditions.add(sub.get(index));
 		}
