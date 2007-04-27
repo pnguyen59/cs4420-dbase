@@ -89,6 +89,27 @@ public class QueryValidator {
 		return true;
 	}
 	
+	public static boolean validateCoditions(final Query query) {
+		
+		ArrayList < Condition > comparisons = query.getConditions();
+		
+		//Get the list of table IDx
+		ArrayList < String > tableIDs = query.getRelations();
+
+		//Get the attributes in the query
+		ArrayList < String > attributes = query.getAttributes();
+
+		//Get the list of tables
+		ArrayList < Relation > tables = new ArrayList < Relation > ();
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		for (int index = 0; index < tableIDs.size(); index++) {
+			int relationID = holder.getRelationByName(tableIDs.get(index));
+			tables.add(holder.getRelation(relationID));
+		}	
+			
+		return false;	
+	}
+	
 	
 	
 }
