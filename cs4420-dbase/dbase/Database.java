@@ -96,10 +96,14 @@ public class Database {
     		Scanner sc = new Scanner(System.in).useDelimiter("\n");
     		input = sc.next();
     		System.out.println(input);
-    		if (!input.toLowerCase().trim().equals("exit"))System.out.println(db.parseCommand(input));
+    		if (!input.toLowerCase().trim().equals("exit")) {
+    			System.out.println(db.parseCommand(input));
+    			System.exit(1);
+    		}
+    		
+    		//Then see what kind of query it is
     		
     	}
-    	System.exit(1);
     }
     
 }
