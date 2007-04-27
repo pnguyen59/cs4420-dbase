@@ -130,4 +130,19 @@ public class Project extends Operation {
 		return string;
 	}
 	
+	public ArrayList < String > getRelations() {
+		
+		ArrayList < String > relations = new ArrayList < String > ();
+		
+		//If this is a one level dealie, that is the tableOne is just a regular
+		//old table then just return that name
+		if (tableOne.getType().equalsIgnoreCase(QueryParser.TABLEOPERATION)) {
+			relations.add(((TableOperation) tableOne).getTableName());
+		} else { //Otherwise, ask the stuff below it for its tables
+			relations = tableOne.getRelations(); 
+		}
+		
+		return relations;
+	}
+	
 }
