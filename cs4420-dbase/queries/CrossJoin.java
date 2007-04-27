@@ -80,24 +80,8 @@ public class CrossJoin extends Operation {
 		
 		ArrayList < String > subOperation;
 		
-		//If this is a one level dealie, that is the tableOne is just a regular
-		//old table then just return that name
-		if (tableOne.getType().equalsIgnoreCase(QueryParser.TABLEOPERATION)) {
-			relations.add(((TableOperation) tableOne).getTableName());
-		} else { //Otherwise, ask the stuff below it for its tables
-			relations = tableOne.getRelations(); 
-		}
-	
-		//Now check on the second table
-		if (tableTwo.getType().equalsIgnoreCase(QueryParser.TABLEOPERATION)) {
-			relations.add(((TableOperation) tableTwo).getTableName());
-		} else {
-			subOperation = tableOne.getRelations();
-			//Merge the listos
-			for (int sub = 0; sub < subOperation.size(); sub++) {
-				relations.add(subOperation.get(sub));
-			}
-		}
+		relations = tableOne.getRelations();
+		relations.addAll(tableTwo.getRelations());
 		
 		return relations;
 	}
