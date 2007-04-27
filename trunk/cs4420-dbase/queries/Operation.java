@@ -263,4 +263,6 @@ public abstract class Operation implements TreeNode  {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public abstract ArrayList < String > getRelations();
 }
