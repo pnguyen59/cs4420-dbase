@@ -1,6 +1,9 @@
 package queries;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SimpleCondition extends Condition {
 	
@@ -31,36 +34,98 @@ public class SimpleCondition extends Condition {
 	}
 	
 	@Override
-	public boolean compare(final String[] tupleattnames, final String[] tuplevals) {
+	public boolean compare(final String[] tupleattnames, final String[] tuplevals, final String[] tupletypes) {
+		
 		String leftval = leftHand.replace("(", "").replace(")", ""); //default: treat them as constants
 		String rightval = rightHand.replace("(", "").replace(")", "");
+		
+		String attname = Utilities.getProperAttName(leftval);
+		String lefttype = "int";
+		
+		
 		for (int j=0; j<tupleattnames.length; j++){
-			if (leftHand.replace("(", "").replace(")", "").equals(tupleattnames[j])){
+			if (attname.equals(tupleattnames[j])){
 				leftval = tuplevals[j];
-			}
-			if (rightHand.replace("(", "").replace(")", "").equals(tupleattnames[j])){
-				rightval = tuplevals[j];
+				lefttype = tupletypes[j];
 			}
 		}
-		try{
-			double j = Double.parseDouble(leftval);
-			double k = Double.parseDouble(rightval);
-			if (this.comparison.equals(QueryParser.EQUAL)){
-				return (j==k);
-			} else if (this.comparison.equals(QueryParser.LESS_THAN)){
-				return (j<k);
-			} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
-				return (j>k);
-			} 
-		} catch (NumberFormatException e){
-			if (this.comparison.equals(QueryParser.EQUAL)){
-				return leftval.equals(rightval);
-			} else if (this.comparison.equals(QueryParser.LESS_THAN)){
-				return (leftval.compareTo(rightval)<0);
-			} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
-				return (leftval.compareTo(rightval)>0);
-			} 
+		
+		String type = lefttype;
+		String rightvalprop = "";
+		System.out.println(rightval);
+		if (rightval.split(" ")[0].equalsIgnoreCase("const") || 
+				rightval.split(" ")[0].equalsIgnoreCase("k")){
+			type = rightval.split(" ")[1];
+			rightvalprop = rightval.split(" ")[2];
+			
 		}
+		else {
+			for (int j=0; j<tupleattnames.length; j++){
+				if (Utilities.getProperAttName(rightval).equals(tupleattnames[j])){
+					rightvalprop = tuplevals[j];
+				}
+			}
+		}
+		 
+		
+			if (type.equalsIgnoreCase("string")){
+				if (this.comparison.equals(QueryParser.EQUAL)){
+					return (rightvalprop.replace("\"", "").equals(leftval));
+				} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+					return (rightvalprop.replace("\"", "").compareTo(leftval) > 0);
+				} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+					return (rightvalprop.replace("\"", "").compareTo(leftval) > 0);
+				}
+			} else if (type.equalsIgnoreCase("float")){
+				if (this.comparison.equals(QueryParser.EQUAL)){
+					return (Float.parseFloat(rightvalprop)==Float.parseFloat(leftval));
+				} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+					return (Float.parseFloat(leftval)<Float.parseFloat(rightvalprop));
+				} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+					return (Float.parseFloat(leftval)>Float.parseFloat(rightvalprop));
+				}
+			} else if (type.equalsIgnoreCase("double")){
+				if (this.comparison.equals(QueryParser.EQUAL)){
+					return (Double.parseDouble(rightvalprop)==Double.parseDouble(leftval));
+				} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+					return (Double.parseDouble(leftval)<Double.parseDouble(rightvalprop));
+				} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+					return (Double.parseDouble(leftval)>Double.parseDouble(rightvalprop));
+				}
+			} else if (type.equalsIgnoreCase("int")){
+				if (this.comparison.equals(QueryParser.EQUAL)){
+					return (Integer.parseInt(rightvalprop)==Integer.parseInt(leftval));
+				} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+					return (Integer.parseInt(leftval)<Integer.parseInt(rightvalprop));
+				} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+					return (Integer.parseInt(leftval)>Integer.parseInt(rightvalprop));
+				}
+			} else if (type.equalsIgnoreCase("dateTime")){
+				try{
+					if (this.comparison.equals(QueryParser.EQUAL)){
+						return (DateFormat.getDateInstance().parse(rightvalprop).equals(DateFormat.getDateInstance().parse(leftval)));
+					} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+						return (DateFormat.getDateInstance().parse(leftval).before(DateFormat.getDateInstance().parse((rightvalprop))));
+					} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+						return (DateFormat.getDateInstance().parse(leftval).after(DateFormat.getDateInstance().parse((rightvalprop))));
+					}
+					} catch (ParseException e){
+						return false;
+					}
+			} else if (type.split("(")[0].equalsIgnoreCase("char")){
+				int length = Integer.parseInt(type.split("(")[1].split(")")[0]);
+				String equiv = rightvalprop.replace("\"", "");
+				if (this.comparison.equals(QueryParser.EQUAL)){
+					return leftval.startsWith(equiv.substring(0, Math.min(length, equiv.length())));
+				} else if (this.comparison.equals(QueryParser.LESS_THAN)){
+					return (leftval.substring(0, Math.min(length, leftval.length())).compareTo(equiv.substring(0, Math.min(length, equiv.length())))<0);
+				} else if (this.comparison.equals(QueryParser.GREATER_THAN)){
+					return (leftval.substring(0, Math.min(length, leftval.length())).compareTo(equiv.substring(0, Math.min(length, equiv.length())))>0);
+				}
+				
+				
+			} 
+		
 		return false;
 	}
 
