@@ -111,11 +111,17 @@ public abstract class Operation implements TreeNode  {
 		return false;
 	}	
 	
+	/**This method tells the operation to generate the temporary table that
+	  * defines it's results.
+	  */
+	 public abstract void generateTemporayTable();
+
 	/**
 	 * 
 	 * @return its attributes
 	 * 
 	 */public abstract ArrayList < String > getAttributes();
+
 
 	/**Gets a child at an index.  Don't know how that works.
 	 * @param index Index of the child.
@@ -132,8 +138,7 @@ public abstract class Operation implements TreeNode  {
 	public int getExecutionOrder() {
 		return executionOrder;
 	}
-
-
+	
 	/**The index of a Child.  Don't know how that works.
 	 * @param child The child to find the index of
 	 * @return nothing.
@@ -142,6 +147,9 @@ public abstract class Operation implements TreeNode  {
 		return 0;
 	}
 	
+	
+
+
 	/**This returns the parent of this Select, probably another operation, but
 	 * return it as a <code>TreeNode</code> because of the interface.
 	 * @return The Operation that owns this one.
@@ -149,8 +157,6 @@ public abstract class Operation implements TreeNode  {
 	public TreeNode getParent() {
 		return this.parent;
 	}
-	
-	
 
 
 	/**This method returns the post order represenation of this node an
@@ -220,8 +226,7 @@ public abstract class Operation implements TreeNode  {
 
 
 	public abstract ArrayList < String > getTreeAttributes();
-
-
+	
 	/**Call to get all of the SimpleConditions at or below this node 
 	 * in the tree.
 	 * @return The SimpleConditions at or below this Operation.
@@ -234,14 +239,14 @@ public abstract class Operation implements TreeNode  {
 	public String getType() {
 		return type;
 	}
-	
+
+
 	/**This method will set the value of executionOrder.
 	 * @param newExecutionOrder The new value of executionOrder.
 	 */
 	public void setExecutionOrder(final int newExecutionOrder) {
 		this.executionOrder = newExecutionOrder;
 	}
-
 
 	/**This method will set the value of parent.
 	 * @param newParent The new value of parent.
@@ -263,7 +268,7 @@ public abstract class Operation implements TreeNode  {
 	public void setResultTableID(final int newResultTableID) {
 		this.resultTableID = newResultTableID;
 	}
-
+	
 	/**This method will set the value of tableOne.
 	 * @param newTableOne The new value of tableOne.
 	 */
@@ -284,8 +289,8 @@ public abstract class Operation implements TreeNode  {
 	public void setTableTwo(final Operation newTableTwo) {
 		this.tableTwo = newTableTwo;
 	}
-	
-	/**
+	 
+	 /**
 	 * Setter
 	 * @param newType what we're setting it to
 	 */public void setType(final String newType) {
