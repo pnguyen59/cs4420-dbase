@@ -97,11 +97,16 @@ public class TableOperation extends Operation {
 		return tableName;
 	}
 	
+	public ArrayList < String > getTreeAttributes() {
+		
+		return new ArrayList < String > ();
+	}
+
 	public boolean isLeaf() {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
+	
 	/**This method will see if this thingy is valid.  In this case, that really
 	 * just means that the table exists.
 	 * @return Whether or not this <code>TableOperaion</code> is valid.
@@ -122,7 +127,7 @@ public class TableOperation extends Operation {
 	public String toString() {
 		return "|" + tableName + "\t|\n";
 	}
-	
+
 	public long uniqueVals(String att){
 //		Find the relation that this TableOperation uses
 		RelationHolder holder = RelationHolder.getRelationHolder();
@@ -139,5 +144,4 @@ public class TableOperation extends Operation {
 		
 		return uniquevals;
 	}
-
 }
