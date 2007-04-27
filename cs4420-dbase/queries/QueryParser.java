@@ -125,7 +125,7 @@ public class QueryParser {
 					if (endingCharacter == '\"') {
 						//If we have found the close then add it to the list
 						//And start over at the next space
-						tableNames.add(statement.substring(start + 1,
+						tableNames.add(statement.substring(start,
 							end + 1));
 						start = end + 1;
 						break;

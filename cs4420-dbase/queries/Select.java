@@ -25,6 +25,7 @@ public class Select extends Operation {
 			QueryParser.SELECT_FROM_INDEX);
 		setTableOne(Operation.makeOperation(sourceStatement));
 		tableOne.setParent(this);
+		//System.out.println("SELECT TABLE ONE TYPE: " + tableOne.getType());
 		
 		//Find the condition from the select if there is one
 		if (selectionParts.size() > 1) {
@@ -117,7 +118,12 @@ public class Select extends Operation {
 	public ArrayList < String > getTreeAttributes() {
 		
 		//Get the attributes of this thing
-		ArrayList < String > attributes = condition.getAttributes();
+		ArrayList < String > attributes;
+		if (condition != null) {
+			attributes = condition.getAttributes();
+		} else {
+			attributes = new ArrayList < String > ();
+		}
 		
 		//Merge the list of attributes from this one and those below it
 		ArrayList < String > subAttributes = tableOne.getTreeAttributes();
@@ -142,7 +148,13 @@ public class Select extends Operation {
 	public ArrayList < SimpleCondition > getTreeConditions() {
 		
 		//Get the list of SimpleConditions from the condition of this select
-		ArrayList < SimpleCondition > conditions = condition.getConditions();
+		ArrayList < SimpleCondition > conditions;
+		
+		if (condition != null) {
+			conditions = condition.getConditions();
+		} else {
+			conditions = new ArrayList < SimpleCondition > ();
+		}
 		
 		//Get the SimpleConditions below this node
 		ArrayList < SimpleCondition > subConditions = 
