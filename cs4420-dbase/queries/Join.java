@@ -293,5 +293,40 @@ public class Join extends Operation {
 		holder.addRelation(result);
 	}
 	
+	/**This method will return the attributes of this Join and those
+	 * required by its parents.
+	 */
+	public ArrayList < String > getParentAttributes() {
+		
+		//Get the attributes of all of the parents if there is a parent
+		ArrayList < String > parentAttributes;
+		ArrayList < String > attributes = condition.getAttributes();
+		
+		if (parent != null) {
+			parentAttributes = parent.getParentAttributes();
+		} else { //If no parents then return those of this projection only
+			return attributes;
+		}
+		
+		//Merge the parent and this one if it exists
+		for (int index = 0; index < attributes.size(); index++) {
+			boolean add = true;
+			String attribute = attributes.get(index);
+			for (int inner = 0; inner < parentAttributes.size(); inner++) {
+				//If the are they same, then don't add
+				String parentAttribute = parentAttributes.get(inner);
+				if (attribute.equalsIgnoreCase(parentAttribute)) {
+					add = false;
+					break;
+				}
+			}
+			if (add) {
+				parentAttributes.add(attribute);
+			}
+		}
+		
+		return parentAttributes;
+	}
+	
 	
 }
