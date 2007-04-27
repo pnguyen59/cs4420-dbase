@@ -5,7 +5,6 @@ import java.util.Enumeration;
 
 import javax.swing.tree.TreeNode;
 
-import dbase.Attribute;
 import dbase.RelationHolder;
 
 public abstract class Operation implements TreeNode  {
@@ -86,6 +85,39 @@ public abstract class Operation implements TreeNode  {
 		return null;
 	}
 	
+	/**
+	 * Does this Operation have the attribute?
+	 * @param att the attribute we're testing for
+	 * @return true if the Operation's result table, or one of its children, contain the attribute
+	 */
+	 public boolean containsAttribute(String att){
+		if (tableTwo!= null){
+			return (tableOne.containsAttribute(att) || tableTwo.containsAttribute(att));
+		} else if (tableOne != null){
+			return (tableOne.containsAttribute(att));
+		} else {
+			return (RelationHolder.getRelationHolder().getRelation(resultTableID).getAttributeByName(att) != null);
+		}
+	}
+	
+	
+	/**
+	 * Executes the operation
+	 * @return true if it executes properly
+	 */
+	public boolean execute(){
+		return false;
+	}	
+	
+	/**
+	 * 
+	 * @return its attributes
+	 * 
+	 */public ArrayList < String > getAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**Gets a child at an index.  Don't know how that works.
 	 * @param index Index of the child.
 	 * @return nothing.
@@ -93,15 +125,16 @@ public abstract class Operation implements TreeNode  {
 	public TreeNode getChildAt(final int index) {
 		return null;
 	}
-	
-	
+
+
 	/**This method returns the value of executionOrder.
 	 * @return the executionOrder
 	 */
 	public int getExecutionOrder() {
 		return executionOrder;
-	}	
-	
+	}
+
+
 	/**The index of a Child.  Don't know how that works.
 	 * @param child The child to find the index of
 	 * @return nothing.
@@ -109,7 +142,7 @@ public abstract class Operation implements TreeNode  {
 	public int getIndex(final TreeNode child) {
 		return 0;
 	}
-
+	
 	/**This returns the parent of this Select, probably another operation, but
 	 * return it as a <code>TreeNode</code> because of the interface.
 	 * @return The Operation that owns this one.
@@ -117,6 +150,8 @@ public abstract class Operation implements TreeNode  {
 	public TreeNode getParent() {
 		return this.parent;
 	}
+	
+	
 
 
 	/**This method returns the value of queryID.
@@ -127,22 +162,15 @@ public abstract class Operation implements TreeNode  {
 	}
 
 
+	public abstract ArrayList < String > getRelations();
+
+
 	/**This method returns the value of resultTableID.
 	 * @return the resultTableID
 	 */
 	public int getResultTableID() {
 		return resultTableID;
 	}
-	
-	/**
-	 * Executes the operation
-	 * @return true if it executes properly
-	 */
-	public boolean execute(){
-		return false;
-	}
-	
-	
 
 
 	/**This method returns the value of tableOne.
@@ -169,22 +197,30 @@ public abstract class Operation implements TreeNode  {
 	}
 
 
+	public abstract ArrayList < String > getTreeAttributes();
+
+
+	/**Call to get all of the SimpleConditions at or below this node 
+	 * in the tree.
+	 * @return The SimpleConditions at or below this Operation.
+	 */
+	public abstract ArrayList < SimpleCondition > getTreeConditions();
+
+
 	/**This method returns the value of type.
 	 * @return the type
 	 */
 	public String getType() {
 		return type;
 	}
-
-
+	
 	/**This method will set the value of executionOrder.
 	 * @param newExecutionOrder The new value of executionOrder.
 	 */
 	public void setExecutionOrder(final int newExecutionOrder) {
 		this.executionOrder = newExecutionOrder;
 	}
-
-
+	
 	/**This method will set the value of parent.
 	 * @param newParent The new value of parent.
 	 */
@@ -200,7 +236,6 @@ public abstract class Operation implements TreeNode  {
 		this.queryID = newQueryID;
 	}
 
-
 	/**This method will set the value of resultTableID.
 	 * @param newResultTableID The new value of resultTableID.
 	 */
@@ -208,12 +243,32 @@ public abstract class Operation implements TreeNode  {
 		this.resultTableID = newResultTableID;
 	}
 
-
 	/**This method will set the value of tableOne.
 	 * @param newTableOne The new value of tableOne.
 	 */
 	public void setTableOne(final Operation newTableOne) {
 		this.tableOne = newTableOne;
+	}
+
+	/**This method will set the value of tableOneAccess.
+	 * @param newTableOneAccess The new value of tableOneAccess.
+	 */
+	public void setTableOneAccess(final int newTableOneAccess) {
+		this.tableOneAccess = newTableOneAccess;
+	}
+	
+	/**This method will set the value of tableTwo.
+	 * @param newTableTwo The new value of tableTwo.
+	 */
+	public void setTableTwo(final Operation newTableTwo) {
+		this.tableTwo = newTableTwo;
+	}
+	
+	/**
+	 * Setter
+	 * @param newType what we're setting it to
+	 */public void setType(final String newType) {
+		this.type = newType;
 	}
 	
 	/**
@@ -233,54 +288,4 @@ public abstract class Operation implements TreeNode  {
 			return 1;
 		}
 	}
-	
-	/**
-	 * Does this Operation have the attribute?
-	 * @param att the attribute we're testing for
-	 * @return true if the Operation's result table, or one of its children, contain the attribute
-	 */
-	 public boolean containsAttribute(String att){
-		if (tableTwo!= null){
-			return (tableOne.containsAttribute(att) || tableTwo.containsAttribute(att));
-		} else if (tableOne != null){
-			return (tableOne.containsAttribute(att));
-		} else {
-			return (RelationHolder.getRelationHolder().getRelation(resultTableID).getAttributeByName(att) != null);
-		}
-	}
-
-
-	/**This method will set the value of tableOneAccess.
-	 * @param newTableOneAccess The new value of tableOneAccess.
-	 */
-	public void setTableOneAccess(final int newTableOneAccess) {
-		this.tableOneAccess = newTableOneAccess;
-	}
-
-	/**This method will set the value of tableTwo.
-	 * @param newTableTwo The new value of tableTwo.
-	 */
-	public void setTableTwo(final Operation newTableTwo) {
-		this.tableTwo = newTableTwo;
-	}
-
-	/**
-	 * Setter
-	 * @param newType what we're setting it to
-	 */public void setType(final String newType) {
-		this.type = newType;
-	}
-
-	/**
-	 * 
-	 * @return its attributes
-	 * 
-	 */public ArrayList < String > getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public abstract ArrayList < String > getTreeAttributes();
-	
-	public abstract ArrayList < String > getRelations();
 }
