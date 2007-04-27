@@ -177,8 +177,8 @@ public class SimpleCondition extends Condition {
 		this.rightHand = newRightHand;
 	}
 	
-	public ArrayList < Condition > getConditions() {
-		ArrayList < Condition > c = new ArrayList < Condition > ();
+	public ArrayList < SimpleCondition > getConditions() {
+		ArrayList < SimpleCondition > c = new ArrayList < SimpleCondition > ();
 		c.add(this);
 		return c;
 	}
