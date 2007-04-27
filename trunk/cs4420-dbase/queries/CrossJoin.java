@@ -64,6 +64,34 @@ public class CrossJoin extends Operation {
 		return children;
 	}
 	
+	public ArrayList < String > getRelations() {
+		
+		ArrayList < String > relations = new ArrayList < String > ();
+		
+		ArrayList < String > subOperation;
+		
+		//If this is a one level dealie, that is the tableOne is just a regular
+		//old table then just return that name
+		if (tableOne.getType().equalsIgnoreCase(QueryParser.TABLEOPERATION)) {
+			relations.add(((TableOperation) tableOne).getTableName());
+		} else { //Otherwise, ask the stuff below it for its tables
+			relations = tableOne.getRelations(); 
+		}
+	
+		//Now check on the second table
+		if (tableTwo.getType().equalsIgnoreCase(QueryParser.TABLEOPERATION)) {
+			relations.add(((TableOperation) tableTwo).getTableName());
+		} else {
+			subOperation = tableOne.getRelations();
+			//Merge the listos
+			for (int sub = 0; sub < subOperation.size(); sub++) {
+				relations.add(subOperation.get(sub));
+			}
+		}
+		
+		return relations;
+	}
+
 	/**Says whether or not the CrossJoin is a Leaf.  
 	 * Always false, a CrossJoin is never a Leaf in a query tree.
 	 * @return <code><b>false</b></code> because CrossJoin statements
@@ -88,6 +116,5 @@ public class CrossJoin extends Operation {
 		
 		return string;
 	}
-
 
 }
