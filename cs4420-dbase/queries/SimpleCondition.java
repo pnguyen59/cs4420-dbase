@@ -16,9 +16,7 @@ public class SimpleCondition extends Condition {
 	 * It's a constructor.  WoooHOOOOOOey
 	 * @param condition the condition this thingy represents
 	 */public SimpleCondition(final String condition) {
-		super(condition);
-		
-		System.out.println(condition);
+		super(condition);;
 		
 		//See what type of condition this is
 		if (condition.toUpperCase().contains(QueryParser.LESS_THAN.toUpperCase())) {
