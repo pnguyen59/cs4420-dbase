@@ -60,6 +60,11 @@ public class CrossJoin extends Operation {
 		Relation left = holder.getRelation(tableOne.getResultTableID());
 		Relation right = holder.getRelation(tableTwo.getResultTableID());
 		
+		/*System.out.println("CROSSJOIN LEFT TABLE: " 
+			+ tableOne.getResultTableID());
+		System.out.println("CROSSJOIN RIGHT TABLE: " 
+			+ tableTwo.getResultTableID());*/
+		
 		//Create the resulting relation
 		Relation result = new Relation(QueryParser.RESULT + resultTableID,
 			resultTableID);
@@ -73,6 +78,9 @@ public class CrossJoin extends Operation {
 		for (int index = 0; index < attributes.size(); index++) {
 			result.addAttribute(attributes.get(index));
 		}
+		
+		//Add the result to the list of relations
+		holder.addRelation(result);
 	}
 	
 	/**This method will return whether or not the CrossJoin allows children as
