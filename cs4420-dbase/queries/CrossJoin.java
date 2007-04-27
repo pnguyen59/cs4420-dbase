@@ -2,6 +2,10 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.Attribute;
+import dbase.Relation;
+import dbase.RelationHolder;
+
 public class CrossJoin extends Operation {
 
 	
@@ -46,6 +50,31 @@ public class CrossJoin extends Operation {
 		return tableOne.calculateCost()*tableTwo.calculateCost();
 	}
 	
+	/**This method will generate the table schema that results from the
+	 * join we have going on here.
+	 */
+	public void generateTemporaryTable() {
+		
+		//From the RelationHolder, get the IDs of the source relations
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		Relation left = holder.getRelation(tableOne.getResultTableID());
+		Relation right = holder.getRelation(tableTwo.getResultTableID());
+		
+		//Create the resulting relation
+		Relation result = new Relation(QueryParser.RESULT + resultTableID,
+			resultTableID);
+		
+		//Add the attributes of each to the result
+		ArrayList < Attribute > attributes = left.getAttributes();
+		for (int index = 0; index < attributes.size(); index++) {
+			result.addAttribute(attributes.get(index));
+		}
+		attributes = right.getAttributes();
+		for (int index = 0; index < attributes.size(); index++) {
+			result.addAttribute(attributes.get(index));
+		}
+	}
+	
 	/**This method will return whether or not the CrossJoin allows children as
 	 * per the <code>TreeNode</code> interface.
 	 * @return <code><b>true</b></code> becase a CrossJoin must always 
@@ -53,6 +82,12 @@ public class CrossJoin extends Operation {
 	 */
 	public boolean getAllowsChildren() {
 		return true;
+	}
+	
+	public ArrayList<String> getAttributes(){
+		ArrayList <String> attrs = tableOne.getAttributes();
+		attrs.addAll(tableTwo.getAttributes());
+		return attrs;
 	}
 	
 	/**This method will return the number of children that this CrossJoin has
@@ -67,13 +102,7 @@ public class CrossJoin extends Operation {
 		
 		return children;
 	}
-	
-	public ArrayList<String> getAttributes(){
-		ArrayList <String> attrs = tableOne.getAttributes();
-		attrs.addAll(tableTwo.getAttributes());
-		return attrs;
-	}
-	
+
 	public ArrayList < String > getRelations() {
 		
 		ArrayList < String > relations = new ArrayList < String > ();
@@ -85,7 +114,7 @@ public class CrossJoin extends Operation {
 		
 		return relations;
 	}
-
+	
 	public ArrayList < String > getTreeAttributes() {
 		
 		//Get the list of attributes from tableOne
@@ -109,7 +138,7 @@ public class CrossJoin extends Operation {
 		
 		return tableTwoAttributes;
 	}
-	
+
 	/**This method will return all of the SimpleConditions of the nodes (
 	 * Operations) below this CrossJoin
 	 * @return The SimpleConditions of the nodes below this CrossJoin.
@@ -128,7 +157,7 @@ public class CrossJoin extends Operation {
 		
 		return conditions;
 	}
-
+	
 	/**Says whether or not the CrossJoin is a Leaf.  
 	 * Always false, a CrossJoin is never a Leaf in a query tree.
 	 * @return <code><b>false</b></code> because CrossJoin statements
@@ -137,7 +166,7 @@ public class CrossJoin extends Operation {
 	public boolean isLeaf() {
 		return false;
 	}
-	
+
 	public String toString() {
 		
 		String string = "|"; 
@@ -152,5 +181,4 @@ public class CrossJoin extends Operation {
 		
 		return string;
 	}
-
 }
