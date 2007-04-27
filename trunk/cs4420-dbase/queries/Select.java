@@ -104,6 +104,31 @@ public class Select extends Operation {
 	}
 	
 	
+	public ArrayList < String > getTreeAttributes() {
+		
+		//Get the attributes of this thing
+		ArrayList < String > attributes = condition.getAttributes();
+		
+		//Merge the list of attributes from this one and those below it
+		ArrayList < String > subAttributes = tableOne.getTreeAttributes();
+		
+		//Merge and return the list
+		for (int index = 0; index < attributes.size(); index++) {
+			
+			boolean add = true;
+			for (int inner = 0; inner < subAttributes.size(); inner++) {
+				if (attributes.get(index) == subAttributes.get(inner)) {
+					add = false;
+				}
+			}
+			if (add) {
+				subAttributes.add(attributes.get(index));
+			}
+		}
+		
+		return subAttributes;
+	}
+
 	/**Says whether or not the Selection is a Leaf.  Always false, a Select is 
 	 * never a Leaf in a query tree.
 	 * @return <code<b>false</b></code> because select statements aren't leaves.
@@ -118,7 +143,7 @@ public class Select extends Operation {
 	public void setCondition(final Condition newCondition) {
 		this.condition = newCondition;
 	}
-
+	
 	public String toString() {
 		
 		String string = "|"; 
@@ -138,3 +163,4 @@ public class Select extends Operation {
 		return tableOne.uniqueVals(att);
 	}
 }
+
