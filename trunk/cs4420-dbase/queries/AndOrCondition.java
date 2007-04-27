@@ -2,7 +2,11 @@ package queries;
 
 import java.util.ArrayList;
 
-public class AndOrCondition extends Condition {
+/**
+ * AND/OR condition, fo rizzle
+ * @author SomeDude
+ *
+ */public class AndOrCondition extends Condition {
 
 	/**This method will parse out the two conditions inside of an AND or an 
 	 * OR statement.
@@ -52,7 +56,11 @@ public class AndOrCondition extends Condition {
 		return conditions;
 	}
 	
-	public static String parseLeftHand(final String statement) {
+	/**
+	 * parses the left-hand side of an AND/OR statement
+	 * @param statement the statement this parses
+	 * @return the left hand side of the statement
+	 */public static String parseLeftHand(final String statement) {
 		return parseConditons(statement)[0];
 	}
 	

@@ -216,7 +216,11 @@ public abstract class Operation implements TreeNode  {
 		this.tableOne = newTableOne;
 	}
 	
-	public long uniqueVals(String att){
+	/**
+	 * How many unique vals does this attribute have?
+	 * @param att the attribute name we are checking
+	 * @return the # of unique vals
+	 */public long uniqueVals(String att){
 		if (tableOne != null){
 			if (tableTwo != null){  //binary?
 				
@@ -230,7 +234,12 @@ public abstract class Operation implements TreeNode  {
 		}
 	}
 	
-	public boolean containsAttribute(String att){
+	/**
+	 * Does this Operation have the attribute?
+	 * @param att the attribute we're testing for
+	 * @return true if the Operation's result table, or one of its children, contain the attribute
+	 */
+	 public boolean containsAttribute(String att){
 		if (tableTwo!= null){
 			return (tableOne.containsAttribute(att) || tableTwo.containsAttribute(att));
 		} else if (tableOne != null){
@@ -255,11 +264,18 @@ public abstract class Operation implements TreeNode  {
 		this.tableTwo = newTableTwo;
 	}
 
-	public void setType(final String newType) {
+	/**
+	 * Setter
+	 * @param newType what we're setting it to
+	 */public void setType(final String newType) {
 		this.type = newType;
 	}
 
-	public ArrayList < String > getAttributes() {
+	/**
+	 * 
+	 * @return its attributes
+	 * 
+	 */public ArrayList < String > getAttributes() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -2,6 +2,11 @@ package queries;
 
 import java.util.ArrayList;
 
+/**
+ * The Condition base class.  used for conditions
+ * @author SomeDude
+ *
+ */
 public abstract class Condition {
 
 	/**This method will return a new subclass of the Condition class, depending
@@ -81,7 +86,9 @@ public abstract class Condition {
 	
 	/**The absract compare function, i.e. tell whether or not this Condition is
 	 * true.
-	 * @param tuple The tuple to look at.
+	 * @param tupleattnames The names of the attributes the tuple represents.
+	 * @param tuplevals The array of tuple vals
+	 * @param tupletypes Their data types
 	 * @return Whether or not the comparison is true.
 	 */
 	public abstract boolean compare(final String[] tupleattnames, final String[] tuplevals, final String[] tupletypes);

@@ -13,7 +13,10 @@ public class SimpleCondition extends Condition {
 	/**The right hand side to the simple condition.*/
 	private String rightHand;
 	
-	public SimpleCondition(final String condition) {
+	/**
+	 * It's a constructor.  WoooHOOOOOOey
+	 * @param condition the condition this thingy represents
+	 */public SimpleCondition(final String condition) {
 		super(condition);
 		
 		System.out.println(condition);
