@@ -102,6 +102,15 @@ public class TableOperation extends Operation {
 		return new ArrayList < String > ();
 	}
 
+	/**For the TableOperation, there will never be any conditions, nor will
+	 * there be any leaves.  For this reason we return an empty list
+	 * of SimpleConditons.
+	 * @return An empty list of SimpleConditions.
+	 */
+	public ArrayList < SimpleCondition > getTreeConditions() {
+		return new ArrayList < SimpleCondition > ();
+	}
+	
 	public boolean isLeaf() {
 		// TODO Auto-generated method stub
 		return true;
