@@ -90,6 +90,8 @@ public class Project extends Operation {
 		for (int index = 0; index < attributes.size(); index++) {
 			String currentName = attributes.get(index);
 			
+			System.out.println(currentName);
+			
 			//Use tempCurrentName cause it may be qualified
 			Attribute currentAttribute 
 				= source.getAttributeByName(currentName);
