@@ -18,6 +18,8 @@ import dbase.Attribute.Type;
 
 public class QueryValidatorTest extends TestCase {
 
+	public static String selectFromSelece = "(PROJECT (qa \"A\") (SELECT (SELECT (CROSSJOIN \"A\", \"B\") (WHERE (EQ (a \"C\") (a \"D\"))))(WHERE(EQ (a \"E\") (a \"F\")))))";
+	
 	@Before
 	public void setUp() {
 	}
@@ -314,6 +316,33 @@ public class QueryValidatorTest extends TestCase {
 		query = new Query(queryString);
 		tables = query.getRelations(); 
 		assertTrue(QueryValidator.validateQuery(query));
+		query.printQueryTree();
+	}
+	
+	@Test
+	public void testValidateQuerySelectFromSelect() {
+		
+		System.out.println();
+		System.out.println("testValidateQuerySelectFromSelect");
+		System.out.println();
+		
+		RelationHolder holder = RelationHolder.getRelationHolder();	
+		holder.addRelation(new Relation("A", 300));
+		holder.addRelation(new Relation("B", 301));
+		holder.addRelation(new Relation("C", 302));
+		holder.addRelation(new Relation("D", 303));
+		Relation relation = holder.getRelation(300);
+		relation.addAttribute(new Attribute("WOW", Type.Int, 300));
+
+		String queryString = "(PROJECT (qa \"A\" \"WOW\") (CROSSJOIN \"A\", \"B\", \"C\", \"D\"))";
+		Query query = new Query(queryString);
+		assertTrue(QueryValidator.validateQuery(query));
+		query.printQueryTree();
+		query.assignTemporaryTables();
+		query.printQueryTree();
+		
+		
+		
 	}
 
 }
