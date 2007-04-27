@@ -26,10 +26,12 @@ public class Select extends Operation {
 		setTableOne(Operation.makeOperation(sourceStatement));
 		tableOne.setParent(this);
 		
-		//Find the condition from the select.
-		String conditionStatement = selectionParts.get(
+		//Find the condition from the select if there is one
+		if (selectionParts.size() > 1) {
+			String conditionStatement = selectionParts.get(
 			QueryParser.SELECT_WHERE_INDEX);
-		setCondition(Condition.makeCondition(conditionStatement));	
+			setCondition(Condition.makeCondition(conditionStatement));
+		}
 	}
 	
 	public Select()
