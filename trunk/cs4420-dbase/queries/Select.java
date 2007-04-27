@@ -128,6 +128,22 @@ public class Select extends Operation {
 		
 		return subAttributes;
 	}
+	
+	public ArrayList < SimpleCondition > getTreeConditions() {
+		
+		//Get the list of SimpleConditions from the condition of this select
+		ArrayList < SimpleCondition > conditions = condition.getConditions();
+		
+		//Get the SimpleConditions below this node
+		ArrayList < SimpleCondition > subConditions = 
+			tableOne.getTreeConditions();
+		
+		//Merge the two lists
+		conditions.addAll(subConditions);
+		
+		//And return
+		return conditions;
+	}
 
 	/**Says whether or not the Selection is a Leaf.  Always false, a Select is 
 	 * never a Leaf in a query tree.
