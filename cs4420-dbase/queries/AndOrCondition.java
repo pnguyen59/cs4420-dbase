@@ -153,32 +153,28 @@ import java.util.ArrayList;
 
 	}
 	
+	/**This method will return the list of conditions inside of this dealie.
+	 * It should only return SimpleConditions
+	 * @return The SimpleConditions inside of this AndOrCondition
+	 */
 	public ArrayList < Condition > getConditions() {
 		
 		//If one side or the other is an AND or an OR, then ask it for its 
 		//conditions
 		ArrayList < Condition > conditions = new ArrayList < Condition > ();
 		
-		if (leftHand.getComparison().equalsIgnoreCase(QueryParser.AND)
-			|| leftHand.getComparison().equalsIgnoreCase(QueryParser.OR)) {
-			ArrayList < Condition > sub = ((AndOrCondition) leftHand).
-				getConditions();
-			for (int index = 0; index < sub.size(); index++) {
-				conditions.add(sub.get(index));
-			}
-		} else {
-			conditions.add(leftHand);
+		//Get the conditions from the right hand
+		ArrayList < Condition > sub = ((AndOrCondition) leftHand).
+			getConditions();
+		for (int index = 0; index < sub.size(); index++) {
+			conditions.add(sub.get(index));
 		}
 		
-		if (rightHand.getComparison().equalsIgnoreCase(QueryParser.AND)
-				|| leftHand.getComparison().equalsIgnoreCase(QueryParser.OR)) {
-				ArrayList < Condition > sub = ((AndOrCondition) rightHand).
-					getConditions();
-				for (int index = 0; index < sub.size(); index++) {
-					conditions.add(sub.get(index));
-				}
-			} else {
-				conditions.add(rightHand);
+		//Get the conditions from the left hand
+		sub = ((AndOrCondition) rightHand).
+			getConditions();
+		for (int index = 0; index < sub.size(); index++) {
+			conditions.add(sub.get(index));
 		}
 		
 		return conditions;		
