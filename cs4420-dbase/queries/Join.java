@@ -96,4 +96,30 @@ public class Join extends Operation {
 			return -1;
 		}
 	}
+	
+	public ArrayList < String > getTreeAttributes() {
+		
+		//TODO Also get the attributes from the condition
+		//Get the list of attributes from tableOne
+		ArrayList < String > tableOneAttributes = tableOne.getTreeAttributes();
+		ArrayList < String > tableTwoAttributes = tableTwo.getTreeAttributes();
+		
+		//Merge and return the list
+		for (int index = 0; index < tableOneAttributes.size(); index++) {
+			
+			boolean add = true;
+			for (int inner = 0; inner < tableTwoAttributes.size(); inner++) {
+				if (tableOneAttributes.get(index) 
+					== tableTwoAttributes.get(inner)) {
+					add = false;
+				}
+			}
+			if (add) {
+				tableTwoAttributes.add(tableOneAttributes.get(index));
+			}
+		}
+		
+		return tableTwoAttributes;
+		
+	}
 }
