@@ -758,5 +758,13 @@ public class Relation {
 		//Then return true;
 		return true;
 	}
+
+	public ArrayList<Attribute> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(ArrayList<Attribute> attributes) {
+		this.attributes = attributes;
+	}
 	
 }
