@@ -9,14 +9,14 @@ public class AndOrCondition extends Condition {
 	 * @param statement The statement to parse.
 	 * @return An array containing the inner statements
 	 */
-	public static String [] parseConditons(final String statement) {
+	public static String [] parseConditons(String statement) {
 		
 		String [] conditions = new String [2];
 		ArrayList < String > parts = new ArrayList < String > ();
 		
 		int opens = 0;
 		int closes = 0;
-		
+		statement = statement.trim();
 		//Start at position 1 because we know that 0 is a "("
 		for (int start = 1; start < statement.length(); start++) {
 			
@@ -79,6 +79,12 @@ public class AndOrCondition extends Condition {
 	public AndOrCondition(final String newCondition) {
 		super(newCondition);
 		//Get the conditions contained within this one.
+		System.out.println("LC: "+newCondition);
+		if (newCondition.replace("(","").toLowerCase().startsWith(QueryParser.AND.toLowerCase())){
+			this.comparison = QueryParser.AND;
+		} else if (newCondition.replace("(","").toLowerCase().startsWith(QueryParser.OR.toLowerCase())){
+			this.comparison = QueryParser.OR;
+		} 
 		leftHand = Condition.makeCondition(parseLeftHand(newCondition));
 		rightHand = Condition.makeCondition(parseRightHand(newCondition));
 	}
@@ -91,7 +97,9 @@ public class AndOrCondition extends Condition {
 	 */
 	public boolean compare(final String[] tupleattnames, final String[] tuplevals, final String[] tupletypes) {
 	
+		System.out.println("C: "+leftHand.getComparison());
 		boolean leftHandEval = leftHand.compare(tupleattnames, tuplevals, tupletypes);
+		
 		boolean rightHandEval = rightHand.compare(tupleattnames, tuplevals, tupletypes);
 		
 		//If an AND then see if both the left and right are true

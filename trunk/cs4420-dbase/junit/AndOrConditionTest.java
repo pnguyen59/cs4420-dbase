@@ -1,14 +1,16 @@
 package junit;
 
 import static org.junit.Assert.fail;
+import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import queries.AndOrCondition;
+import queries.Condition;
 
-public class AndOrConditionTest {
+public class AndOrConditionTest extends TestCase{
 
 	public static String simpleAndTest = 
 		"(AND (eq \"a\" \"b\") (eq \"c\" \"d\"))"; 
@@ -17,11 +19,11 @@ public class AndOrConditionTest {
 		"(AND (AND (eq \"a\" \"b\") (eq \"c\" 1)) (eq \"a\" \"b\"))";
 	
 	public static String veryComplexAndTest = 
-		"(and (eq  (qa \"R\" \"c\") (qa \"S\" \"c\")) (or"
+		"(and (eq (qa \"R\" \"c\") (qa \"S\" \"c\")) (or"
 		+ "(eq (a \"a\") (k string \"leo\") )(lt (a \"e\") (k int 4) )))";
 	
 	public static String anotherAndTest = 
-		"(and(eq  (qa \"P\" \"e\") (qa \"Q\" \"f\"))"
+		"(and(eq (qa \"P\" \"e\") (qa \"Q\" \"f\"))"
 		+ "(eq  (qa \"Q\" \"g\") (qa \"R\" \"h\")))";
 	
 	@Before
@@ -34,6 +36,12 @@ public class AndOrConditionTest {
 
 	@Test
 	public void testCompare() {
+		String tupvals[] = new String[]{"a","a","b","b"};
+		String tupnames[]= new String[]{"P.e","Q.f","Q.g","R.h"};
+		String tuptypes[]= new String[]{"string", "string", "string", "string"};
+		Condition cond = Condition.makeCondition(anotherAndTest);
+		assertTrue(cond.compare(tupnames,tupvals,tuptypes));
+		
 	}
 
 	@Test
