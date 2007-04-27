@@ -178,4 +178,18 @@ import java.util.ArrayList;
 		
 		return conditions;		
 	}
+	
+	/**Returns the left side of this AndOrCondition.
+	 * @return The left side of this AndOrCondition.
+	 */
+	public Condition getLeftHand() {
+		return this.leftHand;
+	}
+	
+	/**Returns the right side of this AndOrCondition.
+	 * @return The right side of this AndOrCondition.
+	 */
+	public Condition getRightHand() {
+		return this.rightHand;
+	}
 }
