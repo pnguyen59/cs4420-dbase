@@ -36,9 +36,9 @@ public class Query {
 		return treeRoot.getTreeAttributes();
 	}
 	
-	public ArrayList < Condition > getConditions() {
+	public ArrayList < SimpleCondition > getConditions() {
 		
-		return null;
+		return treeRoot.getTreeConditions();
 	}
 	
 	
