@@ -89,7 +89,7 @@ public class QueryValidator {
 		return true;
 	}
 	
-	public static boolean validateCoditions(final Query query) {
+	public static boolean validateConditions(final Query query) {
 		
 		ArrayList < Condition > comparisons = query.getConditions();
 		
