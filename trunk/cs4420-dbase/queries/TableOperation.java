@@ -17,11 +17,24 @@ public class TableOperation extends Operation {
 	 * purposes of the query tree.
 	 */
 	public TableOperation(final String newTableName) {
-		String noQuotes = newTableName.replace("\"", "");
-		String noParens = noQuotes.replace("(", "");
-		noParens = noParens.replace(")", "");
-		tableName = noParens;
 		type = QueryParser.TABLEOPERATION;
+		
+		//System.out.println("TABLE: "  + newTableName);
+		
+		//Find the table name
+		int open = newTableName.indexOf('\"');
+		int close;
+		for (close = open + 1; close < newTableName.length(); close++) {
+			//Get the character
+			char currentCharacter = newTableName.charAt(close);
+			if (currentCharacter == '\"') {
+				break;
+			}	
+		}
+		
+		//Set the table name from open + 1 to the close
+		this.setTableName(newTableName.substring(open + 1, close));
+		//System.out.println("TABLE: "  + tableName);
 		this.resultTableID = RelationHolder.getRelationHolder().getRelationByName(tableName);
 	}
 	
