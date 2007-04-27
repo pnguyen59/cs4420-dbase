@@ -146,7 +146,9 @@ public class QueryParser {
 	 * @return The parts of that statement.
 	 */
 	public static ArrayList < String > parseStatementParts(
-		final String statement) {
+		final String statementStart) {
+		
+		String statement = statementStart.trim();
 		
 		ArrayList < String > parts = new ArrayList < String > ();
 		
