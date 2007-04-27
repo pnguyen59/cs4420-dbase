@@ -7,7 +7,6 @@ import dbase.Database;
 import dbase.Iterator;
 import dbase.Relation;
 import dbase.RelationHolder;
-import dbase.SystemCatalog;
 
 public class Join extends Operation {
 
@@ -211,42 +210,82 @@ public class Join extends Operation {
 		Relation left = holder.getRelation(tableOne.getResultTableID());
 		Relation right = holder.getRelation(tableTwo.getResultTableID());
 		
+		//Get the attributes
+		ArrayList < Attribute > leftAttributes = left.getAttributes();
+		ArrayList < Attribute > rightAttributes = right.getAttributes();
+		
 		//Create the resulting relation
 		Relation result = new Relation(QueryParser.RESULT + resultTableID,
 			resultTableID);
 		
-		//Add the attributes of each to the result
-		ArrayList < Attribute > attributes = left.getAttributes();
-		for (int index = 0; index < attributes.size(); index++) {
+		//For the leftHand attributes
+		for (int leftIndex = 0;
+			leftIndex < leftAttributes.size(); leftIndex++) {
 			
-			Attribute currentAttribute = attributes.get(index);
-			String currentName = currentAttribute.getName();
-			//If it isn't qualified, make it so
-			if (!(currentName.contains("."))) {
-				currentName = left.getName() + "." + currentName;
+			//Get the attribute to work on
+			Attribute leftAttribute =  leftAttributes.get(leftIndex);
+			String leftName = leftAttribute.getName();
+			
+			boolean added = false;
+			
+			//See if it has the same name as any on the right
+			for (int rightIndex = 0; 
+				rightIndex < rightAttributes.size(); rightIndex++) {
+				
+				Attribute rightAttribute = rightAttributes.get(rightIndex);
+				String rightName = rightAttribute.getName();
+				
+				if (leftName.equalsIgnoreCase(rightName)) {
+					Relation source = holder.getRelation(leftAttribute.getParent());
+					leftName = source.getName() + "." + leftName;
+					Attribute newAttribute = new Attribute(
+							leftName, leftAttribute.getType(), 0);
+					result.addAttribute(newAttribute);
+					added = true;
+					break;
+				}
 			}
 			
-			//Make a new attribute with the qualified name
-			Attribute newAttribute = new Attribute(
-				currentName, currentAttribute.getType(), 0);
-			
-			result.addAttribute(newAttribute);
+			if (!added) {
+				result.addAttribute(leftAttribute);
+			}
 		}
-		attributes = right.getAttributes();
-		for (int index = 0; index < attributes.size(); index++) {
+		
+		//For the rightHand attributes
+		for (int rightIndex = 0;
+			rightIndex < rightAttributes.size(); rightIndex++) {
 			
-			Attribute currentAttribute = attributes.get(index);
-			String currentName = currentAttribute.getName();
-			//If it isn't qualified, make it so
-			if (!(currentName.contains("."))) {
-				currentName = left.getName() + "." + currentName;
+			//Get the attribute to work on
+			Attribute rightAttribute =  rightAttributes.get(rightIndex);
+			String rightName = rightAttribute.getName();
+			
+			boolean added = false;
+			
+			//See if it has the same name as any on the right
+			for (int leftIndex = 0; 
+				leftIndex < leftAttributes.size(); leftIndex++) {
+				
+				Attribute leftAttribute = leftAttributes.get(leftIndex);
+				String leftName = leftAttribute.getName();
+				
+				if (rightName.equalsIgnoreCase(leftName)) {
+					//Find the relation that rightName belongs to.
+					Relation source = holder.getRelation(rightAttribute.getParent());
+					rightName = source.getName() + "." + rightName;
+					//Then create and add it to the new relation
+					Attribute newAttribute = new Attribute(
+						rightName, rightAttribute.getType(), 0);
+					result.addAttribute(newAttribute);
+					added = true;
+					break;
+				}
 			}
 			
-			//Make a new attribute with the qualified name
-			Attribute newAttribute = new Attribute(
-				currentName, currentAttribute.getType(), 0);
+			if (!added) {
+				result.addAttribute(rightAttribute);
+			}
 			
-			result.addAttribute(newAttribute);
+		
 		}
 		
 		holder.addRelation(result);
