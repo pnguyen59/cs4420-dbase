@@ -63,10 +63,6 @@ public class Select extends Operation {
 		return 0;
 	}
 	
-	public long uniqueVals(String att){
-		return tableOne.uniqueVals(att);
-	}
-	
 	/**This method will return whether or not the Select allows children as
 	 * per the <code>TreeNode</code> interface
 	 * @return <code><b>true</b></code> becase a Select must always 
@@ -90,6 +86,21 @@ public class Select extends Operation {
 	 */
 	public Condition getCondition() {
 		return condition;
+	}
+	
+	public ArrayList < String > getRelations() {
+		
+	ArrayList < String > relations = new ArrayList < String > ();
+		
+		//If this is a one level dealie, that is the tableOne is just a regular
+		//old table then just return that name
+		if (tableOne.getType().equalsIgnoreCase(QueryParser.TABLEOPERATION)) {
+			relations.add(((TableOperation) tableOne).getTableName());
+		} else { //Otherwise, ask the stuff below it for its tables
+			relations = tableOne.getRelations(); 
+		}
+		
+		return relations;
 	}
 	
 	
@@ -121,5 +132,9 @@ public class Select extends Operation {
 		string += "\n";
 		
 		return string;
+	}
+	
+	public long uniqueVals(String att){
+		return tableOne.uniqueVals(att);
 	}
 }
