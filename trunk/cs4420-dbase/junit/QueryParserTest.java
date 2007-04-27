@@ -25,6 +25,13 @@ public class QueryParserTest extends TestCase{
 	public static final String complexAttributeList =
 		"(qa \"R\" \"A\", qa \"S\" \"B\", qa \"T\" \"C\")";
 	
+	public static final String crazyQuery = "(project (a \"a\", qa \"R\" \"c\","
+		+ "a \"e\")(select(crossJoin \"R\", \"S\" )(where(and(eq  "
+		+ "(qa \"R\" \"c\") (qa \"S\" \"c\"))"
+		+ "(or(eq (a \"a\") (k string \"leo\") )(lt (a \"e\") (k int 4) ))))))";
+
+		
+	
 	
 	@Before
 	public void setUp() throws Exception {
