@@ -155,7 +155,8 @@ public class Project extends Operation {
 			
 			boolean add = true;
 			for (int inner = 0; inner < subAttributes.size(); inner++) {
-				if (attributes.get(index) == subAttributes.get(inner)) {
+				if (attributes.get(index).
+					equalsIgnoreCase(subAttributes.get(inner))) {
 					add = false;
 				}
 			}
@@ -163,11 +164,6 @@ public class Project extends Operation {
 				subAttributes.add(attributes.get(index));
 			}
 		}
-		
-		for (int index = 0; index < attributes.size(); index++) {
-			System.out.println("ATTRIBUTE: " + attributes.get(index));
-		}
-		
 		return subAttributes;
 	}
 	
