@@ -245,5 +245,22 @@ public class Select extends Operation {
 	public long uniqueVals(String att){
 		return tableOne.uniqueVals(att);
 	}
+	
+	public void generateTemporaryTable() {
+		
+		//Get the Schema of the source table and copy it over
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		Relation source = holder.getRelation(tableOne.resultTableID);
+		
+		//Make the resulting table
+		Relation result = new Relation(QueryParser.RESULT + resultTableID,
+			resultTableID);
+		
+		//Copy the attributes over
+		ArrayList < Attribute > attributes = source.getAttributes();
+		for (int index = 0; index < attributes.size(); index++) {
+			result.addAttribute(attributes.get(index));
+		}
+	}
 }
 
