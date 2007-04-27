@@ -25,7 +25,7 @@ public abstract class Condition {
 			int openIndex = filteredCondition.indexOf("(");
 			int closeIndex = filteredCondition.lastIndexOf(")");
 			filteredCondition 
-				= filteredCondition.substring(openIndex + 1, closeIndex);
+				= filteredCondition.substring(openIndex + 1, closeIndex-1);
 		}
 		
 		//See what kind of condition it is

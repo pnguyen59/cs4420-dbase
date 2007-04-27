@@ -19,11 +19,11 @@ public class SimpleCondition extends Condition {
 		System.out.println(condition);
 		
 		//See what type of condition this is
-		if (condition.contains(QueryParser.LESS_THAN)) {
+		if (condition.toUpperCase().contains(QueryParser.LESS_THAN.toUpperCase())) {
 			this.comparison = QueryParser.LESS_THAN;
-		} else if (condition.contains(QueryParser.GREATER_THAN)) {
+		} else if (condition.toUpperCase().contains(QueryParser.GREATER_THAN.toUpperCase())) {
 			this.comparison = QueryParser.GREATER_THAN;
-		} else if (condition.contains(QueryParser.EQUAL)) {
+		} else if (condition.toUpperCase().contains(QueryParser.EQUAL.toUpperCase())) {
 			this.comparison = QueryParser.EQUAL;
 		}
 		
