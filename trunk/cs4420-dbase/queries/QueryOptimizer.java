@@ -4,6 +4,7 @@
 package queries;
 
 import java.util.ArrayList;
+import dbase.*;
 
 /**
  * @author gtg471h
@@ -97,13 +98,78 @@ public class QueryOptimizer {
 					return;
 				}
 				
-				ArrayList <String> alist = head.getAttributes();
+				ArrayList <SimpleCondition> alist = cond.getConditions();
+				child1.setParent((Operation) head.getParent());
+				
+				head.setParent(child1);
+				child1.getTableOne().setParent(head);
+				leftsel = new Select();
+				rightsel = new Select();
+				SimpleCondition simp = new SimpleCondition("(EQ (k INT 1) (K INT 1))");
+				RelationHolder relhold = RelationHolder.getRelationHolder();
+				AndOrCondition rightcon = new AndOrCondition(), leftcon = new AndOrCondition();;
 				for (int i = 0; i < alist.size(); i++)
 				{
-					child1.setParent((Operation) head.getParent());
+					SimpleCondition thisatt = alist.get(i);
 					
-					head.setParent(child1);
-					child1.getTableOne().setParent(head);
+					for (int j = 0; j < left.size(); j++)
+					{
+						String table = ((TableOperation) left.get(j)).getTableName();
+						Relation rel = relhold.getRelation(relhold.getRelationByName(table));
+						boolean yes = rel.hasAttributeWithName(thisatt.getAttributes().get(0));
+						if (yes)
+						{
+							AndOrCondition condition = new AndOrCondition();
+							if (leftsel.getCondition() == null)
+							{
+								leftcon = condition;
+								leftsel.setCondition(leftcon);
+								break;
+							}
+							leftcon = (AndOrCondition) leftcon.getRightHand();
+							leftcon.setLeftHand(thisatt);
+							leftcon.setRightHand(simp);
+							
+							
+						}
+					}
+					for (int j = 0; j < right.size(); j++)
+					{
+						String table = ((TableOperation) right.get(j)).getTableName();
+						Relation rel = relhold.getRelation(relhold.getRelationByName(table));
+						boolean yes = rel.hasAttributeWithName(thisatt.getAttributes().get(0));
+						if (yes)
+						{
+							AndOrCondition condition = new AndOrCondition();
+							if (rightsel.getCondition() == null)
+							{
+								rightcon = condition;
+								rightsel.setCondition(leftcon);
+								break;
+							}
+							rightcon = (AndOrCondition) rightcon.getRightHand();
+							rightcon.setLeftHand(thisatt);
+							rightcon.setRightHand(simp);
+							
+							
+						}
+					}
+					
+					
+				}
+				if (leftsel.getCondition() != null)
+				{
+					leftsel.setTableOne(head.getTableOne().getTableOne());
+					head.getTableOne().getTableOne().setParent(leftsel);
+					head.getTableOne().setTableOne(leftsel);
+					leftsel.setParent(head.getTableOne());
+				}
+				if (rightsel.getCondition() != null)
+				{
+					rightsel.setTableOne(head.getTableOne().getTableTwo());
+					head.getTableOne().getTableTwo().setParent(rightsel);
+					head.getTableOne().setTableTwo(rightsel);
+					rightsel.setParent(head.getTableOne());
 				}
 			}
 		}

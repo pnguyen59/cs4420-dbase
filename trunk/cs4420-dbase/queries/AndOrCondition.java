@@ -194,4 +194,19 @@ import java.util.ArrayList;
 	public Condition getRightHand() {
 		return this.rightHand;
 	}
+	
+	public void setLeftHand(Condition leftHand)
+	{
+		this.leftHand = leftHand;
+	}
+	
+	public void setRightHand(Condition rightHand)
+	{
+		this.rightHand = rightHand;
+	}
+	
+	public AndOrCondition()
+	{
+		
+	}
 }
