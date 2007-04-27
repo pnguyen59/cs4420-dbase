@@ -114,7 +114,7 @@ public abstract class Operation implements TreeNode  {
 	/**This method tells the operation to generate the temporary table that
 	  * defines it's results.
 	  */
-	 public abstract void generateTemporayTable();
+	 public abstract void generateTemporaryTable();
 
 	/**
 	 * 
