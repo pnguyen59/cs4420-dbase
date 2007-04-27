@@ -331,17 +331,47 @@ public class QueryValidatorTest extends TestCase {
 		holder.addRelation(new Relation("B", 301));
 		holder.addRelation(new Relation("C", 302));
 		holder.addRelation(new Relation("D", 303));
+		
 		Relation relation = holder.getRelation(300);
-		relation.addAttribute(new Attribute("WOW", Type.Int, 300));
+		Attribute attribute = new Attribute("WOW", Type.Int, 300);
+		attribute.setParent(300);
+		relation.addAttribute(attribute);
+		
+		relation = holder.getRelation(301);
+		attribute = new Attribute("WOW", Type.Int, 301);
+		attribute.setParent(301);
+		relation.addAttribute(attribute);
+		
+		relation = holder.getRelation(302);
+		attribute = new Attribute("SOW", Type.Int, 302);
+		attribute.setParent(302);
+		relation.addAttribute(attribute);
+		
+		relation = holder.getRelation(303);
+		attribute = new Attribute("POW", Type.Int, 303);
+		attribute.setParent(303);
+		relation.addAttribute(attribute);
 
-		String queryString = "(PROJECT (qa \"A\" \"WOW\") (CROSSJOIN \"A\", \"B\", \"C\", \"D\"))";
+		String queryString = "(PROJECT (qa \"A\" \"WOW\", qa \"B\" \"WOW\") (CROSSJOIN \"A\", \"B\", \"C\", \"D\"))";
 		Query query = new Query(queryString);
 		assertTrue(QueryValidator.validateQuery(query));
 		query.printQueryTree();
 		query.assignTemporaryTables();
+		query.generateTemporaryTables();
+		
+		queryString = "(PROJECT (qa \"A\" \"WOW\", qa \"B\" \"WOW\", a \"SOW\") (CROSSJOIN \"A\", \"B\", \"C\", \"D\"))";
+		query = new Query(queryString);
+		assertTrue(QueryValidator.validateQuery(query));
 		query.printQueryTree();
+		query.assignTemporaryTables();
+		query.generateTemporaryTables();
 		
-		
+		queryString = "(PROJECT (qa \"A\" \"WOW\", qa \"B\" \"WOW\", a \"SOW\", a \"POW\") (CROSSJOIN \"A\", \"B\", \"C\", \"D\"))";
+		query = new Query(queryString);
+		assertTrue(QueryValidator.validateQuery(query));
+		query.printQueryTree();
+		query.assignTemporaryTables();
+		query.generateTemporaryTables();
 		
 	}
 
