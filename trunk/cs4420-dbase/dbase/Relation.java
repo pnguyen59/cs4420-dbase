@@ -357,7 +357,13 @@ public class Relation {
 		if (name.contains(".")) {
 			String [] split = name.split("\\.");
 			if (!split[0].equalsIgnoreCase(this.relationname)) {
-				return null;
+				
+				//Just see if there is one anyway
+				for (int j=0; j< attributes.size(); j++){
+					if (attributes.get(j).getName().equalsIgnoreCase(name)){
+						return attributes.get(j);
+					}
+				}
 			}
 			return this.getAttributeByName(split[1]);
 		}
