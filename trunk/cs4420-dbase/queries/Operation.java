@@ -157,7 +157,23 @@ public abstract class Operation implements TreeNode  {
 	  * those below it.
 	  * @return The tree below this in post-order.
 	  */
-	 public abstract ArrayList < Operation > getPostOrder();
+	 public ArrayList < Operation > getPostOrder() {
+		 
+		 ArrayList < Operation > postOrder = new ArrayList < Operation > ();
+		 
+		 //Get the left and right sub-trees in post-order
+		 if (tableOne != null) {
+			 postOrder.addAll(tableOne.getPostOrder());
+		 }
+		 if (tableTwo != null) {
+			 postOrder.addAll(tableTwo.getPostOrder());
+		 }
+		 
+		 //Add this after the sub trees have been added.
+		 postOrder.add(this);
+		 
+		 return postOrder;
+	 }
 
 
 	/**This method returns the value of queryID.
