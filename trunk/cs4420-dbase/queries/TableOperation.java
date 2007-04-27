@@ -174,7 +174,7 @@ public class TableOperation extends Operation {
 	}
 	
 	public String toString() {
-		return "|" + tableName + "\t|\n";
+		return "";
 	}
 
 	public long uniqueVals(String att){
