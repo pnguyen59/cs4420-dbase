@@ -13,6 +13,8 @@ public class QueryParser {
 	
 	public static final String GREATER_THAN = "GT";
 	
+	public static final String JOIN = "JOIN";
+	
 	public static final String LESS_THAN = "LT";
 	
 	public static final String OR = "OR";
@@ -23,17 +25,41 @@ public class QueryParser {
 	
 	public static final int PROJECT_FROM_INDEX = 1;
 	
+	public static final String RESULT = "RESULT_TABLE";
+	
 	public static final String SELECT = "SELECT";
 	
 	public static final int SELECT_FROM_INDEX = 0;
-	
+
 	public static final int SELECT_WHERE_INDEX = 1;
-	
-	public static final String WHERE = "WHERE";
 
 	public static final String TABLEOPERATION = "TABLEOPERATION";
-
-	public static final String JOIN = "JOIN";
+	
+	public static final String WHERE = "WHERE";
+	
+	/**This method will parse the attributes out of a simple condition, such
+	 * as (a "A") or (qa "B" "C")
+	 * @param The thing to parse the attribute name out of.
+	 * @return The attribute name
+	 */
+	public static String parseAttribute(final String attribute) {
+		
+		//Remove any parens
+		String noParens = attribute.replace(")", "");
+		noParens = noParens.replace("(", "");
+		noParens = noParens.replace(" ", "");
+		
+		//Split it up by quotes
+		String [] split = noParens.split("\"");
+		if (split[0].equalsIgnoreCase("QA")) {
+			return split[1] + "." + split[3];
+		} else if (split[0].equalsIgnoreCase("A")) {
+			return split[1];
+		} else {
+			return null;
+		}
+		
+	}
 	
 	/**This method will find the names of all of the attributes in the thingy
 	 * passed to it.  Looks for QA and A
@@ -75,30 +101,6 @@ public class QueryParser {
 		
 		
 		return attributes;
-	}
-	
-	/**This method will parse the attributes out of a simple condition, such
-	 * as (a "A") or (qa "B" "C")
-	 * @param The thing to parse the attribute name out of.
-	 * @return The attribute name
-	 */
-	public static String parseAttribute(final String attribute) {
-		
-		//Remove any parens
-		String noParens = attribute.replace(")", "");
-		noParens = noParens.replace("(", "");
-		noParens = noParens.replace(" ", "");
-		
-		//Split it up by quotes
-		String [] split = noParens.split("\"");
-		if (split[0].equalsIgnoreCase("QA")) {
-			return split[1] + "." + split[3];
-		} else if (split[0].equalsIgnoreCase("A")) {
-			return split[1];
-		} else {
-			return null;
-		}
-		
 	}
 	
 	/**This method will take in a statement as a string, and look for any 
