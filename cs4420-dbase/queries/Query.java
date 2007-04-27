@@ -28,9 +28,7 @@ public class Query {
 	
 	public ArrayList < String > getRelations() {
 		
-		ArrayList < String > relations = treeRoot.getRelations();
-		
-		return null;
+		return treeRoot.getRelations();
 	}
 	
 	public ArrayList < String > getAttributes() {
