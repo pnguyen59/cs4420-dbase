@@ -67,7 +67,19 @@ public class SimpleCondition extends Condition {
 	@Override
 	public ArrayList < String > getAttributes() {
 		// TODO Auto-generated method stub
-		return new ArrayList < String > ();
+		ArrayList < String > attributes = new ArrayList < String > ();
+		
+		String leftHandAttribute = QueryParser.parseAttribute(leftHand);
+		if (leftHandAttribute != null) {
+			attributes.add(leftHandAttribute);
+		}
+		
+		String rightHandAttribute = QueryParser.parseAttribute(rightHand);
+		if (rightHandAttribute != null) {
+			attributes.add(rightHandAttribute);
+		}
+		
+		return attributes;
 	}
 
 	/**This method returns the value of leftHand.
