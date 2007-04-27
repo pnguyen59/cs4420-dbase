@@ -323,7 +323,6 @@ public class Attribute {
 	public String toString(){
 		String ret = name+" "+type;
 		if (this.type == Type.Char) ret+=" of length "+length;
-		ret += ",";
 		return ret;
 	}
 
