@@ -592,6 +592,49 @@ public class SystemCatalog {
     	return true;
     }
     
+    public boolean insert(final int relationID, final String[] names, final String[]vals) {
+
+    	//TODO First see if a record exists with this key.  If so then return
+    	//false or print an error or some shit.  Either way don't inser it.
+    	
+    	//Ask relation which block this record should be written to, i.e. it's
+    	//last block
+    	Relation relation = relationHolder.getRelation(relationID);
+    	long blockTotal = relation.getBlocktotal();
+    	//The last block is blockTotal - 1 cause the first block is 0 
+    	long lastBlock = blockTotal - 1;
+    	
+    	//See if there is enough space in the last block for another record.
+    	if (relation.isLastBlockFull()) {
+    		//If there isn't, generate a new block and write it to the file
+    		//of the relation.
+    		long blockAddress = BufferManager.makePhysicalAddress(relationID
+    				, lastBlock + 1);
+    		buffer.writePhysical(blockAddress, BufferManager.getEmptyBlock());
+    		//Then increment the block count of the relation
+    		relation.setBlocktotal(relation.getBlocktotal() + 1);
+    	}
+
+    	//Then regardless, the last block of the relation has enough space in
+    	//it, so have the last block loaded into the buffer.
+    	ByteBuffer block = buffer.read(relationID, 
+    			relation.getBlocktotal() - 1);
+    	//System.out.println("Inserting into block " 
+    	//	+ buffer.makePhysicalAddress(relationID, 
+    	//			relation.getBlockTotal() -1));
+    	
+    	
+    	relation.addRecord(block, names,vals);
+    	
+    	
+    	//Update the record for this relation
+    	ByteBuffer entry = relation.writeCrapToBuffer();
+    	writeoutRel(entry, relation.getID());
+    	
+    	
+    	return true;
+    }
+    
     /**
      *Inserts a record into a relation and possibl an index.
      *
@@ -1152,4 +1195,12 @@ public class SystemCatalog {
     	}
     	sc.createIndex("INT_TABLE_1", "INT1", "WALRUS", true);*/
     }
+
+	public BufferManager getBuffer() {
+		return buffer;
+	}
+
+	public void setBuffer(BufferManager buffer) {
+		this.buffer = buffer;
+	}
 }

@@ -2,6 +2,12 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.Attribute;
+import dbase.Database;
+import dbase.Iterator;
+import dbase.Relation;
+import dbase.RelationHolder;
+
 
 public class Select extends Operation {
 	
@@ -38,6 +44,45 @@ public class Select extends Operation {
 	public Select()
 	{
 		setType(QueryParser.SELECT);
+	}
+	
+	public boolean execute(){
+		if (tableOne.execute()){
+			//do the select crapola here
+			Relation rel = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
+			ArrayList<Attribute> atts = rel.getAttributes();
+			ArrayList<String> types =  new ArrayList<String>();
+			ArrayList<String> names =  new ArrayList<String>();
+			for (int j=0; j<atts.size(); j++){
+				types.add(atts.get(j).getType().name());
+				names.add(atts.get(j).getName());
+			}
+			
+			String[] types2 =  new String[0];
+			types2= types.toArray((new String[0]));
+			String[] names2 =  new String[0];
+			names2= names.toArray((new String[0]));
+			Relation rel2 = RelationHolder.getRelationHolder().getRelation(this.resultTableID);
+			if (rel2.getAttributes().size()==0){
+				//hasn't been initialized
+				for (int j=0; j<atts.size(); j++){
+					rel2.addAttribute(atts.get(j));
+				}
+			}
+			Iterator it = new Iterator(rel);
+			while (it.hasNext()){
+				String[] vals = it.getNext();
+				if (condition.compare(names2, vals, types2)){
+					
+					Database.getCatalog().insert(this.resultTableID,names2,vals);
+				}
+			}
+			
+			return true;
+		} else{
+			return false;
+		}
+		
 	}
 	
 	@Override

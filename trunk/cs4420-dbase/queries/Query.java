@@ -41,6 +41,13 @@ public class Query {
 		return treeRoot.getTreeConditions();
 	}
 	
+	public int getResultRelationID(){
+		return treeRoot.getResultTableID();
+	}
+	
+	public boolean execute(){
+		return treeRoot.execute();
+	}
 	
 	
 }
