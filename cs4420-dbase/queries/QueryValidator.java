@@ -23,6 +23,7 @@ public class QueryValidator {
 		for (int index = 0; index < tableIDs.size(); index++) {
 			int relationID = holder.getRelationByName(tableIDs.get(index));
 			tables.add(holder.getRelation(relationID));
+			//System.out.println(holder.getRelation(relationID).getName());
 		}
 		
 		//See that one of the relations has each of the attributes
@@ -37,6 +38,7 @@ public class QueryValidator {
 			for (int inner = 0; inner < tables.size(); inner++) {
 				
 				Relation relation = tables.get(inner);
+				//System.out.println("TABLE: " + relation.getName());
 				if (relation.hasAttributeWithName(attributeName)) {
 					containing.add(relation);
 				}
