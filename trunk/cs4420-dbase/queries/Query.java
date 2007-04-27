@@ -2,6 +2,8 @@ package queries;
 
 import java.util.ArrayList;
 
+import dbase.RelationHolder;
+
 public class Query {
 
 	private Operation treeRoot;
@@ -41,13 +43,39 @@ public class Query {
 		return treeRoot.getTreeConditions();
 	}
 	
+
+	public void printQueryTree() {
+		ArrayList < Operation > nodes = treeRoot.getPostOrder();
+		for (int index = 0; index < nodes.size(); index++) {
+			System.out.print(nodes.get(index).toString());
+		}
+	}
+
 	public int getResultRelationID(){
 		return treeRoot.getResultTableID();
+	}
+
+	public void assignTemporaryTables() {
+		
+		int tempTable = RelationHolder.getRelationHolder().getSmallestUnusedID();
+		String temp = "TEMP";
+		
+		ArrayList < Operation > tree = treeRoot.getPostOrder();
+		
+		for (int index = 0; index < tree.size(); index++) {
+			
+			Operation currentOperation = tree.get(index);
+			
+			if (!(currentOperation.getType().
+				equalsIgnoreCase(QueryParser.TABLEOPERATION))) {
+				currentOperation.setResultTableID(tempTable);
+				tempTable++;
+			}
+		}
 	}
 	
 	public boolean execute(){
 		return treeRoot.execute();
 	}
-	
 	
 }
