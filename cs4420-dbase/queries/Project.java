@@ -39,47 +39,6 @@ public class Project extends Operation {
 		return tableOne.calculateCost();
 	}
 	
-	/**This method will return whether or not the Project allows children as
-	 * per the <code>TreeNode</code> interface.
-	 * @return <code><b>true</b></code> becase a Project must always 
-	 * have children.
-	 */
-	public boolean getAllowsChildren() {
-		return true;
-	}
-	
-	/**This method returns the value of attributes.
-	 * @return the attributes
-	 */
-	public ArrayList < String > getAttributes() {
-		return attributes;
-	}
-	
-	/**This method will return the number of children that this Project has
-	 * as per the TreeNode interface.
-	 * @return The number of children of this node.
-	 */
-	public int getChildCount() {
-		int childCount = 1 + tableOne.getChildCount();
-		return childCount;
-	}
-	
-	/**Says whether or not the Projection is a Leaf.  
-	 * Always false, a Project is never a Leaf in a query tree.
-	 * @return <code><b>false</b></code> because Project statements
-	 * aren't leaves.
-	 */
-	public boolean isLeaf() {
-		return false;
-	}
-
-	/**This method will set the value of attributes.
-	 * @param newAttributes The new value of attributes.
-	 */
-	public void setAttributes(final ArrayList < String > newAttributes) {
-		this.attributes = newAttributes;
-	}
-	
 	public boolean execute(){
 		if (!tableOne.execute()){
 			return false;
@@ -109,23 +68,53 @@ public class Project extends Operation {
 		
 		
 	}
-
-	public String toString() {
+	
+	/**This method caueses the project to generate the table that is the
+	 * result of the PROJECT.
+	 */
+	public void generateTemporaryTable() {
 		
-		String string = "|"; 
+		//Get the schema for the thing below it
+		Relation source = RelationHolder.getRelationHolder().
+			getRelation(tableOne.getResultTableID());
 		
-		string += this.queryID + "\t|";
-		string += this.executionOrder + "\t|";
-		string += this.type + "\t|";
+		//Create the new table
+		Relation result = new Relation(QueryParser.RESULT + resultTableID,
+			resultTableID);
+		RelationHolder.getRelationHolder().addRelation(result);
+		
+		//For each attribute, get the real thing from the source
 		for (int index = 0; index < attributes.size(); index++) {
-			string += attributes.get(index) + ", ";
+			String currentName = attributes.get(index);
+			Attribute currentAttribute 
+				= source.getAttributeByName(currentName);
+			result.addAttribute(currentAttribute);
 		}
-		string += "|";
-		string += tableOne.getResultTableID() + "\t|";
-		string += resultTableID + "\t|";
-		string += "\n";
-		
-		return string;
+	}
+	
+	/**This method will return whether or not the Project allows children as
+	 * per the <code>TreeNode</code> interface.
+	 * @return <code><b>true</b></code> becase a Project must always 
+	 * have children.
+	 */
+	public boolean getAllowsChildren() {
+		return true;
+	}
+	
+	/**This method returns the value of attributes.
+	 * @return the attributes
+	 */
+	public ArrayList < String > getAttributes() {
+		return attributes;
+	}
+
+	/**This method will return the number of children that this Project has
+	 * as per the TreeNode interface.
+	 * @return The number of children of this node.
+	 */
+	public int getChildCount() {
+		int childCount = 1 + tableOne.getChildCount();
+		return childCount;
 	}
 	
 	public ArrayList < String > getRelations() {
@@ -142,7 +131,7 @@ public class Project extends Operation {
 		
 		return relations;
 	}
-	
+
 	public ArrayList < String > getTreeAttributes() {
 		
 		//Merge the list of attributes from this one and those below it
@@ -175,4 +164,37 @@ public class Project extends Operation {
 		
 	}
 	
+	/**Says whether or not the Projection is a Leaf.  
+	 * Always false, a Project is never a Leaf in a query tree.
+	 * @return <code><b>false</b></code> because Project statements
+	 * aren't leaves.
+	 */
+	public boolean isLeaf() {
+		return false;
+	}
+	
+	/**This method will set the value of attributes.
+	 * @param newAttributes The new value of attributes.
+	 */
+	public void setAttributes(final ArrayList < String > newAttributes) {
+		this.attributes = newAttributes;
+	}
+	
+	public String toString() {
+		
+		String string = "|"; 
+		
+		string += this.queryID + "\t|";
+		string += this.executionOrder + "\t|";
+		string += this.type + "\t|";
+		for (int index = 0; index < attributes.size(); index++) {
+			string += attributes.get(index) + ", ";
+		}
+		string += "|";
+		string += tableOne.getResultTableID() + "\t|";
+		string += resultTableID + "\t|";
+		string += "\n";
+		
+		return string;
+	}
 }
