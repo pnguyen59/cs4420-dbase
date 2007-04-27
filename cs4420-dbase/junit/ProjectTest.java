@@ -21,6 +21,8 @@ public class ProjectTest extends TestCase {
 	
 	public static String project = "(PROJECT ";
 	
+	public static String oneLevelProject = "(PROJECT (a \"A\") (\"A\"))";
+	
 	public static String simpleCrossJoin = "(CROSSJOIN \"A\", \"B\")";
 	
 	public static String simpleWhere = "(WHERE (EQ (A \"A\") (A \"B\")))";
@@ -35,6 +37,12 @@ public class ProjectTest extends TestCase {
 	
 	public static String simpleProjectSelect = project + simpleAttributes 
 		+ simpleSelect + ")";
+	
+	public static final String crazyQuery = "(project (a \"a\", qa \"R\" \"c\","
+		+ "a \"e\")(select(crossJoin \"R\", \"S\" )(where(and(eq  "
+		+ "(qa \"R\" \"c\") (qa \"S\" \"c\"))"
+		+ "(or(eq (a \"a\") (k string \"leo\") )(lt (a \"e\") (k int 4) ))))))";
+
 	
 	
 	@Before
@@ -93,10 +101,35 @@ public class ProjectTest extends TestCase {
 		
 		System.out.println(Operation.generateQueryTable(projection));
 		
+		projection = (Project) Operation.makeOperation(crazyQuery);
+		System.out.println(Operation.generateQueryTable(projection));
+		
+		
 	}
 
 	@Test
 	public void testGetChildCount() {
+	}
+	
+	@Test 
+	public void testGetRelations() {
+		System.out.println();
+		System.out.println("testGetRelations");
+		System.out.println();
+		
+		projection = (Project) Operation.makeOperation(oneLevelProject);
+		
+		ArrayList < String > results = projection.getRelations();
+		
+		assertTrue("Table should have been A, was "
+			+ results.get(0), results.get(0).equalsIgnoreCase("A")); 
+		
+		projection = (Project) Operation.makeOperation(simpleProjectSelect);
+		results = projection.getRelations();
+		assertTrue("Table should have been A, was "
+				+ results.get(0), results.get(0).equalsIgnoreCase("A"));
+		assertTrue("Table should have been B, was "
+				+ results.get(1), results.get(1).equalsIgnoreCase("B"));
 	}
 
 }
