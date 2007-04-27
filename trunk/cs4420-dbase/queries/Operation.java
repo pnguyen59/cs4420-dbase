@@ -113,10 +113,7 @@ public abstract class Operation implements TreeNode  {
 	 * 
 	 * @return its attributes
 	 * 
-	 */public ArrayList < String > getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	 */public abstract ArrayList < String > getAttributes();
 
 	/**Gets a child at an index.  Don't know how that works.
 	 * @param index Index of the child.
