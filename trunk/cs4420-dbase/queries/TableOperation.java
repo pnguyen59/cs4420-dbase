@@ -1,5 +1,7 @@
 package queries;
 
+import java.util.ArrayList;
+
 import dbase.Relation;
 import dbase.RelationHolder;
 
@@ -50,23 +52,6 @@ public class TableOperation extends Operation {
 		return blocks;
 	}
 	
-	public long uniqueVals(String att){
-//		Find the relation that this TableOperation uses
-		RelationHolder holder = RelationHolder.getRelationHolder();
-		int relationID = holder.getRelationByName(tableName);
-		
-		//check for error condition
-		if (relationID == -1) return -1;
-		Relation relation = holder.getRelation(relationID);
-		
-		//if relation doesn't exist
-		if (relation == null) return -2;
-		
-		long uniquevals = relation.getUniqueVals(att);
-		
-		return uniquevals;
-	}
-	
 	public boolean containsAttribute(String att){
 		RelationHolder holder = RelationHolder.getRelationHolder();
 		int relationID = holder.getRelationByName(tableName);
@@ -79,6 +64,10 @@ public class TableOperation extends Operation {
 		if (relation == null) return false;
 		
 		return (relation.getAttributeByName(att) != null);
+	}
+	
+	public boolean execute(){
+		return true;
 	}
 
 	/**Tables will be the leaves of the query tree and never have children.
@@ -95,19 +84,21 @@ public class TableOperation extends Operation {
 		return 0;
 	}
 
+	public ArrayList < String > getRelations() {
+		ArrayList < String > relationList = new ArrayList < String > ();
+		relationList.add(tableName);
+		return relationList;
+	}
+
 	/**This method returns the value of tableName.
 	 * @return the tableName
 	 */
 	public String getTableName() {
 		return tableName;
 	}
-
+	
 	public boolean isLeaf() {
 		// TODO Auto-generated method stub
-		return true;
-	}
-	
-	public boolean execute(){
 		return true;
 	}
 
@@ -130,6 +121,23 @@ public class TableOperation extends Operation {
 	
 	public String toString() {
 		return "|" + tableName + "\t|\n";
+	}
+	
+	public long uniqueVals(String att){
+//		Find the relation that this TableOperation uses
+		RelationHolder holder = RelationHolder.getRelationHolder();
+		int relationID = holder.getRelationByName(tableName);
+		
+		//check for error condition
+		if (relationID == -1) return -1;
+		Relation relation = holder.getRelation(relationID);
+		
+		//if relation doesn't exist
+		if (relation == null) return -2;
+		
+		long uniquevals = relation.getUniqueVals(att);
+		
+		return uniquevals;
 	}
 
 }
