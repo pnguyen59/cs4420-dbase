@@ -153,6 +153,13 @@ public abstract class Operation implements TreeNode  {
 	
 
 
+	/**This method returns the post order represenation of this node an
+	  * those below it.
+	  * @return The tree below this in post-order.
+	  */
+	 public abstract ArrayList < Operation > getPostOrder();
+
+
 	/**This method returns the value of queryID.
 	 * @return the queryID
 	 */
@@ -204,8 +211,7 @@ public abstract class Operation implements TreeNode  {
 	 * @return The SimpleConditions at or below this Operation.
 	 */
 	public abstract ArrayList < SimpleCondition > getTreeConditions();
-
-
+	
 	/**This method returns the value of type.
 	 * @return the type
 	 */
@@ -219,14 +225,14 @@ public abstract class Operation implements TreeNode  {
 	public void setExecutionOrder(final int newExecutionOrder) {
 		this.executionOrder = newExecutionOrder;
 	}
-	
+
+
 	/**This method will set the value of parent.
 	 * @param newParent The new value of parent.
 	 */
 	public void setParent(final Operation newParent) {
 		this.parent = newParent;
 	}
-
 
 	/**This method will set the value of queryID.
 	 * @param newQueryID The new value of queryID.
@@ -248,7 +254,7 @@ public abstract class Operation implements TreeNode  {
 	public void setTableOne(final Operation newTableOne) {
 		this.tableOne = newTableOne;
 	}
-
+	
 	/**This method will set the value of tableOneAccess.
 	 * @param newTableOneAccess The new value of tableOneAccess.
 	 */
@@ -269,8 +275,8 @@ public abstract class Operation implements TreeNode  {
 	 */public void setType(final String newType) {
 		this.type = newType;
 	}
-	
-	/**
+	 
+	 /**
 	 * How many unique vals does this attribute have?
 	 * @param att the attribute name we are checking
 	 * @return the # of unique vals
