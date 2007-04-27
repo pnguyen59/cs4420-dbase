@@ -87,6 +87,23 @@ public class TableOperation extends Operation {
 		}
 	}
 	
+	public boolean execute(){
+		return true;
+	}
+	
+	/**For TableOperation, generateTemporaryTable won't do anything.
+	 */
+	public void generateTemporaryTable() {
+		
+	}
+
+	/**Tables will be the leaves of the query tree and never have children.
+	 * @return <code><b>false</b></code> because leaves never have children.
+	 */
+	public boolean getAllowsChildren() {
+		return false;
+	}
+
 	public ArrayList<String> getAttributes(){
 		RelationHolder holder = RelationHolder.getRelationHolder();
 		int relationID = holder.getRelationByName(tableName);
@@ -105,17 +122,6 @@ public class TableOperation extends Operation {
 		}
 		return ret;
 	}
-	
-	public boolean execute(){
-		return true;
-	}
-
-	/**Tables will be the leaves of the query tree and never have children.
-	 * @return <code><b>false</b></code> because leaves never have children.
-	 */
-	public boolean getAllowsChildren() {
-		return false;
-	}
 
 	/**Tables will be the leaves of the query tree and never have children.
 	 * @return 0
@@ -129,19 +135,19 @@ public class TableOperation extends Operation {
 		relationList.add(tableName);
 		return relationList;
 	}
-
+	
 	/**This method returns the value of tableName.
 	 * @return the tableName
 	 */
 	public String getTableName() {
 		return tableName;
 	}
-	
+
 	public ArrayList < String > getTreeAttributes() {
 		
 		return new ArrayList < String > ();
 	}
-
+	
 	/**For the TableOperation, there will never be any conditions, nor will
 	 * there be any leaves.  For this reason we return an empty list
 	 * of SimpleConditons.
@@ -172,11 +178,11 @@ public class TableOperation extends Operation {
 	public void setTableName(final String newTableName) {
 		this.tableName = newTableName;
 	}
-	
+
 	public String toString() {
 		return "";
 	}
-
+	
 	public long uniqueVals(String att){
 //		Find the relation that this TableOperation uses
 		RelationHolder holder = RelationHolder.getRelationHolder();
