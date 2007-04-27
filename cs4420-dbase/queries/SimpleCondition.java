@@ -32,13 +32,13 @@ public class SimpleCondition extends Condition {
 	
 	@Override
 	public boolean compare(final String[] tupleattnames, final String[] tuplevals) {
-		String leftval = leftHand; //default: treat them as constants
-		String rightval = rightHand;
+		String leftval = leftHand.replace("(", "").replace(")", ""); //default: treat them as constants
+		String rightval = rightHand.replace("(", "").replace(")", "");
 		for (int j=0; j<tupleattnames.length; j++){
-			if (leftHand.equals(tupleattnames[j])){
+			if (leftHand.replace("(", "").replace(")", "").equals(tupleattnames[j])){
 				leftval = tuplevals[j];
 			}
-			if (rightHand.equals(tupleattnames[j])){
+			if (rightHand.replace("(", "").replace(")", "").equals(tupleattnames[j])){
 				rightval = tuplevals[j];
 			}
 		}
