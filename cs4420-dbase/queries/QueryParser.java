@@ -133,11 +133,7 @@ public class QueryParser {
 				}
 			} //End if
 		} //End finding tables loop
-		
-		for (int index = 0; index < tableNames.size(); index++) {
-			System.out.println("TABLE: " + tableNames.get(index));
-		}
-		
+
 		return tableNames;
 	}
 	
