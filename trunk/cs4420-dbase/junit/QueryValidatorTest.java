@@ -1,6 +1,8 @@
 package junit;
 
 
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 
 import org.junit.After;
@@ -259,6 +261,10 @@ public class QueryValidatorTest extends TestCase {
 	
 	@Test
 	public void testValidateRelationsValidRelations() {
+
+		System.out.println();
+		System.out.println("testValidateRelations");
+		System.out.println();
 		
 		//Add some relations
 		RelationHolder holder = RelationHolder.getRelationHolder();
@@ -276,7 +282,38 @@ public class QueryValidatorTest extends TestCase {
 		
 		queryString = "(PROJECT (a \"a\") (CROSSJOIN (\"WALRUS\", \"CHICKEN\")))";
 		query = new Query(queryString);
+		ArrayList < String > tables = query.getRelations(); 
+		for (int index = 0; index < tables.size(); index++) {
+			System.out.println("HAS TABLE:"  + tables.get(index));
+		}
 		assertTrue(QueryValidator.validateTables(query));
+	}
+	
+	@Test
+	public void testValidateQueryExamples() {
+		
+		System.out.println();
+		System.out.println("testValidateQueryExamples");
+		System.out.println();
+		
+		//EXAMPLE: (project (a ÒaÓ, a ÒbÓ, a ÒcÓ)(select (table ÒRÓ))
+		//Add the relation
+		RelationHolder holder = RelationHolder.getRelationHolder();	
+		holder.addRelation(new Relation("R", 200));
+		Relation relation = holder.getRelation(200);
+		relation.addAttribute(new Attribute("a", Type.Int, 200));
+		relation.addAttribute(new Attribute("b", Type.Int, 201));
+		relation.addAttribute(new Attribute("c", Type.DateTime, 202));
+		String queryString = "(project (a \"a\", a \"b\", a \"c\")(select (table \"R\"))";
+		Query query = new Query(queryString);
+		assertTrue(QueryValidator.validateQuery(query));
+		ArrayList < String > tables = query.getRelations(); 
+		
+		//With a bigger one
+		queryString = "(project (a \"a\") (select (table \"R\") (where (gt (a \"C\") (k dateTime \"03:21:2007 16:30:00\")))))";
+		query = new Query(queryString);
+		tables = query.getRelations(); 
+		assertTrue(QueryValidator.validateQuery(query));
 	}
 
 }
