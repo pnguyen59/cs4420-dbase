@@ -131,5 +131,36 @@ public class ProjectTest extends TestCase {
 		assertTrue("Table should have been B, was "
 				+ results.get(1), results.get(1).equalsIgnoreCase("B"));
 	}
+	
+	@Test 
+	public void testGetTreeAttributes() {
+		System.out.println();
+		System.out.println("testGetTreeAttributes");
+		System.out.println();
+		
+		projection = (Project) Operation.makeOperation(oneLevelProject);
+		
+		ArrayList < String > results = projection.getTreeAttributes();
+		
+		assertTrue("Attribute should have been A, was "
+			+ results.get(0), results.get(0).equalsIgnoreCase("A"));
+		
+		projection = (Project) Operation.makeOperation(crazyQuery);
+		results = projection.getTreeAttributes();
+		
+		for (int index = 0; index < results.size(); index++) {
+			System.out.println("RESULT: " + results.get(index));
+		}
+		
+		assertTrue("Attribute should have been R.C, was "
+				+ results.get(0), results.get(0).equalsIgnoreCase("R.C"));
+		assertTrue("Attribute should have been S.C, was "
+				+ results.get(1), results.get(1).equalsIgnoreCase("S.C"));
+		assertTrue("Attribute should have been A, was "
+				+ results.get(2), results.get(2).equalsIgnoreCase("A"));
+		assertTrue("Attribute should have been E, was "
+				+ results.get(3), results.get(3).equalsIgnoreCase("E"));
+		
+	}
 
 }
