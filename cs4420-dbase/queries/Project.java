@@ -81,6 +81,9 @@ public class Project extends Operation {
 	}
 	
 	public boolean execute(){
+		if (!tableOne.execute()){
+			return false;
+		}
 		Relation r = RelationHolder.getRelationHolder().getRelation(this.resultTableID);
 		Relation s = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
 		String attnames = "";

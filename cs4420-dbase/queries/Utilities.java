@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import dbase.Attribute;
 import dbase.Relation;
+import dbase.RelationHolder;
 import dbase.Attribute.Type;
 
 /**
@@ -83,5 +84,17 @@ public class Utilities {
 		}
 		
 		return null;
+	}
+	
+	public static boolean isQualifiedAttr(String attrname){
+		return (attrname.contains("."));
+	}
+	
+	public static String makeAttrQualified(int relationID, String attrname){
+		if (!isQualifiedAttr(attrname)){
+			return RelationHolder.getRelationHolder().getRelation(relationID).getName()+"."+attrname;
+		} else{
+			return attrname;
+		}
 	}
 }
