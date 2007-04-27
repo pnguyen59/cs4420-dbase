@@ -321,8 +321,9 @@ public class Attribute {
 	}
 	
 	public String toString(){
-		String ret = "Attribute with name "+name+" and type "+type;
+		String ret = name+" "+type;
 		if (this.type == Type.Char) ret+=" of length "+length;
+		ret += ",";
 		return ret;
 	}
 
