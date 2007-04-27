@@ -72,11 +72,18 @@ public class RelationHolder {
 	 * @return the smallest unused relation ID
 	 */
 	public int getSmallestUnusedID(){
-		int j=0;
-		while (getRelation(j)!=null){
-			j++;
+		int highest = 0;
+		
+		//Find the lowest value among all of the relations
+		for (int index = 0; index < relations.size(); index++) {
+			
+			Relation currentRelation = relations.get(index);
+			if (currentRelation.getID() > highest) {
+				highest = currentRelation.getID();
+			}
 		}
-		return j;
+		
+		return highest + 1;
 	}
 	
 	/**
