@@ -128,6 +128,8 @@ public class QueryValidator {
 			int relationID = holder.getRelationByName(tables.get(index));
 			Relation relation = holder.getRelation(relationID);
 			if (relation == null) {
+				System.out.println("Relation " + tables.get(index)
+					+ " can't be found.");
 				return false;
 			}
 		}
