@@ -67,7 +67,7 @@ public class SimpleCondition extends Condition {
 	@Override
 	public ArrayList < String > getAttributes() {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList < String > ();
 	}
 
 	/**This method returns the value of leftHand.
