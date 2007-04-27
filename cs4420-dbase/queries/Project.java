@@ -167,4 +167,14 @@ public class Project extends Operation {
 		return subAttributes;
 	}
 	
+	/**The project doesn't really have any conditions associated with it, but
+	 * suff below it might.  You know, just in case it does.
+	 * @return All of the SimpleConditions in the tree below this project.
+	 */
+	public ArrayList < SimpleCondition > getTreeConditions() {
+	
+		return tableOne.getTreeConditions();
+		
+	}
+	
 }
