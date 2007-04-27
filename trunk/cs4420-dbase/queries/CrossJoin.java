@@ -64,6 +64,12 @@ public class CrossJoin extends Operation {
 		return children;
 	}
 	
+	public ArrayList<String> getAttributes(){
+		ArrayList <String> attrs = tableOne.getAttributes();
+		attrs.addAll(tableTwo.getAttributes());
+		return attrs;
+	}
+	
 	public ArrayList < String > getRelations() {
 		
 		ArrayList < String > relations = new ArrayList < String > ();

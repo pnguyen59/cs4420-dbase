@@ -140,4 +140,12 @@ public class Join extends Operation {
 			return -1;
 		}
 	}
+	
+	public ArrayList<String> getAttributes(){
+		ArrayList <String> attrs = tableOne.getAttributes();
+		attrs.addAll(tableTwo.getAttributes());
+		return attrs;
+	}
+	
+	
 }
