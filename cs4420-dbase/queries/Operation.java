@@ -159,6 +159,13 @@ public abstract class Operation implements TreeNode  {
 	}
 
 
+	/**This method will get the attributes required by operations that 
+	  * exists higher up in the tree.
+	  * @return A list of attributes from higher up in the tree.
+	  */
+	 public abstract ArrayList < String > getParentAttributes();
+
+
 	/**This method returns the post order represenation of this node an
 	  * those below it.
 	  * @return The tree below this in post-order.
@@ -223,8 +230,7 @@ public abstract class Operation implements TreeNode  {
 	public Operation getTableTwo() {
 		return tableTwo;
 	}
-
-
+	
 	public abstract ArrayList < String > getTreeAttributes();
 	
 	/**Call to get all of the SimpleConditions at or below this node 
@@ -232,14 +238,14 @@ public abstract class Operation implements TreeNode  {
 	 * @return The SimpleConditions at or below this Operation.
 	 */
 	public abstract ArrayList < SimpleCondition > getTreeConditions();
-	
+
+
 	/**This method returns the value of type.
 	 * @return the type
 	 */
 	public String getType() {
 		return type;
 	}
-
 
 	/**This method will set the value of executionOrder.
 	 * @param newExecutionOrder The new value of executionOrder.
@@ -261,7 +267,7 @@ public abstract class Operation implements TreeNode  {
 	public void setQueryID(final int newQueryID) {
 		this.queryID = newQueryID;
 	}
-
+	
 	/**This method will set the value of resultTableID.
 	 * @param newResultTableID The new value of resultTableID.
 	 */
@@ -282,8 +288,8 @@ public abstract class Operation implements TreeNode  {
 	public void setTableOneAccess(final int newTableOneAccess) {
 		this.tableOneAccess = newTableOneAccess;
 	}
-	
-	/**This method will set the value of tableTwo.
+	 
+	 /**This method will set the value of tableTwo.
 	 * @param newTableTwo The new value of tableTwo.
 	 */
 	public void setTableTwo(final Operation newTableTwo) {
