@@ -121,7 +121,7 @@ public class QueryParser {
 			if (startingChacter == '\"') {
 				for (int end = start + 1; end < statement.length(); end++) {
 					//Get the ending character
-					char endingCharacter = statement.charAt(start);
+					char endingCharacter = statement.charAt(end);
 					if (endingCharacter == '\"') {
 						//If we have found the close then add it to the list
 						//And start over at the next space
@@ -133,6 +133,10 @@ public class QueryParser {
 				}
 			} //End if
 		} //End finding tables loop
+		
+		for (int index = 0; index < tableNames.size(); index++) {
+			System.out.println("TABLE: " + tableNames.get(index));
+		}
 		
 		return tableNames;
 	}
