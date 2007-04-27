@@ -294,8 +294,19 @@ public class Relation {
 	}
 
 	public Attribute getAttributeByName(String name){
+		
+		//See if it is one of those dot thingies
+		//See if it has the . in it
+		if (name.contains(".")) {
+			String [] split = name.split("\\.");
+			if (!split[0].equalsIgnoreCase(this.relationname)) {
+				return null;
+			}
+			return this.getAttributeByName(split[1]);
+		}
+		
 		for (int j=0; j< attributes.size(); j++){
-			if (attributes.get(j).getName().equals(name)){
+			if (attributes.get(j).getName().equalsIgnoreCase(name)){
 				return attributes.get(j);
 			}
 		}
