@@ -171,6 +171,13 @@ public class CrossJoin extends Operation {
 		return children;
 	}
 
+	/**This just returns the required attributes of its parents.
+	 * @return A horses head in Chris's bed.
+	 */
+	public ArrayList < String > getParentAttributes() {
+		return parent.getParentAttributes();
+	}
+	
 	public ArrayList < String > getRelations() {
 		
 		ArrayList < String > relations = new ArrayList < String > ();
@@ -182,7 +189,7 @@ public class CrossJoin extends Operation {
 		
 		return relations;
 	}
-	
+
 	public ArrayList < String > getTreeAttributes() {
 		
 		//Get the list of attributes from tableOne
@@ -206,7 +213,7 @@ public class CrossJoin extends Operation {
 		
 		return tableTwoAttributes;
 	}
-
+	
 	/**This method will return all of the SimpleConditions of the nodes (
 	 * Operations) below this CrossJoin
 	 * @return The SimpleConditions of the nodes below this CrossJoin.
@@ -225,7 +232,7 @@ public class CrossJoin extends Operation {
 		
 		return conditions;
 	}
-	
+
 	/**Says whether or not the CrossJoin is a Leaf.  
 	 * Always false, a CrossJoin is never a Leaf in a query tree.
 	 * @return <code><b>false</b></code> because CrossJoin statements
@@ -234,7 +241,7 @@ public class CrossJoin extends Operation {
 	public boolean isLeaf() {
 		return false;
 	}
-
+	
 	public String toString() {
 		
 		String string = "|"; 
