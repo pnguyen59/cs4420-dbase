@@ -419,6 +419,15 @@ public class Relation {
 	
 	public boolean hasAttributeWithName(final String attributeName) {
 		
+		//See if it has the . in it
+		if (attributeName.contains(".")) {
+			String [] split = attributeName.split(".");
+			if (!split[0].equalsIgnoreCase(this.relationname)) {
+				return false;
+			}
+			return this.hasAttributeWithName(split[1]);
+		}
+		
 		//See if any of the attributes have this name
 		for (int index = 0; index < attributes.size(); index++) {
 			Attribute currentAttribute = attributes.get(index);
