@@ -115,88 +115,47 @@ public class CrossJoin extends Operation {
 		RelationHolder holder = RelationHolder.getRelationHolder();
 		Relation left = holder.getRelation(tableOne.getResultTableID());
 		Relation right = holder.getRelation(tableTwo.getResultTableID());
-		
-		
-		
-		//Get the attributes
-		ArrayList < Attribute > leftAttributes = left.getAttributes();
-		ArrayList < Attribute > rightAttributes = right.getAttributes();
-		
-		//Create the resulting relation
 		Relation result = new Relation(QueryParser.RESULT + resultTableID,
 			resultTableID);
 		
-		//For the leftHand attributes
-		for (int leftIndex = 0;
-			leftIndex < leftAttributes.size(); leftIndex++) {
+		//Get the attributes from both sides
+		ArrayList < Attribute > rightAttributes = right.getAttributes();
+		
+		//Get the attributes
+		ArrayList < Attribute > leftAttributes = left.getAttributes();
+		
+		//Merge the two lists
+		ArrayList < Attribute > resultAttributes = 
+			(ArrayList) rightAttributes.clone();
+		resultAttributes.addAll(leftAttributes);
+		
+		//Qualify all of the Attributes
+		ArrayList < Attribute > qualifiedAttributes 
+			= new ArrayList < Attribute > ();
+		for (int index = 0; index < resultAttributes.size(); index++) {
 			
-			//Get the attribute to work on
-			Attribute leftAttribute =  leftAttributes.get(leftIndex);
-			String leftName = leftAttribute.getName();
-			
-			boolean added = false;
-			
-			//See if it has the same name as any on the right
-			for (int rightIndex = 0; 
-				rightIndex < rightAttributes.size(); rightIndex++) {
-				
-				Attribute rightAttribute = rightAttributes.get(rightIndex);
-				String rightName = rightAttribute.getName();
-				
-				if (leftName.equalsIgnoreCase(rightName)) {
-					Relation source = holder.getRelation(leftAttribute.getParent());
-					leftName = source.getName() + "." + leftName;
-					Attribute newAttribute = new Attribute(
-							leftName, leftAttribute.getType(), 0);
-					result.addAttribute(newAttribute);
-					newAttribute.setParent(leftAttribute.getParent());
-					added = true;
-					break;
-				}
+			//Get the current attribute and qualify it if it isn't already
+			Attribute currentAttribute = resultAttributes.get(index);
+			if (currentAttribute.getName().contains(".")) {
+				qualifiedAttributes.add(currentAttribute);
+				continue;
 			}
-			
-			if (!added) {
-				result.addAttribute(leftAttribute);
-			}
+			//System.out.println("CURRENT PARENT ID:"  + currentAttribute.getParent());
+			Relation parent = holder.getRelation(currentAttribute.getParent());
+			//System.out.println("CURRENT CROSSJOIN ATT: " + currentAttribute);
+			String parentName = parent.getName();
+			String qualifiedName = parentName + "." 
+				+ currentAttribute.getName();
+ 			Attribute newAttribute = new Attribute(qualifiedName,
+ 				currentAttribute.getType(), 0);
+ 			newAttribute.setParent(parent.getID());
+ 			
+ 			//Add it to the list to return
+			qualifiedAttributes.add(newAttribute);
 		}
 		
-		//For the rightHand attributes
-		for (int rightIndex = 0;
-			rightIndex < rightAttributes.size(); rightIndex++) {
-			
-			//Get the attribute to work on
-			Attribute rightAttribute =  rightAttributes.get(rightIndex);
-			String rightName = rightAttribute.getName();
-			
-			boolean added = false;
-			
-			//See if it has the same name as any on the right
-			for (int leftIndex = 0; 
-				leftIndex < leftAttributes.size(); leftIndex++) {
-				
-				Attribute leftAttribute = leftAttributes.get(leftIndex);
-				String leftName = leftAttribute.getName();
-				
-				if (rightName.equalsIgnoreCase(leftName)) {
-					//Find the relation that rightName belongs to.
-					Relation source = holder.getRelation(rightAttribute.getParent());
-					rightName = source.getName() + "." + rightName;
-					//Then create and add it to the new relation
-					Attribute newAttribute = new Attribute(
-						rightName, rightAttribute.getType(), 0);
-					newAttribute.setParent(rightAttribute.getParent());
-					result.addAttribute(newAttribute);
-					added = true;
-					break;
-				}
-			}
-			
-			if (!added) {
-				result.addAttribute(rightAttribute);
-			}
-			
-		
-		}
+		//Set the resutl tables attributes
+		result.setAttributes(qualifiedAttributes);
 		
 		holder.addRelation(result);
 	}
