@@ -144,6 +144,8 @@ public class SimpleCondition extends Condition {
 			attributes.add(rightHandAttribute);
 		}
 		
+		System.out.println("ATTRIBUTES:" + attributes);
+		
 		return attributes;
 	}
 
