@@ -36,9 +36,9 @@ public class TableOperation extends Operation {
 		}
 		
 		//Set the table name from open + 1 to the close
-		System.out.println("TABLE: "  + newTableName);
+		//System.out.println("TABLE: "  + newTableName);
 		this.setTableName(newTableName.substring(open + 1, close).replace("\"","").trim());
-		System.out.println(tableName);
+		//System.out.println(tableName);
 		if (tableName.contains(" ")){
 			tableName = tableName.split(" ")[1];
 		}
@@ -111,7 +111,7 @@ public class TableOperation extends Operation {
 		return false;
 	}
 
-	public ArrayList<String> getAttributes(){
+	public ArrayList < String > getAttributes(){
 		RelationHolder holder = RelationHolder.getRelationHolder();
 		int relationID = holder.getRelationByName(tableName);
 		
@@ -122,11 +122,14 @@ public class TableOperation extends Operation {
 		//if relation doesn't exist
 		if (relation == null) return null;
 		
-		ArrayList <Attribute> attr = relation.getAttributes();
-		ArrayList <String> ret = new ArrayList <String>();
+		ArrayList < Attribute > attr = relation.getAttributes();
+		ArrayList < String > ret = new ArrayList  < String > ();
 		for (int j=0; j<attr.size(); j++){
 			ret.add(relation.getName()+"."+attr.get(j).getName());
+			//System.out.println("TALBE ATTRIBUTE: " 
+			//	+ relation.getName()+"."+attr.get(j).getName());
 		}
+		//System.out.println("ATTRIBUTES: " + ret);
 		return ret;
 	}
 
