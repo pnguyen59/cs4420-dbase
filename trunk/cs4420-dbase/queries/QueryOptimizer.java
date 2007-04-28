@@ -4,7 +4,11 @@
 package queries;
 
 import java.util.ArrayList;
-import dbase.*;
+
+import com.sun.corba.se.impl.orbutil.graph.Node;
+
+import dbase.Relation;
+import dbase.RelationHolder;
 
 /**
  * @author gtg471h
@@ -202,5 +206,69 @@ public class QueryOptimizer {
 	public static void OptimizeProjects(Operation root, ArrayList<String> attrs) {
 
 	}
-
+	
+	/**This method will push projections down a tree.
+	 * @param query The query to push projections on.
+	 */
+	public static void pushProjections(final Query query) {
+		
+		//Get the list of nodes from the query
+		ArrayList < Operation > nodes = 
+			query.getTreeRoot().getPostOrder();
+		
+		//Go through each one and see if it needs a projet above it
+		for (int index = 0; index < nodes.size(); index++) {
+			//Get the current node and the parent
+			Operation node = nodes.get(index);
+			Operation parent = node.getParent();
+			
+			//If the parent is a SELECT or PROJECT, then don't add a project
+			if (parent == null) {
+				continue;
+			} else if (parent.getType().equalsIgnoreCase(QueryParser.SELECT)) {
+				continue;
+			} else if (parent.getType().equalsIgnoreCase(QueryParser.PROJECT)) {
+				continue;
+			}
+			
+			//OTHERWISE, better add a god damn project in there,
+			//or I swear I will cut you.
+			ArrayList < String > nodeAttributes = node.getAttributes();
+			ArrayList < String > parentAttributes = parent.getParentAttributes();
+			//See which of parent list is in the node and make the project
+			ArrayList < String > projection = new ArrayList < String > ();
+			
+			for (int nodeIndex = 0; nodeIndex < nodeAttributes.size();
+				nodeIndex++) {
+				String nodeAttribute = nodeAttributes.get(nodeIndex);
+				for (int parentIndex = 0; parentIndex < parentAttributes.size();
+					parentIndex++) {
+					String parentAttribute = parentAttributes.get(parentIndex);
+					if (nodeAttribute.equalsIgnoreCase(parentAttribute)) {
+						projection.add(nodeAttribute);
+						//Then see if it is just wrong cause it's qualfied
+					} else if (nodeAttribute.contains(".")) {
+						String [] split = nodeAttribute.split("\\.");
+						if (parentAttribute.equalsIgnoreCase(split[1])) {
+							projection.add(nodeAttribute);
+						}  
+					}
+				}
+			}
+			//Instanstiate the new projection
+			Project newProject = new Project();
+			newProject.setAttributes(projection);
+			
+			//Link the node and the new Project
+			newProject.setTableOne(node);
+			node.setParent(newProject);
+			
+			//Like the previous parent to the new project
+			if (parent.getTableOne() == node) {
+				parent.setTableOne(newProject);
+			} else if (parent.getTableTwo() == node) {
+				parent.setTableTwo(newProject);
+			}
+		}		
+	}
 }
