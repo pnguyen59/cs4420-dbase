@@ -35,8 +35,7 @@ public class SimpleCondition extends Condition {
 	
 	@Override
 	public boolean compare(final String[] tupleattnames, final String[] tuplevals, final String[] tupletypes) {
-		return true;
-		/*String leftval = leftHand.replace("(", "").replace(")", ""); //default: treat them as constants
+		String leftval = leftHand.replace("(", "").replace(")", ""); //default: treat them as constants
 		String rightval = rightHand.replace("(", "").replace(")", "");
 		
 		String attname = Utilities.getProperAttName(leftval);
@@ -126,7 +125,7 @@ public class SimpleCondition extends Condition {
 				
 			} 
 		
-		return false;*/
+		return false;
 	}
 
 	@Override

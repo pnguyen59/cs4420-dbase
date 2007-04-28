@@ -61,10 +61,8 @@ public class CrossJoin extends Operation {
 		} else {
 			Relation r1 = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
 			Relation r2 = RelationHolder.getRelationHolder().getRelation(tableTwo.getResultTableID());
-			System.out.println("SZZ: "+r1.getAttributes().size());
 			ArrayList<Attribute> atts = (ArrayList <Attribute>)r1.getAttributes().clone();
 			atts.addAll(r2.getAttributes());
-			System.out.println("CROSSJOIN ATT SIZE: "+atts.size());
 			ArrayList<String> types =  new ArrayList<String>();
 			ArrayList<String> names =  new ArrayList<String>();
 			for (int j=0; j<atts.size(); j++){
@@ -78,12 +76,13 @@ public class CrossJoin extends Operation {
 			names2= names.toArray((new String[0]));
 			
 			Iterator i1 = new Iterator(r1);
-			Iterator i2 = new Iterator(r2);
+			
 			
 			
 			while (i1.hasNext()){
 				String[] r1vals = i1.getNext();
 				System.out.println("R1: "+Utilities.printArray(r1vals));
+				Iterator i2 = new Iterator(r2);
 				while (i2.hasNext()){
 					
 					String[] r2vals = i2.getNext();
