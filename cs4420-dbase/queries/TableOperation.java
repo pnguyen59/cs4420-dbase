@@ -130,7 +130,7 @@ public class TableOperation extends Operation {
 			//	+ relation.getName()+"."+attr.get(j).getName());
 		}
 		//System.out.println("ATTRIBUTES: " + ret);
-		return ret;
+		return (ArrayList) ret.clone();
 	}
 
 	/**Tables will be the leaves of the query tree and never have children.
@@ -144,7 +144,7 @@ public class TableOperation extends Operation {
 	 * @return A horses head in Chris's bed.
 	 */
 	public ArrayList < String > getParentAttributes() {
-		return parent.getParentAttributes();
+		return (ArrayList) parent.getParentAttributes().clone();
 	}
 	
 	public ArrayList < String > getRelations() {
