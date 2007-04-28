@@ -235,7 +235,7 @@ public class Select extends Operation {
 		string += this.executionOrder + "\t|";
 		string += this.type + "\t\t|";
 		string += condition.toString() + "\t|";
-		string += tableOneAccess +"\t|";
+		string += tableOne.getResultTableID() +"\t|";
 		string += resultTableID + "\t|";
 		string += "\n";
 		
