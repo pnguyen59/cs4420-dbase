@@ -282,8 +282,8 @@ public class Attribute {
 		} else if (newType.toLowerCase().equalsIgnoreCase("boolean") 
 				|| newType.toLowerCase().equalsIgnoreCase("bool")) {
 			returnType = Attribute.Type.Boolean;
-		} else if (newType.toLowerCase().equalsIgnoreCase("char") 
-				|| newType.toLowerCase().equalsIgnoreCase("character")) {
+		} else if (newType.toLowerCase().toLowerCase().startsWith("char") 
+				|| newType.toLowerCase().toLowerCase().startsWith("character")) {
 			returnType = Attribute.Type.Char;
 		} else if (newType.toLowerCase().equalsIgnoreCase("float")) {
 			returnType = Attribute.Type.Float;

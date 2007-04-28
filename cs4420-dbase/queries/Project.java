@@ -52,24 +52,27 @@ public class Project extends Operation {
 		}
 		Relation r = RelationHolder.getRelationHolder().getRelation(this.resultTableID);
 		Relation s = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
-		String attnames = "";
+		String [] attnames = new String[attributes.size()];
 		if (r == null) return false;
-		for (String st: attributes){
-			Attribute att = s.getAttributeByName(st.trim());
-			r.addAttribute(att.getName(), att.getType(), Database.getCatalog().getSmallestUnusedAttributeID());
-			attnames += st + ", ";
+		
+		
+		for (int j=0; j<attnames.length; j++){
+			Attribute att = s.getAttributeByName(attributes.get(j).trim());
+			//r.addAttribute(att.getName(), att.getType(), Database.getCatalog().getSmallestUnusedAttributeID());
+			attnames[j] = att.getName();
 		}
-		attnames = attnames.substring(0, attnames.length()-2);
+		System.out.println(attnames);
 		Iterator it = new Iterator (s);
-		String newattvals = "";
+		String [] newattvals = new String[attnames.length];
+		System.out.println(s);
 		while (it.hasNext()){
 			String [] oldattvals = it.getNext();
 			for (int j=0; j<attributes.size(); j++){
 				int idx = s.getIndexByName(attributes.get(j));
-				newattvals += oldattvals[idx] + ", ";
+				newattvals[j] = oldattvals[idx];
 			}
-			newattvals = newattvals.substring(0, newattvals.length()-2);
-			if (!Database.getCatalog().insert(this.resultTableID, "("+newattvals+")") )return false;
+			System.out.println(newattvals);
+			if (!Database.getCatalog().insert(this.resultTableID, attnames, newattvals) )return false;
 		}
 		return true;
 		

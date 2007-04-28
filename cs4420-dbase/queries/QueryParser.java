@@ -81,7 +81,7 @@ public class QueryParser {
 		for (int index = 0; index < split.length; index++) {
 			
 			String currentAttribute = split[index];
-			currentAttribute = currentAttribute.replace(" ", "");
+			currentAttribute = currentAttribute.trim();
 			String attributeName = "";
 			
 			//See if it is a Q or an A
@@ -93,6 +93,7 @@ public class QueryParser {
 			} else {
 				currentAttribute.replace(" ", "");
 				String [] qualifiedAttribute = currentAttribute.split("\"");
+				System.out.println(currentAttribute);
 				attributeName += qualifiedAttribute[1];
 			}
 		

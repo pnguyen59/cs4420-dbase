@@ -172,7 +172,7 @@ public class Relation {
 	
 	public boolean addRecord (ByteBuffer block, String record) {
     	//Parse the record to be inserted into its single attributes
-		System.out.println(record.indexOf("(")+1+","+record.indexOf(")"));
+		//System.out.println(record.indexOf("(")+1+","+record.indexOf(")"));
 		
     	String [] attributeValues =
     		record.substring(record.indexOf("(")+1,record.indexOf(")")).split(",");
