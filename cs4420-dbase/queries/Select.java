@@ -237,7 +237,7 @@ public class Select extends Operation {
 		string += this.queryID + "\t|";
 		string += this.executionOrder + "\t|";
 		string += this.type + "\t\t|";
-		string += condition.toString() + "\t|";
+		//string += condition.toString() + "\t|";
 		string += tableOne.getResultTableID() +"\t|";
 		string += resultTableID + "\t|";
 		string += "\n";
@@ -253,6 +253,7 @@ public class Select extends Operation {
 		
 		//Get the Schema of the source table and copy it over
 		RelationHolder holder = RelationHolder.getRelationHolder();
+		System.out.println(tableOne.getType());
 		Relation source = holder.getRelation(tableOne.resultTableID);
 		
 		//Make the resulting table

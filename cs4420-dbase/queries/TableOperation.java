@@ -36,8 +36,12 @@ public class TableOperation extends Operation {
 		}
 		
 		//Set the table name from open + 1 to the close
-		this.setTableName(newTableName.substring(open + 1, close).replace("\"","").split(" ")[1]);
-		System.out.println("TABLE: "  + tableName);
+		System.out.println("TABLE: "  + newTableName);
+		this.setTableName(newTableName.substring(open + 1, close).replace("\"","").trim());
+		System.out.println(tableName);
+		if (tableName.contains(" ")){
+			tableName = tableName.split(" ")[1];
+		}
 		this.resultTableID = RelationHolder.getRelationHolder().getRelationByName(tableName);
 	}
 	

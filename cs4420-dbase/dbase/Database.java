@@ -90,12 +90,12 @@ public class Database {
     
     public String parseCommandNew(final String command) {
     	//Split the command into an array of strings
-    	
     	String [] splitCommand = command.split(" ");
     	if (splitCommand[0].replace("(","").compareToIgnoreCase("PROJECT") == 0) {
     		Query q = new Query(command);
     		q.assignTemporaryTables();
     		q.generateTemporaryTables();
+    		q.printQueryTree();
     		q.execute();
     		Iterator it = new Iterator(RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()));
     		System.out.println(RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()).getAttributes().size());
