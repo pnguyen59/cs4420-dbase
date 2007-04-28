@@ -275,7 +275,7 @@ public class Select extends Operation {
 		ArrayList < String > attributes = condition.getAttributes();
 		
 		if (parent != null) {
-			parentAttributes = parent.getParentAttributes();
+			parentAttributes = (ArrayList) parent.getParentAttributes().clone();
 		} else { //If no parents then return those of this projection only
 			return attributes;
 		}
