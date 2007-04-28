@@ -95,7 +95,9 @@ public class Project extends Operation {
 			resultTableID);
 		RelationHolder.getRelationHolder().addRelation(result);
 		
-		//System.out.println("PROJECT SOURCE:" + source);
+		//System.out.println("PROJECT TABLE SOURCE: " + source);
+		//System.out.println("PROJECT ATTRIBUTES: " + attributes);
+		//System.out.println("SOURCE ATTRIBUTES: " + source.getAttributes());
 		
 		//For each attribute, get the real thing from the source
 		for (int index = 0; index < attributes.size(); index++) {
@@ -106,7 +108,6 @@ public class Project extends Operation {
 			Attribute currentAttribute 
 				= source.getAttributeByName(currentName);
 			
-			System.out.println(currentName);
 			//Give it the full name when we make it though
 			Attribute newAttribute = new Attribute(
 				currentName, currentAttribute.getType(), 0);
@@ -123,9 +124,9 @@ public class Project extends Operation {
 		//Get the attributes of all of the parents if there is a parent
 		ArrayList < String > parentAttributes;
 		if (parent != null) {
-			parentAttributes = parent.getParentAttributes();
+			parentAttributes = (ArrayList) parent.getParentAttributes().clone();
 		} else { //If no parents then return those of this projection only
-			return this.attributes;
+			return (ArrayList) this.attributes.clone();
 		}
 		
 		//Merge the parent and this one if it exists
