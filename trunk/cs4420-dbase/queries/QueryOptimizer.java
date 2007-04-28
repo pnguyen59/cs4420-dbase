@@ -219,6 +219,7 @@ public class QueryOptimizer {
 		//Go through each one and see if it needs a projet above it
 		for (int index = 0; index < nodes.size(); index++) {
 			//Get the current node and the parent
+			//nodes = query.getTreeRoot().getPostOrder();
 			Operation node = nodes.get(index);
 			Operation parent = node.getParent();
 			
@@ -228,6 +229,8 @@ public class QueryOptimizer {
 			} else if (parent.getType().equalsIgnoreCase(QueryParser.SELECT)) {
 				continue;
 			} else if (parent.getType().equalsIgnoreCase(QueryParser.PROJECT)) {
+				continue;
+			} else if (node.getType().equalsIgnoreCase(QueryParser.PROJECT)) {
 				continue;
 			}
 			
@@ -255,11 +258,13 @@ public class QueryOptimizer {
 					}
 				}
 			}
+
 			//Instanstiate the new projection
 			Project newProject = new Project();
 			newProject.setAttributes(projection);
 			
 			//Link the node and the new Project
+			newProject.setParent(parent);
 			newProject.setTableOne(node);
 			node.setParent(newProject);
 			
@@ -269,6 +274,9 @@ public class QueryOptimizer {
 			} else if (parent.getTableTwo() == node) {
 				parent.setTableTwo(newProject);
 			}
+			
+			//Index = 0
+			//index = 0;
 		}		
 	}
 }

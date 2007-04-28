@@ -91,7 +91,7 @@ public class Query {
 			
 			Relation relation = RelationHolder.getRelationHolder().
 				getRelation(currentOperation.getResultTableID());
-			System.out.println(relation);
+			//System.out.println(relation);
 		}
 		
 	}
