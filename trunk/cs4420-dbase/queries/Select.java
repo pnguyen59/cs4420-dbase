@@ -274,7 +274,7 @@ public class Select extends Operation {
 		if (parent != null) {
 			parentAttributes = (ArrayList) parent.getParentAttributes().clone();
 		} else { //If no parents then return those of this projection only
-			return attributes;
+			return (ArrayList) attributes.clone();
 		}
 		
 		//Merge the parent and this one if it exists
