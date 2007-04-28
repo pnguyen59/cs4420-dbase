@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import queries.Query;
+import queries.QueryOptimizer;
 import queries.QueryValidator;
 import dbase.Attribute;
 import dbase.Relation;
@@ -352,6 +353,14 @@ public class QueryValidatorTest extends TestCase {
 		attribute.setParent(303);
 		relation.addAttribute(attribute);
 
+		attribute = new Attribute("MOO", Type.Int, 304);
+		attribute.setParent(303);
+		relation.addAttribute(attribute);
+		
+		attribute = new Attribute("COW", Type.Int, 305);
+		attribute.setParent(303);
+		relation.addAttribute(attribute);
+
 		String queryString = "(PROJECT (qa \"A\" \"WOW\", qa \"B\" \"WOW\") (CROSSJOIN \"A\", \"B\", \"C\", \"D\"))";
 		Query query = new Query(queryString);
 		assertTrue(QueryValidator.validateQuery(query));
@@ -369,10 +378,11 @@ public class QueryValidatorTest extends TestCase {
 		queryString = "(PROJECT (qa \"A\" \"WOW\", qa \"B\" \"WOW\", a \"SOW\", a \"POW\") (CROSSJOIN \"A\", \"B\", \"C\", \"D\"))";
 		query = new Query(queryString);
 		assertTrue(QueryValidator.validateQuery(query));
+		QueryOptimizer.pushProjections(query);
 		query.printQueryTree();
 		query.assignTemporaryTables();
+		query.printQueryTree();
 		query.generateTemporaryTables();
-		
 	}
 
 }
