@@ -43,10 +43,11 @@ public class SimpleCondition extends Condition {
 		
 		
 		for (int j=0; j<tupleattnames.length; j++){
-			if (attname.equals(tupleattnames[j])){
+			if (attname.equalsIgnoreCase(tupleattnames[j])){
 				leftval = tuplevals[j];
 				lefttype = tupletypes[j];
 			}
+			System.out.println(attname+", "+tupleattnames[j]);
 		}
 		
 		String type = lefttype;
@@ -60,13 +61,14 @@ public class SimpleCondition extends Condition {
 		}
 		else {
 			for (int j=0; j<tupleattnames.length; j++){
-				if (Utilities.getProperAttName(rightval).equals(tupleattnames[j])){
+				if (Utilities.getProperAttName(rightval).equalsIgnoreCase(tupleattnames[j])){
 					rightvalprop = tuplevals[j];
 				}
 			}
 		}
 		 
-		
+		System.out.println("left type: "+leftval);
+		System.out.println("right type: "+rightval);
 			if (type.equalsIgnoreCase("string")){
 				if (this.comparison.equals(QueryParser.EQUAL)){
 					return (rightvalprop.replace("\"", "").equals(leftval));
