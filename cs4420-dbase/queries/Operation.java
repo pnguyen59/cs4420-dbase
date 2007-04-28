@@ -7,7 +7,7 @@ import javax.swing.tree.TreeNode;
 
 import dbase.RelationHolder;
 
-public abstract class Operation implements TreeNode  {
+public abstract class Operation {
 	
 	/**This method will make a query table from the Operation (node) given,
 	 * down to the bottom.
@@ -130,6 +130,8 @@ public abstract class Operation implements TreeNode  {
 	public TreeNode getChildAt(final int index) {
 		return null;
 	}
+	
+	public abstract int getChildCount();
 
 
 	/**This method returns the value of executionOrder.
@@ -154,7 +156,7 @@ public abstract class Operation implements TreeNode  {
 	 * return it as a <code>TreeNode</code> because of the interface.
 	 * @return The Operation that owns this one.
 	 */
-	public TreeNode getParent() {
+	public Operation getParent() {
 		return this.parent;
 	}
 

@@ -25,11 +25,17 @@ public class Project extends Operation {
 		//Find the list of attributes to project
 		attributes = QueryParser.parseQueryAttributes(
 			parts.get(QueryParser.PROJECT_ATTRIBUTES_INDEX));
-		
+				
 		//Find the table its coming from
 		tableOne = Operation.makeOperation(
 			parts.get(QueryParser.PROJECT_FROM_INDEX));
 		tableOne.setParent(this);
+	}
+	
+	/**This will make an empty project, with onlt the type initialized.
+	 */
+	public Project () {
+		setType(QueryParser.PROJECT);
 	}
 	
 	/**This method will return the cost of performing this Project which is
@@ -88,11 +94,13 @@ public class Project extends Operation {
 		
 		//For each attribute, get the real thing from the source
 		for (int index = 0; index < attributes.size(); index++) {
-			String currentName = attributes.get(index);
 			
+			String currentName = attributes.get(index);
+			//System.out.println("PROJECT CURRENT ATTRIBUTE: " + currentName);
 			//Use tempCurrentName cause it may be qualified
 			Attribute currentAttribute 
 				= source.getAttributeByName(currentName);
+			
 			
 			//Give it the full name when we make it though
 			Attribute newAttribute = new Attribute(
