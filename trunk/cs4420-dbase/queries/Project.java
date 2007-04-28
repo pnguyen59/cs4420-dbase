@@ -48,6 +48,7 @@ public class Project extends Operation {
 	
 	public boolean execute(){
 		if (!tableOne.execute()){
+			System.out.println("in here?");
 			return false;
 		}
 		Relation r = RelationHolder.getRelationHolder().getRelation(this.resultTableID);
@@ -65,6 +66,7 @@ public class Project extends Operation {
 		Iterator it = new Iterator (s);
 		String [] newattvals = new String[attnames.length];
 		while (it.hasNext()){
+			System.out.println("onerow");
 			String [] oldattvals = it.getNext();
 			for (int j=0; j<attributes.size(); j++){
 				for (Attribute a: s.getAttributes()){
@@ -73,7 +75,6 @@ public class Project extends Operation {
 				int idx = s.getIndexByName(attributes.get(j));
 				newattvals[j] = oldattvals[idx];
 			}
-			System.out.println(newattvals);
 			if (!Database.getCatalog().insert(this.resultTableID, attnames, newattvals) )return false;
 		}
 		return true;

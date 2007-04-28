@@ -295,7 +295,6 @@ public class Relation {
 	    	for (int j = 0; j < attributeNames.length; j++) {
 	    			
 	    		//Get the current attribute from the list of attributes.
-	    		System.out.println(attributeNames[j].trim());
 	    		
 	    		Attribute currentAttribute = 
 	    			getAttributeByName(attributeNames[j].trim());
@@ -749,11 +748,6 @@ public class Relation {
 			parsed[attributeID] = parsedAttribute;
 	    	
 		} 
-		System.out.print("ATTRS for"+this.getName());
-		for (int j=0; j<attributes.size(); j++){
-			System.out.print(attributes.get(j).getName());
-		}
-		System.out.println();
 		return parsed;
 	}
 	

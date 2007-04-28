@@ -98,7 +98,7 @@ public class Database {
     		q.printQueryTree();
     		q.execute();
     		Iterator it = new Iterator(RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()));
-    		System.out.println(RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()).getAttributes().size());
+    		System.out.println("RESULT TABLE: ");
     		while (it.hasNext()){
     			String[] s = it.getNext();
     			System.out.println(queries.Utilities.printArray(s));
