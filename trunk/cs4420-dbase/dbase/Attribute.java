@@ -68,7 +68,7 @@ public class Attribute {
 	private int size;
 	
 	public Attribute() {
-		
+		values = new ArrayList();
 	}
 
 	/**
@@ -82,6 +82,7 @@ public class Attribute {
 		this.name = name;
 		this.type = type;
 		this.ID = ID;
+		values = new ArrayList();
 	}
 	
 	
@@ -97,6 +98,7 @@ public class Attribute {
 		this.type = type;
 		this.ID = ID;
 		this.length = length;
+		values = new ArrayList();
 	}
 
 	/**Creates a new instance of the type Attribute.  This particular 
@@ -123,6 +125,7 @@ public class Attribute {
 		this.nullable = (newNullable == 't');
 		this.distinct = newDistinct;
 		this.length = newLength;
+		values = new ArrayList();
 	}
 	
 	/**This method will take in a character, and will return the 
