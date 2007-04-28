@@ -104,7 +104,7 @@ public class Project extends Operation {
 			Attribute currentAttribute 
 				= source.getAttributeByName(currentName);
 			
-			
+			System.out.println(currentName);
 			//Give it the full name when we make it though
 			Attribute newAttribute = new Attribute(
 				currentName, currentAttribute.getType(), 0);

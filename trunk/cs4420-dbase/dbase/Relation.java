@@ -484,11 +484,15 @@ public class Relation {
 	}
 
 	public int getIndexByName(final String name) {
+		String newname = name;
+		if (name.contains(".")){
+			newname = name.split("\\.")[1];
+		}
 		for (int index = 0; index < attributes.size(); index++) {
 			Attribute current = (Attribute) attributes.get(index);
 			//System.out.println("Comparing " + name +
 				//	" and " + current.getName());
-			if (name.equalsIgnoreCase(current.getName())) {
+			if (newname.equalsIgnoreCase(current.getName())) {
 				return index;
 			}
 		}
