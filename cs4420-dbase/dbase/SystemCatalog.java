@@ -611,6 +611,65 @@ public class SystemCatalog {
     	return true;
     }
     
+    /**This method will insert the specified record into the specified
+     * relation.
+     * @param relation The relation in which to insert the record.
+     * @param record The record to be inserted.
+     * @return Whether or not the insertion succeeded.
+     */
+    public boolean insertNew(final int relationID, final String record) {
+
+    	//TODO First see if a record exists with this key.  If so then return
+    	//false or print an error or some shit.  Either way don't inser it.
+    	
+    	//Ask relation which block this record should be written to, i.e. it's
+    	//last block
+    	Relation relation = relationHolder.getRelation(relationID);
+    	long blockTotal = relation.getBlocktotal();
+    	//The last block is blockTotal - 1 cause the first block is 0 
+    	long lastBlock = blockTotal - 1;
+    	
+    	//See if there is enough space in the last block for another record.
+    	if (relation.isLastBlockFull()) {
+    		//If there isn't, generate a new block and write it to the file
+    		//of the relation.
+    		long blockAddress = BufferManager.makePhysicalAddress(relationID
+    				, lastBlock + 1);
+    		buffer.writePhysical(blockAddress, BufferManager.getEmptyBlock());
+    		//Then increment the block count of the relation
+    		relation.setBlocktotal(relation.getBlocktotal() + 1);
+    	}
+
+    	//Then regardless, the last block of the relation has enough space in
+    	//it, so have the last block loaded into the buffer.
+    	ByteBuffer block = buffer.read(relationID, 
+    			relation.getBlocktotal() - 1);
+    	//System.out.println("Inserting into block " 
+    	//	+ buffer.makePhysicalAddress(relationID, 
+    	//			relation.getBlockTotal() -1));
+    	
+    	//Then ask relation to insert the record in this block for us
+    	if (record.toLowerCase().indexOf("values") < record.indexOf("(")) {
+    		// there are no attributes given
+    		relation.addRecordNew(block, record);
+    	} else{
+    		int oparan = record.indexOf("(");
+    		int cparan = record.indexOf(")")+1;
+    		String attlist = record.substring(oparan, cparan);
+    		oparan = record.indexOf("(", cparan);
+    		cparan = record.indexOf(")", oparan)+1;
+    		String vallist = record.substring(oparan, cparan);
+    		relation.addRecord(block, vallist, attlist);
+    	}
+    	
+    	//Update the record for this relation
+    	ByteBuffer entry = relation.writeCrapToBuffer();
+    	writeoutRel(entry, relation.getID());
+    	
+    	
+    	return true;
+    }
+    
     public boolean insert(final int relationID, final String[] names, final String[]vals) {
 
     	//TODO First see if a record exists with this key.  If so then return
@@ -663,8 +722,24 @@ public class SystemCatalog {
      */
     public boolean insert(String insertion) {
     	String relationname = insertion.split(" ")[2];
+    	System.out.println(relationname);
         int ID = relationHolder.getRelationByName(relationname);
         insert(ID, insertion);
+    	return true;
+    }
+    
+    /**
+     *Inserts a record into a relation and possibl an index.
+     *
+     *@param insertion the record to be inserted still in string format
+     *
+     *@return whether it was successfully added.
+     */
+    public boolean insertNew(String insertion) {
+    	String relationname = insertion.split(" ")[2];
+    	System.out.println(relationname);
+        int ID = relationHolder.getRelationByName(relationname);
+        insertNew(ID, insertion);
     	return true;
     }
     

@@ -11,6 +11,8 @@ package dbase;
 
 import java.util.Scanner;
 
+import queries.Query;
+
 /**
  *
  * @author andrewco
@@ -77,6 +79,48 @@ public class Database {
     		
     	} else if (splitCommand[0].compareToIgnoreCase("INSERT") == 0) {
     		if (catalog.insert(command)){
+    			return "Record successfully inserted";
+    		} else {
+    			return "Error inserting record";
+    		}
+    	}
+    	
+        return "Command not Recognized";
+    }
+    
+    public String parseCommandNew(final String command) {
+    	//Split the command into an array of strings
+    	
+    	String [] splitCommand = command.split(" ");
+    	if (splitCommand[0].replace("(","").compareToIgnoreCase("PROJECT") == 0) {
+    		Query q = new Query(command);
+    		q.execute();
+    		return "Result Table Name :"+RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()).getName();
+    	} if (splitCommand[0].replace("(","").compareToIgnoreCase("CREATE") == 0) {
+    		if (splitCommand[1].compareToIgnoreCase("TABLE") == 0){
+    			if( catalog.createTable(command.replace("\"", "").substring(1, command.replace("\"", "").length()-1), "key")){
+    				return "Table Successfully Created";
+    			} else {
+    				return "Error Creating Table";
+    			}
+    		} else if (splitCommand[1].compareToIgnoreCase("INDEX") == 0){
+    			if (catalog.createIndex(command)){
+    				return "Index Successfully Created";
+    			} else {
+    				return "Error Creating Index";
+    			}
+    			
+    		} else {
+    			return "Command not Recognized";
+    		}
+    		
+    	} else if (splitCommand[0].replace("(","").compareToIgnoreCase("INSERT") == 0) {
+    		String newcommand = command.split(" ",2)[0]+" into "+command.split(" ",2)[1];
+    		
+    		newcommand = newcommand.substring(1,newcommand.length()-1);
+    		newcommand = newcommand.replace("\"", "");
+    		System.out.println(newcommand);
+    		if (catalog.insertNew(newcommand)){
     			return "Record successfully inserted";
     		} else {
     			return "Error inserting record";
