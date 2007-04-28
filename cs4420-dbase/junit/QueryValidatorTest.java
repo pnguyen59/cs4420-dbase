@@ -306,7 +306,7 @@ public class QueryValidatorTest extends TestCase {
 		relation.addAttribute(new Attribute("a", Type.Int, 200));
 		relation.addAttribute(new Attribute("b", Type.Int, 201));
 		relation.addAttribute(new Attribute("c", Type.DateTime, 202));
-		String queryString = "(project (a \"a\", a \"b\", a \"c\")(select (table \"R\"))";
+		String queryString = " (project (a \"a\", a \"b\", a \"c\")(select (table \"R\"))";
 		Query query = new Query(queryString);
 		assertTrue(QueryValidator.validateQuery(query));
 		ArrayList < String > tables = query.getRelations(); 
