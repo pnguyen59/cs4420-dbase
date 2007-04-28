@@ -437,8 +437,13 @@ public class Relation {
 		}
 		
 		for (int j=0; j< attributes.size(); j++){
-			System.out.println("Attr "+attributes.get(j).getName()+" "+name);
-			if (attributes.get(j).getName().equalsIgnoreCase(name)){
+			String currentAttribute = attributes.get(j).getName();
+			if (currentAttribute.contains(".")) {
+				String [] split = currentAttribute.split("\\.");
+				if (name.equalsIgnoreCase(split[1])) {
+					return attributes.get(j);
+				}
+			} else if (name.equalsIgnoreCase(currentAttribute)) {
 				return attributes.get(j);
 			}
 		}
