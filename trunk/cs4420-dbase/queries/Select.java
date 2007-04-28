@@ -49,11 +49,14 @@ public class Select extends Operation {
 	public boolean execute(){
 		if (tableOne.execute()){
 			//do the select crapola here
+			System.out.println(tableOne.getType());
 			Relation rel = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
 			ArrayList<Attribute> atts = rel.getAttributes();
+			
 			ArrayList<String> types =  new ArrayList<String>();
 			ArrayList<String> names =  new ArrayList<String>();
 			for (int j=0; j<atts.size(); j++){
+				System.out.println(atts.get(j).getType());
 				types.add(atts.get(j).getType().name());
 				names.add(atts.get(j).getName());
 			}
@@ -72,7 +75,7 @@ public class Select extends Operation {
 			Iterator it = new Iterator(rel);
 			while (it.hasNext()){
 				String[] vals = it.getNext();
-				if (condition.compare(names2, vals, types2)){
+				if (condition == null || condition.compare(names2, vals, types2)){
 					
 					Database.getCatalog().insert(this.resultTableID,names2,vals);
 				}

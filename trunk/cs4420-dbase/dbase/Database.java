@@ -94,11 +94,20 @@ public class Database {
     	String [] splitCommand = command.split(" ");
     	if (splitCommand[0].replace("(","").compareToIgnoreCase("PROJECT") == 0) {
     		Query q = new Query(command);
+    		q.assignTemporaryTables();
+    		q.generateTemporaryTables();
     		q.execute();
+    		Iterator it = new Iterator(RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()));
+    		System.out.println(RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()).getAttributes().size());
+    		while (it.hasNext()){
+    			String[] s = it.getNext();
+    			System.out.println(queries.Utilities.printArray(s));
+    		}
     		return "Result Table Name :"+RelationHolder.getRelationHolder().getRelation(q.getResultRelationID()).getName();
     	} if (splitCommand[0].replace("(","").compareToIgnoreCase("CREATE") == 0) {
     		if (splitCommand[1].compareToIgnoreCase("TABLE") == 0){
-    			if( catalog.createTable(command.replace("\"", "").substring(1, command.replace("\"", "").length()-1), "key")){
+    			System.out.println(command.replace("\"", "").substring(1, command.replace("\"", "").length()-2));
+    			if( catalog.createTable(command.replace("\"", "").substring(1, command.replace("\"", "").length()-2), "key")){
     				return "Table Successfully Created";
     			} else {
     				return "Error Creating Table";

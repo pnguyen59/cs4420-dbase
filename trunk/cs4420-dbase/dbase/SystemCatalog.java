@@ -1,4 +1,4 @@
-/*
+ /*
  * SystemCatalog.java
  *
  * Created on March 6, 2007, 5:18 PM
@@ -450,7 +450,8 @@ public class SystemCatalog {
     		Attribute.Type newAttributeType 
     			= Attribute.stringToType(attributeType);
     		if (newAttributeType == Attribute.Type.Char) {
-    			size = Integer.parseInt(currentAttribute.split(" ")[2]);
+    			//size = Integer.parseInt(currentAttribute.split(" ")[2]);
+    			size = Integer.parseInt(currentAttribute.replace("char(", "").replace("char ", "").replace(")","").split(" ")[1]);
     		}
     		
     		//Create the new attribute and add it to the list of attributes

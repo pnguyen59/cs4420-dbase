@@ -22,19 +22,22 @@ public class TableOperation extends Operation {
 		//System.out.println("TABLE: "  + newTableName);
 		
 		//Find the table name
-		int open = newTableName.indexOf('\"');
+		
+		System.out.println(newTableName);
+		
+		int open = newTableName.indexOf('(');
 		int close;
 		for (close = open + 1; close < newTableName.length(); close++) {
 			//Get the character
 			char currentCharacter = newTableName.charAt(close);
-			if (currentCharacter == '\"') {
+			if (currentCharacter == ')') {
 				break;
 			}	
 		}
 		
 		//Set the table name from open + 1 to the close
-		this.setTableName(newTableName.substring(open + 1, close));
-		//System.out.println("TABLE: "  + tableName);
+		this.setTableName(newTableName.substring(open + 1, close).replace("\"","").split(" ")[1]);
+		System.out.println("TABLE: "  + tableName);
 		this.resultTableID = RelationHolder.getRelationHolder().getRelationByName(tableName);
 	}
 	

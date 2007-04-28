@@ -93,7 +93,7 @@ public class RelationHolder {
 	 */
 	public int getRelationByName(String name){
 		for (int j=0; j<relations.size(); j++){
-			if (relations.get(j).getName().equals(name)){
+			if (relations.get(j).getName().equalsIgnoreCase(name)){
 				return relations.get(j).getID();
 			}
 		}
