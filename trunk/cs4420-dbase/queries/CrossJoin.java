@@ -173,11 +173,9 @@ public class CrossJoin extends Operation {
 	}
 	
 	public ArrayList<String> getAttributes(){
-		ArrayList <String> attrs = tableOne.getAttributes();
-		System.out.println(tableOne.getChildCount());
-		System.out.println(attrs);
+		ArrayList <String> attrs = (ArrayList) tableOne.getAttributes().clone();
 		attrs.addAll(tableTwo.getAttributes());
-		return attrs;
+		return (ArrayList) attrs.clone();
 	}
 	
 	/**This method will return the number of children that this CrossJoin has
