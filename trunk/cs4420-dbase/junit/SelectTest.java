@@ -1,5 +1,7 @@
 package junit;
 
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 
 import org.junit.After;
@@ -8,6 +10,7 @@ import org.junit.Test;
 
 import queries.CrossJoin;
 import queries.Operation;
+import queries.Query;
 import queries.Select;
 import queries.TableOperation;
 
@@ -19,6 +22,11 @@ public class SelectTest extends TestCase {
 	
 	public static String simpleSelect = "(SELECT" + simpleCrossJoin
 		+ simpleWhere + ")";
+	
+	public static final String crazyQuery = "(project (a \"a\", qa \"R\" \"c\","
+		+ "a \"e\")(select(crossJoin \"R\", \"S\" )(where(and(eq  "
+		+ "(qa \"R\" \"c\") (qa \"S\" \"c\"))"
+		+ "(or(eq (a \"a\") (k string \"leo\") )(lt (a \"e\") (k int 4) ))))))";
 	
 	public Select select;
 	
@@ -65,4 +73,22 @@ public class SelectTest extends TestCase {
 	public void testGetChildCount() {
 	}
 
+	@Test
+	public void testGetParentAttributes() {
+		
+		Query query = new Query(crazyQuery);
+		
+		//Check the root
+		Operation treeRoot = query.getTreeRoot();
+		ArrayList < String > results = treeRoot.getParentAttributes();
+		for (int index = 0; index < results.size(); index++) {
+			System.out.print(results.get(index) + "\t");
+		}
+		
+		//Check the select
+		results = treeRoot.getTableOne().getParentAttributes();
+		for (int index = 0; index < results.size(); index++) {
+			System.out.print(results.get(index) + "\t");
+		}
+	}
 }
