@@ -61,6 +61,7 @@ public class CrossJoin extends Operation {
 		} else {
 			Relation r1 = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
 			Relation r2 = RelationHolder.getRelationHolder().getRelation(tableTwo.getResultTableID());
+			System.out.println("SZZ: "+r1.getAttributes().size());
 			ArrayList<Attribute> atts = r1.getAttributes();
 			atts.addAll(r2.getAttributes());
 			System.out.println("CROSSJOIN ATT SIZE: "+atts.size());
@@ -114,6 +115,8 @@ public class CrossJoin extends Operation {
 		RelationHolder holder = RelationHolder.getRelationHolder();
 		Relation left = holder.getRelation(tableOne.getResultTableID());
 		Relation right = holder.getRelation(tableTwo.getResultTableID());
+		
+		
 		
 		//Get the attributes
 		ArrayList < Attribute > leftAttributes = left.getAttributes();

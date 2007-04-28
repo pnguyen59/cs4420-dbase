@@ -742,7 +742,11 @@ public class Relation {
 			parsed[attributeID] = parsedAttribute;
 	    	
 		} 
-		
+		System.out.print("ATTRS for"+this.getName());
+		for (int j=0; j<attributes.size(); j++){
+			System.out.print(attributes.get(j).getName());
+		}
+		System.out.println();
 		return parsed;
 	}
 	
