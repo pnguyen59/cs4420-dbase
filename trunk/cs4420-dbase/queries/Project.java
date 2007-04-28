@@ -64,10 +64,12 @@ public class Project extends Operation {
 		System.out.println(attnames);
 		Iterator it = new Iterator (s);
 		String [] newattvals = new String[attnames.length];
-		System.out.println(s);
 		while (it.hasNext()){
 			String [] oldattvals = it.getNext();
 			for (int j=0; j<attributes.size(); j++){
+				for (Attribute a: s.getAttributes()){
+					System.out.println(a.getName());
+				}
 				int idx = s.getIndexByName(attributes.get(j));
 				newattvals[j] = oldattvals[idx];
 			}

@@ -62,7 +62,7 @@ public class CrossJoin extends Operation {
 			Relation r1 = RelationHolder.getRelationHolder().getRelation(tableOne.getResultTableID());
 			Relation r2 = RelationHolder.getRelationHolder().getRelation(tableTwo.getResultTableID());
 			System.out.println("SZZ: "+r1.getAttributes().size());
-			ArrayList<Attribute> atts = r1.getAttributes();
+			ArrayList<Attribute> atts = (ArrayList <Attribute>)r1.getAttributes().clone();
 			atts.addAll(r2.getAttributes());
 			System.out.println("CROSSJOIN ATT SIZE: "+atts.size());
 			ArrayList<String> types =  new ArrayList<String>();
@@ -87,6 +87,7 @@ public class CrossJoin extends Operation {
 				while (i2.hasNext()){
 					
 					String[] r2vals = i2.getNext();
+					System.out.println("R2: "+Utilities.printArray(r2vals));
 					String[] allvals = new String[r1vals.length+r2vals.length];
 					for (int j=0; j<r1vals.length; j++){
 						allvals[j] = r1vals[j];
@@ -123,6 +124,8 @@ public class CrossJoin extends Operation {
 		
 		//Get the attributes
 		ArrayList < Attribute > leftAttributes = left.getAttributes();
+		
+		System.out.println("GENERATING TEMPORARY TABLES: Left size "+tableOne.resultTableID+" Right size "+tableTwo.resultTableID);
 		
 		//Merge the two lists
 		ArrayList < Attribute > resultAttributes = 
