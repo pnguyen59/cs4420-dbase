@@ -154,6 +154,8 @@ public class CrossJoin extends Operation {
 	
 	public ArrayList<String> getAttributes(){
 		ArrayList <String> attrs = tableOne.getAttributes();
+		System.out.println(tableOne.getChildCount());
+		System.out.println(attrs);
 		attrs.addAll(tableTwo.getAttributes());
 		return attrs;
 	}
