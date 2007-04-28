@@ -65,13 +65,6 @@ public class Select extends Operation {
 			types2= types.toArray((new String[0]));
 			String[] names2 =  new String[0];
 			names2= names.toArray((new String[0]));
-			Relation rel2 = RelationHolder.getRelationHolder().getRelation(this.resultTableID);
-			if (rel2.getAttributes().size()==0){
-				//hasn't been initialized
-				for (int j=0; j<atts.size(); j++){
-					rel2.addAttribute(atts.get(j));
-				}
-			}
 			Iterator it = new Iterator(rel);
 			while (it.hasNext()){
 				String[] vals = it.getNext();

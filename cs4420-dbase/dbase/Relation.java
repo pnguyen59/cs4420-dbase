@@ -110,6 +110,7 @@ public class Relation {
 		indexFiles = new ArrayList<String>();
 		isLocked = false;
 		password="";
+		records = 0;
 	}
 	
 	public void addAttribute(Attribute att){
@@ -488,11 +489,17 @@ public class Relation {
 		if (name.contains(".")){
 			newname = name.split("\\.")[1];
 		}
+		
 		for (int index = 0; index < attributes.size(); index++) {
 			Attribute current = (Attribute) attributes.get(index);
 			//System.out.println("Comparing " + name +
 				//	" and " + current.getName());
-			if (newname.equalsIgnoreCase(current.getName())) {
+			String name2 = current.getName();
+			if (current.getName().contains(".")){
+				name2 = current.getName().split("\\.")[1];
+			}
+			
+			if (newname.equalsIgnoreCase(name2)) {
 				return index;
 			}
 		}
